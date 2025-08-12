@@ -8,7 +8,7 @@
 - [Maria Júlia Ferreira](github.com)
 - [Matheus Chaves](github.com)
 - [Guilherme Lacerda](github.com)
-- [Natan Tavares](github.com)
+- [Natan Tavares](https://github.com/Natan-Tavares)
   
 **Equipe de Design:**
 - Loreena Romão
