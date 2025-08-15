@@ -5,7 +5,7 @@
 - [Davila Peixoto](github.com)
 - [Guilherme Hecksher](github.com)
 - [Maria Alice Moura](github.com)
-- [Maria Júlia Ferreira](github.com)
+- [Maria Júlia Ferreira](https://github.com/Majufponte)
 - [Matheus Chaves](github.com)
 - [Guilherme Lacerda](https://github.com/guilhermeblacerda)
 - [Natan Tavares](https://github.com/Natan-Tavares)
