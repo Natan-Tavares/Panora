@@ -7,7 +7,7 @@
 - [Maria Alice Moura](github.com)
 - [Maria Júlia Ferreira](github.com)
 - [Matheus Chaves](github.com)
-- [Guilherme Lacerda](github.com)
+- [Guilherme Lacerda](https://github.com/guilhermeblacerda)
 - [Natan Tavares](https://github.com/Natan-Tavares)
   
 **Equipe de Design:**
