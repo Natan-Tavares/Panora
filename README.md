@@ -4,7 +4,7 @@
 - [Rafael Fernandes](github.com)
 - [Davila Peixoto](https://github.com/Davilapeixoto)
 - [Guilherme Hecksher](github.com)
-- [Maria Alice Moura](github.com)
+- [Maria Alice Moura](https://github.com/aalicevieiraa)
 - [Maria Júlia Ferreira](https://github.com/Majufponte)
 - [Matheus Chaves](github.com)
 - [Guilherme Lacerda](https://github.com/guilhermeblacerda)
