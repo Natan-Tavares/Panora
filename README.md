@@ -3,7 +3,7 @@
 **Equipe de Ciência da Computação:**
 - [Rafael Fernandes](github.com)
 - [Davila Peixoto](https://github.com/Davilapeixoto)
-- [Guilherme Hecksher](github.com)
+- [Guilherme Hecksher](https://github.com/G-Hecksher8)
 - [Maria Alice Moura](https://github.com/aalicevieiraa)
 - [Maria Júlia Ferreira](https://github.com/Majufponte)
 - [Matheus Chaves](github.com)
