@@ -1,9 +1,6 @@
 from django.db import models
 
 # Create your models here.
-import datetime
-from django.utils import timezone
-from django.contrib.auth.models import User
 
 class Noticia(models.Model):
     titulo = models.CharField(max_length=200, null=False)
@@ -19,7 +16,7 @@ class Resposta(models.Model):
     texto = models.TextField(null=False)
     data_criacao = models.DateTimeField("Criado em ", auto_now_add=True)
     usuario = models.CharField(max_length=200, null=False)
-    
+
     def __str__(self):
         return "[" + str(self.id) + "] " + self.texto
     
