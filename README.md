@@ -15,10 +15,7 @@ Mais do que um projeto, o Panora funciona como a sua própria vitrine: uma plata
 ## 💻🔨Tecnologias e Ferramentas
 
 - framework Django: Django é um framework web em Python que permite o desenvolvimento rápido e seguro de aplicações, seguindo o padrão MVT. Ele inclui uma ORM poderosa, autenticação integrada e painel administrativo automático.
-  
 - Figma: Figma é uma ferramenta de design colaborativo baseada na web, usada para criar interfaces, protótipos e designs. Permite trabalho em tempo real, facilitando a colaboração entre equipes.
-  
-- Jira: O Jira é uma ferramenta para gerenciar tarefas e projetos, especialmente em equipes de software, usando metodologias ágeis.
 
 ---
  ## ✨ Funcionalidades
