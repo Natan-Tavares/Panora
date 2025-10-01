@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 # Create your models here.
@@ -20,3 +21,8 @@ class Resposta(models.Model):
     def __str__(self):
         return "[" + str(self.id) + "] " + self.texto
     
+class Usuario(AbstractUser):
+    pass
+
+    def __str__(self):
+        return self.username
