@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Notícias</title>
+</head>
+<body>
+    <h1>Lista de Notícias</h1>
+
+    <hr>
+
+    {% if noticias %}
+        <ul style="list-style-type:none; padding:0;">
+            {% for noticia in noticias %}
+                <li style="margin-bottom:20px;">
+                    <h3>{{ noticia.titulo }}</h3>
+                    <p>{{ noticia.materia }}</p>
+                    <small>
+                        Autor: {{ noticia.autor }} |
+                        Publicada em: {{ noticia.data_criacao|date:"d/m/Y H:i" }}
+                    </small>
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhuma notícia cadastrada.</p>
+    {% endif %}
+</body>
+</html>

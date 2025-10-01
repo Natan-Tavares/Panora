@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Notícia</title>
+</head>
+<body>
+    <h1>Nova Notícia</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <label for="titulo">Título:</label><br>
+        <input type="text" id="titulo" name="titulo" required><br><br>
+
+        <label for="materia">Matéria:</label><br>
+        <textarea id="materia" name="materia" rows="5" cols="40" required></textarea><br><br>
+
+        <button type="submit">Publicar</button>
+    </form>
+
+    <br>
+    <a href="/">Voltar</a>
+</body>
+</html>
