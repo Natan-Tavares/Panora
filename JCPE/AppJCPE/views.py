@@ -1,4 +1,4 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render,get_object_or_404,redirect
 from .models import Noticia, Resposta
 from django.contrib.auth.models import User
 from django.utils.timezone import now
@@ -21,4 +21,11 @@ def inicial(request):
 def ler_noticia(request,id):
     noticia_individual = get_object_or_404(Noticia, id=id)
     return render(request,'noticia.html', {'noticia':noticia_individual})
+
+def apagar_noticia(request,id):
+    noticia_individual = get_object_or_404(Noticia, id=id)
+    if request.method == 'POST':
+        noticia_individual.delete()
+        return redirect('/')
+    return render(request, 'apagar_noticia.html', {'noticia': noticia_individual})
 

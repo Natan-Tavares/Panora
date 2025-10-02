@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar exclusão</title>
+</head>
+<body>
+    <h1>Excluir Notícia</h1>
+    <p>Tem certeza que deseja excluir a notícia: "<strong>{{ noticia.titulo }}</strong>"?</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Sim, excluir</button>
+        <a href="{% url 'inicial' %}">Cancelar</a>
+    </form>
+</body>
+</html>
