@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from .models import Noticia, Resposta
 from django.contrib.auth.models import User
 from django.utils.timezone import now
@@ -17,4 +17,8 @@ def criar_noticia(request):
 def inicial(request):
     noticias=Noticia.objects.all()
     return render(request,'inicial.html', {'noticias':noticias})
+
+def ler_noticia(request,id):
+    noticia_individual = get_object_or_404(Noticia, id=id)
+    return render(request,'noticia.html', {'noticia':noticia_individual})
 

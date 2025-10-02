@@ -20,6 +20,7 @@ from AppJCPE import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('criar/', views.criar_noticia),
-    path('', views.inicial),
+    path('criar/', views.criar_noticia,name='criar_noticia'),
+    path('', views.inicial,name='inicial'),
+    path('noticia/<int:id>', views.ler_noticia,name='ler_noticia'),
 ]

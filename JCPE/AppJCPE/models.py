@@ -21,8 +21,9 @@ class Resposta(models.Model):
     def __str__(self):
         return "[" + str(self.id) + "] " + self.texto
     
-class Usuario(AbstractUser):
+'''class Usuario(AbstractUser):
     pass
 
     def __str__(self):
         return self.username
+        '''
