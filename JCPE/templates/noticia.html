@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ noticia.titulo }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .resposta { margin-bottom: 15px; padding: 10px; border-left: 3px solid #ddd; }
+        small { color: #666; }
+        a, button { text-decoration: none; margin-top: 10px; display: inline-block; }
+    </style>
 </head>
 <body>
     <h1>{{ noticia.titulo }}</h1>
@@ -11,20 +18,20 @@
         Autor: {{ noticia.autor }} |
         Publicada em: {{ noticia.data_criacao|date:"d/m/Y H:i" }}
     </small>
+
     <hr>
 
     <h2>Respostas</h2>
     {% if noticia.resposta_set.all %}
-        <ul>
+        <ul style="list-style-type:none; padding:0;">
             {% for resposta in noticia.resposta_set.all %}
-                <li>
+                <li class="resposta">
                     {{ resposta.texto }} <br>
                     <small>
                         Por: {{ resposta.usuario }} |
                         {{ resposta.data_criacao|date:"d/m/Y H:i" }}
                     </small>
                 </li>
-                <hr>
             {% endfor %}
         </ul>
     {% else %}
@@ -32,6 +39,8 @@
     {% endif %}
 
     <hr>
-    <a href="{% url 'inicial' %}">⬅ Voltar para lista de notícias</a>
+    <a href="{% url 'inserir_resposta' noticia.id %}">💬 Responder</a> |
+    <a href="{% url 'inicial' %}">⬅ Voltar para lista de notícias</a> |
+    <a href="{% url 'apagar_noticia' noticia.id %}">🗑 Apagar</a>
 </body>
 </html>

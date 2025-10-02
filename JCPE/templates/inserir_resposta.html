@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Responder Notícia</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        textarea { width: 100%; min-height: 100px; margin-bottom: 10px; padding: 10px; font-size: 14px; }
+        button { padding: 8px 15px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        a { margin-left: 10px; color: #333; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Responder à notícia</h1>
+    
+    <h2>{{ noticia.titulo }}</h2>
+    <p>{{ noticia.materia }}</p>
+    <hr>
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="texto">Sua resposta:</label><br>
+        <textarea name="texto" id="texto" placeholder="Escreva sua resposta aqui..." required></textarea><br>
+        <button type="submit">Enviar resposta</button>
+    </form>
+</body>
+</html>

@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from AppJCPE import views
+from AppJCPE.views import InserirRespostaView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +25,5 @@ urlpatterns = [
     path('', views.inicial,name='inicial'),
     path('noticia/<int:id>', views.ler_noticia,name='ler_noticia'),
     path('noticia/<int:id>/apagar', views.apagar_noticia,name='apagar_noticia'),
+     path('noticia/<int:noticia_id>/responder', InserirRespostaView.as_view(), name='inserir_resposta'),
 ]
