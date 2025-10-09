@@ -29,6 +29,23 @@ Mais do que um projeto, o Panora funciona como a sua própria vitrine: uma plata
 - Ciclos contínuos de testes e melhorias
 
 ---
+## 📊 Status do Projeto
+
+- ✅ Levantamento de requisitos e definição de escopo  
+- ✅ Criação das primeiras telas no Figma  
+- ✅ Estruturação inicial do backend com Django   
+
+O projeto está em desenvolvimento contínuo, com entregas feitas em ciclos ágeis e foco constante em testes e iteração com base em feedbacks reais.
+
+### 📅 09/10
+
+- Documento atualizado com histórias do usuário  
+- [Histórias do Usuário](https://docs.google.com/document/d/1JKfzkTWteRNfYLQeY93pkUaebWu0PJlaDNHpkiU9wKg/edit?tab=t.0)
+- Atualização e finalização do modelo de dados (Models no Django);
+- Criação de um Trello para melhor organização e gestão de tarefas.
+
+
+---
 ## 🤝 Equipe
 
 **👨‍💻 Ciência da Computação:**
