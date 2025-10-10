@@ -49,7 +49,6 @@ O projeto está em desenvolvimento contínuo, com entregas feitas em ciclos áge
 ## 🤝 Equipe
 
 **👨‍💻 Ciência da Computação:**
-- [Rafael Fernandes](github.com)
 - [Davila Peixoto](https://github.com/Davilapeixoto)
 - [Guilherme Hecksher](https://github.com/G-Hecksher8)
 - [Maria Alice Moura](https://github.com/aalicevieiraa)
