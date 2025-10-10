@@ -35,6 +35,9 @@ def apagar_noticia(request,id):
 
 class InserirRespostaView(View):
     def get(self, request, noticia_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+            
         try:
             noticia = Noticia.objects.get(pk=noticia_id)
         except Noticia.DoesNotExist:
@@ -43,6 +46,9 @@ class InserirRespostaView(View):
         return render(request, 'inserir_resposta.html', contexto)
 
     def post(self, request, noticia_id):
+        if not request.user.is_authenticated:
+            return redirect('login')
+
         try:
             noticia = Noticia.objects.get(pk=noticia_id)
         except Noticia.DoesNotExist:
@@ -70,12 +76,12 @@ def cadastro(request):
         user = User.objects.filter(username=username).first()
 
         if user:
-            return HttpResponse("Usuário já existe")
+            return HttpResponse("Usuário já existe <a href='/login'>Faça login</a>")
         
         user = User.objects.create_user(username=username, email=email, password=senha)
         user.save()
 
-        return HttpResponse("Usuário criado com sucesso!")
+        return HttpResponse("Usuário criado com sucesso! <a href='/login'>Faça login</a>")
         
 
     
@@ -91,6 +97,6 @@ def login_view(request):
         if user:
             login(request, user)
 
-            return HttpResponse("Usuário autenticado com sucesso!") 
+            return HttpResponse("Usuário autenticado com sucesso! <a href='/'>Ir para página inicial</a>") 
         else:
-            return HttpResponse("Usuário ou senha inválidos")
+            return HttpResponse("Usuário ou senha inválidos <a href='/login'>Tente novamente</a>")
