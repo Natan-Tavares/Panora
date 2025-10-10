@@ -25,5 +25,8 @@ urlpatterns = [
     path('', views.inicial,name='inicial'),
     path('noticia/<int:id>', views.ler_noticia,name='ler_noticia'),
     path('noticia/<int:id>/apagar', views.apagar_noticia,name='apagar_noticia'),
-     path('noticia/<int:noticia_id>/responder', InserirRespostaView.as_view(), name='inserir_resposta'),
+    path('noticia/<int:noticia_id>/responder', InserirRespostaView.as_view(), name='inserir_resposta'),
+    path('cadastro/', views.cadastro, name='cadastro'),
+    path('login/', views.login_view, name='login'),
+
 ]

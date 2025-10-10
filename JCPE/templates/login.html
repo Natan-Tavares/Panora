@@ -1,0 +1,26 @@
+<html>
+
+    <head>
+
+    </head>
+
+
+    <body>
+
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+
+            <input type="text" placeholder="Username" name="username">
+            <br>
+            <br>
+            <input type="password" placeholder="Senha" name="senha">
+            <br>
+            <br>
+            <input type="submit" value="logar">
+            <br>
+
+        </form>
+
+    </body>
+
+</html>
