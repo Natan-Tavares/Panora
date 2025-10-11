@@ -1,0 +1,128 @@
+/* ====== Estilo Global ====== */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+/* ====== Cabeçalhos ====== */
+h1, h2, h3 {
+    color: #222;
+    text-align: center;
+}
+
+/* ====== Formulários ====== */
+form {
+    max-width: 400px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea {
+    resize: vertical;
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+/* ====== Botões ====== */
+button,
+input[type="submit"],
+a.button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+button:hover,
+input[type="submit"]:hover,
+a.button:hover {
+    background-color: #0056b3;
+}
+
+/* ====== Botão de exclusão (vermelho) ====== */
+button.excluir {
+    background-color: #dc3545;  /* vermelho */
+    color: white;
+}
+
+button.excluir:hover {
+    background-color: #b02a37;
+}
+
+/* ====== Links ====== */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ====== Listas e Notícias ====== */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid #007bff;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+}
+
+small {
+    color: #666;
+}
+
+/* ====== Container de respostas ====== */
+.resposta {
+    background: #f1f1f1;
+    border-left: 3px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* ====== Centralização de links ====== */
+.links-centrais {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.links-centrais a {
+    margin: 0 10px;
+}
+
+/* ====== Ajuste responsivo ====== */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    form {
+        width: 100%;
+        padding: 15px;
+    }
+}

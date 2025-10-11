@@ -1,6 +1,8 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta charset="UTF-8">
     <title>Confirmar exclusão</title>
 </head>
@@ -10,8 +12,10 @@
 
     <form method="POST">
         {% csrf_token %}
-        <button type="submit">Sim, excluir</button>
-        <a href="{% url 'inicial' %}">Cancelar</a>
+        <button type="submit" class="excluir">Sim, excluir</button>
+        <button type="button" onclick="window.location.href='{% url 'inicial' %}'">
+            Cancelar
+        </button>
     </form>
 </body>
 </html>
