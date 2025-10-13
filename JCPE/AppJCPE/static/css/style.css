@@ -1,26 +1,85 @@
+/* ====== Paleta de Cores JCPE ====== */
+:root {
+    --jcpe-azul: #004AAD;
+    --jcpe-azul-escuro: #00337A;
+    --jcpe-branco: #ffffff;
+    --jcpe-cinza-claro: #f4f6f8;
+    --jcpe-cinza-escuro: #444;
+    --jcpe-vermelho: #d32f2f;
+    --jcpe-vermelho-escuro: #a61b1b;
+}
+
+/* ====== Reset Global ====== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 /* ====== Estilo Global ====== */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
+    font-family: 'Poppins', Arial, sans-serif;
+    background-color: var(--jcpe-cinza-claro);
+    color: var(--jcpe-cinza-escuro);
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ====== Cabeçalho com logo ====== */
+header {
+    background-color: var(--jcpe-azul);
+    color: var(--jcpe-branco);
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+header img.logo {
+    height: 50px;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    margin-left: 10px;
+    color: #ffffff;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+    background-color: #004aad;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+/* ====== Container principal ====== */
+main {
+    flex: 1;
+    max-width: 900px;
+    width: 90%;
+    margin: 40px auto;
+    background: var(--jcpe-branco);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 /* ====== Cabeçalhos ====== */
 h1, h2, h3 {
-    color: #222;
+    color: var(--jcpe-azul-escuro);
     text-align: center;
+    margin-bottom: 20px;
 }
 
 /* ====== Formulários ====== */
 form {
-    max-width: 400px;
-    margin: 20px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    width: 100%;
+    background: var(--jcpe-branco);
+}
+
+label {
+    font-weight: 600;
 }
 
 input[type="text"],
@@ -29,52 +88,55 @@ input[type="email"],
 textarea {
     resize: vertical;
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
+    border-radius: 8px;
+    font-size: 15px;
 }
 
 /* ====== Botões ====== */
 button,
 input[type="submit"],
 a.button {
-    background-color: #007bff;
-    color: white;
+    background-color: var(--jcpe-azul);
+    color: var(--jcpe-branco);
     border: none;
-    padding: 10px 15px;
-    border-radius: 6px;
+    padding: 10px 18px;
+    border-radius: 8px;
     cursor: pointer;
+    margin: 6px 0;
     text-decoration: none;
     display: inline-block;
     text-align: center;
+    font-weight: 600;
+    transition: background 0.2s;
 }
 
 button:hover,
 input[type="submit"]:hover,
 a.button:hover {
-    background-color: #0056b3;
+    background-color: var(--jcpe-azul-escuro);
+    transform: scale(1.03);
 }
 
-/* ====== Botão de exclusão (vermelho) ====== */
+/* ====== Botão de exclusão ====== */
 button.excluir {
-    background-color: #dc3545;  /* vermelho */
-    color: white;
+    background-color: var(--jcpe-vermelho);
 }
-
 button.excluir:hover {
-    background-color: #b02a37;
+    background-color: var(--jcpe-vermelho-escuro);
 }
 
 /* ====== Links ====== */
 a {
-    color: #007bff;
+    color: var(--jcpe-azul);
     text-decoration: none;
+    transition: color 0.2s;
 }
-
 a:hover {
+    color: var(--jcpe-azul-escuro);
     text-decoration: underline;
 }
 
@@ -83,46 +145,42 @@ ul {
     list-style: none;
     padding: 0;
 }
-
 li {
-    background: white;
-    padding: 15px;
+    background: var(--jcpe-branco);
+    padding: 20px;
     margin-bottom: 15px;
-    border-left: 4px solid #007bff;
-    border-radius: 6px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.05);
+    border-left: 5px solid var(--jcpe-azul);
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
 }
 
-small {
-    color: #666;
-}
-
-/* ====== Container de respostas ====== */
+/* ====== Respostas ====== */
 .resposta {
-    background: #f1f1f1;
-    border-left: 3px solid #ccc;
-    padding: 10px;
-    border-radius: 5px;
+    background: var(--jcpe-cinza-claro);
+    border-left: 4px solid var(--jcpe-azul);
+    padding: 10px 15px;
+    border-radius: 8px;
     margin-bottom: 10px;
 }
 
-/* ====== Centralização de links ====== */
-.links-centrais {
+/* ====== Rodapé ====== */
+footer {
+    background-color: var(--jcpe-azul-escuro);
+    color: var(--jcpe-branco);
     text-align: center;
-    margin-top: 20px;
+    padding: 15px;
+    font-size: 0.9rem;
+    margin-top: auto;
 }
 
-.links-centrais a {
-    margin: 0 10px;
-}
-
-/* ====== Ajuste responsivo ====== */
+/* ====== Responsividade ====== */
 @media (max-width: 600px) {
-    body {
-        padding: 10px;
+    header {
+        flex-direction: column;
+        align-items: center;
     }
-    form {
-        width: 100%;
-        padding: 15px;
+    main {
+        width: 95%;
+        padding: 20px;
     }
 }

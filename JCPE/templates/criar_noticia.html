@@ -2,26 +2,38 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta charset="UTF-8">
-    <title>Criar Notícia</title>
+    <title>Criar Notícia - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
 </head>
 <body>
-    <h1>Nova Notícia</h1>
+    <header>
+        <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        <h1>JCPE - Jornal Comunitário de Pernambuco</h1>
+    </header>
 
-    <form method="POST">
-        {% csrf_token %}
-        
-        <label for="titulo">Título:</label><br>
-        <input type="text" id="titulo" name="titulo" required><br><br>
+    <main>
+        <h2>Nova Notícia</h2>
 
-        <label for="materia">Matéria:</label><br>
-        <textarea id="materia" name="materia" rows="5" cols="40" required></textarea><br><br>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" required>
 
-        <button type="submit">Publicar</button>
-    </form>
+            <label for="materia">Matéria:</label>
+            <textarea id="materia" name="materia" rows="6" required></textarea>
 
-    <br>
-    <a href="/">Voltar</a>
+            <button type="submit">Publicar</button>
+        </form>
+
+        <div class="links-centrais">
+            <a href="{% url 'inicial' %}" class="button">⬅ Voltar</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
 </body>
 </html>

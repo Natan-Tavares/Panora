@@ -2,31 +2,38 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta charset="UTF-8">
-    <title>Responder Notícia</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        textarea { width: 100%; min-height: 100px; margin-bottom: 10px; padding: 10px; font-size: 14px; }
-        button { padding: 8px 15px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        a { margin-left: 10px; color: #333; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-    </style>
+    <title>Responder Notícia - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
 </head>
 <body>
-    <h1>Responder à notícia</h1>
-    
-    <h2>{{ noticia.titulo }}</h2>
-    <p>{{ noticia.materia }}</p>
-    <hr>
+    <header>
+        <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        <h1>JCPE - Jornal Comunitário de Pernambuco</h1>
+    </header>
 
-    <form method="post">
-        {% csrf_token %}
-        <label for="texto">Sua resposta:</label><br>
-        <textarea name="texto" id="texto" placeholder="Escreva sua resposta aqui..." required></textarea><br>
-        <button type="submit">Enviar resposta</button>
-    </form>
+    <main>
+        <h2>Responder à Notícia</h2>
+
+        <h3>{{ noticia.titulo }}</h3>
+        <p>{{ noticia.materia }}</p>
+        <hr>
+
+        <form method="post">
+            {% csrf_token %}
+            <label for="texto">Sua resposta:</label>
+            <textarea name="texto" id="texto" placeholder="Escreva sua resposta aqui..." required></textarea>
+            <button type="submit">Enviar Resposta</button>
+        </form>
+
+        <div class="links-centrais">
+            <a href="{% url 'ler_noticia' noticia.id %}" class="button">⬅ Voltar</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
 </body>
 </html>

@@ -1,32 +1,41 @@
 {% load static %}
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+</head>
+<body>
+    <header>
+        <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        <h1>JCPE - Jornal Comunitário de Pernambuco</h1>
+    </header>
 
-    <head>
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-    </head>
-
-
-    <body>
+    <main>
+        <h2>Entrar na Conta</h2>
 
         <form action="{% url 'login' %}" method="post">
             {% csrf_token %}
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
 
-            <input type="text" placeholder="Username" name="username">
-            <br>
-            <br>
-            <input type="password" placeholder="Senha" name="senha">
-            <br>
-            <br>
-            <input type="submit" value="Logar">
-            <br>
-            <br>
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+
+            <input type="submit" value="Entrar">
+        </form>
+
+        <div class="links-centrais">
             <button type="button" onclick="window.location.href='{% url 'cadastro' %}'">
                 Não tenho conta
             </button>
+        </div>
+    </main>
 
-        </form>
-
-    </body>
-
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
 </html>

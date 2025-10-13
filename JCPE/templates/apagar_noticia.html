@@ -2,20 +2,33 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta charset="UTF-8">
-    <title>Confirmar exclusão</title>
+    <title>Excluir Notícia - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
 </head>
 <body>
-    <h1>Excluir Notícia</h1>
-    <p>Tem certeza que deseja excluir a notícia: "<strong>{{ noticia.titulo }}</strong>"?</p>
+    <header>
+        <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        <h1>JCPE - Jornal Comunitário de Pernambuco</h1>
+    </header>
 
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit" class="excluir">Sim, excluir</button>
-        <button type="button" onclick="window.location.href='{% url 'inicial' %}'">
-            Cancelar
-        </button>
-    </form>
+    <main>
+        <h2>Excluir Notícia</h2>
+        <p>Tem certeza que deseja excluir a notícia:
+            "<strong>{{ noticia.titulo }}</strong>"?</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="excluir">Sim, excluir</button>
+            <button type="button" onclick="window.location.href='{% url 'inicial' %}'">
+                Cancelar
+            </button>
+        </form>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
 </body>
 </html>

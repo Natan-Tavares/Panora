@@ -2,47 +2,51 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta charset="UTF-8">
-    <title>{{ noticia.titulo }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        .resposta { margin-bottom: 15px; padding: 10px; border-left: 3px solid #ddd; }
-        small { color: #666; }
-        a, button { text-decoration: none; margin-top: 10px; display: inline-block; }
-    </style>
+    <title>{{ noticia.titulo }} - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
 </head>
 <body>
-    <h1>{{ noticia.titulo }}</h1>
-    <p>{{ noticia.materia }}</p>
-    <small>
-        Autor: {{ noticia.autor }} |
-        Publicada em: {{ noticia.data_criacao|date:"d/m/Y H:i" }}
-    </small>
+    <header>
+        <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        <h1>JCPE - Jornal Comunitário de Pernambuco</h1>
+    </header>
 
-    <hr>
+    <main>
+        <h1>{{ noticia.titulo }}</h1>
+        <p>{{ noticia.materia }}</p>
+        <small>
+            Autor: {{ noticia.autor }} |
+            Publicada em: {{ noticia.data_criacao|date:"d/m/Y H:i" }}
+        </small>
 
-    <h2>Respostas</h2>
-    {% if noticia.resposta_set.all %}
-        <ul style="list-style-type:none; padding:0;">
-            {% for resposta in noticia.resposta_set.all %}
-                <li class="resposta">
-                    {{ resposta.texto }} <br>
-                    <small>
-                        Por: {{ resposta.usuario }} |
-                        {{ resposta.data_criacao|date:"d/m/Y H:i" }}
-                    </small>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Não há respostas para esta notícia.</p>
-    {% endif %}
+        <hr>
+        <h2>Respostas</h2>
 
-    <hr>
-    <a href="{% url 'inserir_resposta' noticia.id %}">💬 Responder</a> |
-    <a href="{% url 'inicial' %}">⬅ Voltar para lista de notícias</a> |
-    <a href="{% url 'apagar_noticia' noticia.id %}">🗑 Apagar</a>
+        {% if noticia.resposta_set.all %}
+            <ul>
+                {% for resposta in noticia.resposta_set.all %}
+                    <li class="resposta">
+                        {{ resposta.texto }} <br>
+                        <small>Por: {{ resposta.usuario }} |
+                            {{ resposta.data_criacao|date:"d/m/Y H:i" }}</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Não há respostas para esta notícia.</p>
+        {% endif %}
+
+        <div class="links-centrais">
+            <a href="{% url 'inserir_resposta' noticia.id %}" class="button">💬 Responder</a>
+            <a href="{% url 'inicial' %}" class="button">⬅ Voltar</a>
+            <a href="{% url 'apagar_noticia' noticia.id %}" class="button excluir">🗑 Apagar</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
 </body>
 </html>

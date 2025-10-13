@@ -1,31 +1,42 @@
 {% load static %}
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+</head>
+<body>
+    <header>
+        <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        <h1>JCPE - Jornal Comunitário de Pernambuco</h1>
+    </header>
 
-    <head>
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-    </head>
-
-
-    <body>
+    <main>
+        <h2>Criar Conta</h2>
 
         <form action="{% url 'cadastro' %}" method="post">
             {% csrf_token %}
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
 
-            <input type="text" placeholder="Username" name="username">
-            <br>
-            <br>
-            <input type="email" placeholder="Email" name="email">
-            <br>
-            <br>
-            <input type="password" placeholder="Senha" name="senha">
-            <br>
-            <br>
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required>
+
             <input type="submit" value="Cadastrar">
-            <br>
-
         </form>
 
-    </body>
+        <div class="links-centrais">
+            <a href="{% url 'login' %}" class="button">⬅ Já tenho conta</a>
+        </div>
+    </main>
 
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
 </html>

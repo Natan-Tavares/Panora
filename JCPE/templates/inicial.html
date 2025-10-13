@@ -2,44 +2,49 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <meta charset="UTF-8">
-    <title>Notícias</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; }
-        ul { list-style-type: none; padding: 0; }
-        li { margin-bottom: 20px; padding: 10px; border-bottom: 1px solid #ddd; }
-        a { text-decoration: none; color: #007BFF; }
-        a:hover { text-decoration: underline; }
-        small { color: #555; }
-    </style>
+    <title>Notícias - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
 </head>
 <body>
-    <h1>Lista de Notícias</h1>
+    <header>
+        <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        <h1>JCPE - Jornal Comunitário de Pernambuco</h1>
+    </header>
 
-    <a href="{% url 'criar_noticia' %}">➕ Criar Nova Notícia</a>
-    <hr>
+    <main>
+        <h2>Últimas Notícias</h2>
 
-    {% if noticias %}
-        <ul>
-            {% for noticia in noticias %}
-                <li>
-                    <h3>
-                        <a href="{% url 'ler_noticia' noticia.id %}">
-                            {{ noticia.titulo }}
-                        </a>
-                    </h3>
-                    <p>{{ noticia.materia|truncatewords:20 }}</p>
-                    <small>
-                        Autor: {{ noticia.autor }} |
-                        Publicada em: {{ noticia.data_criacao|date:"d/m/Y H:i" }}
-                    </small>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nenhuma notícia cadastrada.</p>
-    {% endif %}
+        <div class="links-centrais">
+            <a href="{% url 'criar_noticia' %}" class="button">➕ Criar Nova Notícia</a>
+        </div>
+        <br>
+
+        {% if noticias %}
+            <ul>
+                {% for noticia in noticias %}
+                    <li>
+                        <h3>
+                            <a href="{% url 'ler_noticia' noticia.id %}">
+                                {{ noticia.titulo }}
+                            </a>
+                        </h3>
+                        <p>{{ noticia.materia|truncatewords:20 }}</p>
+                        <small>
+                            Autor: {{ noticia.autor }} |
+                            Publicada em: {{ noticia.data_criacao|date:"d/m/Y H:i" }}
+                        </small>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhuma notícia cadastrada.</p>
+        {% endif %}
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
 </body>
 </html>
