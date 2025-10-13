@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ titulo }}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <a href="{% url 'inicial' %}">
+            <img src="{% static 'img/logo-jcpe.png' %}" alt="Logo JCPE" class="logo">
+        </a>
+        <h1>JCPE Notícias</h1>
+    </header>
+
+    <main>
+        <h2>{{ titulo }}</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 20px;">{{ mensagem }}</p>
+
+        {% if link %}
+            <a href="{{ link }}" class="button">{{ link_text }}</a>
+        {% endif %}
+    </main>
+
+    <footer>
+        © JCPE - 2025
+    </footer>
+</body>
+</html>

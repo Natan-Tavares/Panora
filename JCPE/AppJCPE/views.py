@@ -67,36 +67,54 @@ class InserirRespostaView(View):
     
 def cadastro(request):
     if request.method == "GET":
-        return render(request, 'cadastro.html') 
-    else:
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        senha = request.POST.get("senha")
-
-        user = User.objects.filter(username=username).first()
-
-        if user:
-            return HttpResponse("Usuário já existe <a href='/login'>Faça login</a>")
-        
-        user = User.objects.create_user(username=username, email=email, password=senha)
-        user.save()
-
-        return HttpResponse("Usuário criado com sucesso! <a href='/login'>Faça login</a>")
-        
-
+        return render(request, 'cadastro.html')
     
+    username = request.POST.get("username")
+    email = request.POST.get("email")
+    senha = request.POST.get("senha")
+
+    user = User.objects.filter(username=username).first()
+
+    if user:
+        return render(request, 'mensagem.html', {
+            'titulo': 'Usuário já existe',
+            'mensagem': 'Esse nome de usuário já está sendo usado.',
+            'link': '/login',
+            'link_text': 'Fazer login'
+        })
+
+    user = User.objects.create_user(username=username, email=email, password=senha)
+    user.save()
+
+    return render(request, 'mensagem.html', {
+        'titulo': 'Usuário criado com sucesso!',
+        'mensagem': 'Sua conta foi criada. Agora você pode fazer login.',
+        'link': '/login',
+        'link_text': 'Fazer login'
+    })
+
+
 def login_view(request):
     if request.method == "GET":
         return render(request, 'login.html')
+    
+    username = request.POST.get("username")
+    senha = request.POST.get("senha")
+
+    user = authenticate(request, username=username, password=senha)
+
+    if user:
+        login(request, user)
+        return render(request, 'mensagem.html', {
+            'titulo': 'Usuário autenticado com sucesso!',
+            'mensagem': 'Bem-vindo(a) de volta.',
+            'link': '/',
+            'link_text': 'Ir para página inicial'
+        })
     else:
-        username = request.POST.get("username")
-        senha = request.POST.get("senha")
-
-        user = authenticate(username=username, password=senha)
-
-        if user:
-            login(request, user)
-
-            return HttpResponse("Usuário autenticado com sucesso! <a href='/'>Ir para página inicial</a>") 
-        else:
-            return HttpResponse("Usuário ou senha inválidos <a href='/login'>Tente novamente</a>")
+        return render(request, 'mensagem.html', {
+            'titulo': 'Erro no login',
+            'mensagem': 'Usuário ou senha inválidos.',
+            'link': '/login',
+            'link_text': 'Tentar novamente'
+        })
