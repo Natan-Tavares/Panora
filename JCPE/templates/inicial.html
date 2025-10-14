@@ -14,12 +14,12 @@
         </a>
         <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
     
-        <form action="{% url 'logout' %}" method="post" style="margin:0;">
+        <a action="{% url 'logout' %}" method="post" style="margin:0;">
             {% csrf_token %}
             <button type="submit" class="button" style="background-color: var(--jcpe-vermelho);">
                 Logout
             </button>
-        </form>
+        </a>
     </header>
 
     <main>
