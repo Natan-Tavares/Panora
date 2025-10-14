@@ -1,7 +1,7 @@
 from django.shortcuts import render,get_object_or_404,redirect
 from .models import Noticia, Resposta
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login 
+from django.contrib.auth import authenticate, login, logout
 from django.utils.timezone import now
 from django.views import View
 from django.utils import timezone
@@ -118,3 +118,7 @@ def login_view(request):
             'link': '/login',
             'link_text': 'Tentar novamente'
         })
+    
+def deslogar(request):
+    logout(request)
+    return redirect('login')

@@ -28,5 +28,5 @@ urlpatterns = [
     path('noticia/<int:noticia_id>/responder', InserirRespostaView.as_view(), name='inserir_resposta'),
     path('cadastro/', views.cadastro, name='cadastro'),
     path('login/', views.login_view, name='login'),
-
+    path('logout/', views.deslogar, name='logout'),
 ]
