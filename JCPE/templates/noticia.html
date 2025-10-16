@@ -26,19 +26,30 @@
         <hr>
         <h2>Respostas</h2>
 
-        {% if noticia.resposta_set.all %}
-            <ul>
-                {% for resposta in noticia.resposta_set.all %}
-                    <li class="resposta">
-                        {{ resposta.texto }} <br>
-                        <small>Por: {{ resposta.usuario }} |
-                            {{ resposta.data_criacao|date:"d/m/Y H:i" }}</small>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>Não há respostas para esta notícia.</p>
-        {% endif %}
+        {% with comentarios_raiz=noticia.resposta_set.all|dictsort:"data_criacao" %}
+            {% for comentario in comentarios_raiz %}
+                {% if not comentario.pai %}
+                    <div>
+                        <p><b>{{ comentario.usuario }}</b>: {{ comentario.texto }}</p>
+                        <small>{{ comentario.data_criacao|date:"d/m/Y H:i" }}</small>
+                        <br>
+                        <a href="{% url 'inserir_resposta' noticia.id %}?pai={{ comentario.id }}">Responder</a>
+
+                        <!-- Exibir respostas-filho -->
+                        {% for filho in comentario.comentarios_filho.all %}
+                            <div style="margin-left: 30px;">
+                                <p><b>{{ filho.usuario }}</b>: {{ filho.texto }}</p>
+                                <small>{{ filho.data_criacao|date:"d/m/Y H:i" }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% empty %}
+                <p>Não há respostas para esta notícia.</p>
+            {% endfor %}
+        {% endwith %}
+
+        
 
         <div class="links-centrais">
             <a href="{% url 'inserir_resposta' noticia.id %}" class="button">💬 Responder</a>

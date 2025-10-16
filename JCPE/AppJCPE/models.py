@@ -21,6 +21,13 @@ class Noticia(models.Model):
 class Resposta(models.Model):
     noticia = models.ForeignKey(Noticia, on_delete=models.CASCADE)
     texto = models.TextField(null=False)
+    # "pai" seria o comentario original e "filho" seriam as respostas a ele
+    pai = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="comentarios_filho")
     data_criacao = models.DateTimeField("Criado em ", auto_now_add=True)
     usuario = models.CharField(max_length=200, null=False)
 

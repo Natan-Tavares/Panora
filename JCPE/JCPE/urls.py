@@ -17,7 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from AppJCPE import views
-from AppJCPE.views import InserirRespostaView
+from AppJCPE.views import InserirRespostaView, RespostaViewSet
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r"respostas", RespostaViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,3 +34,5 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.deslogar, name='logout'),
 ]
+
+urlpatterns += router.urls

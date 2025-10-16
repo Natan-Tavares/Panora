@@ -6,6 +6,8 @@ from django.utils.timezone import now
 from django.views import View
 from django.utils import timezone
 from django.http import HttpResponse, Http404
+from rest_framework import viewsets
+from .serializers import RespostaSerializer
 # Create your views here.
 
 def criar_noticia(request):
@@ -42,7 +44,18 @@ class InserirRespostaView(View):
             noticia = Noticia.objects.get(pk=noticia_id)
         except Noticia.DoesNotExist:
             raise Http404("Noticia inexistente")
-        contexto = {'noticia' : noticia}
+        
+        pai_id = request.GET.get("pai")
+        pai = None
+        if pai_id:
+            try:
+                pai = Resposta.objects.get(pk=pai_id)
+            except Resposta.DoesNotExist:
+                pai = None
+
+        contexto = {'noticia' : noticia,
+                    'pai' : pai
+                    }
         return render(request, 'inserir_resposta.html', contexto)
 
     def post(self, request, noticia_id):
@@ -60,8 +73,16 @@ class InserirRespostaView(View):
             usuario = 'anônimo'
         texto = request.POST.get('texto')
         data_criacao = timezone.now()
+
+        pai_id = request.GET.get("pai")
+        pai = None
+        if pai_id:
+            try:
+                pai = Resposta.objects.get(pk=pai_id)
+            except Resposta.DoesNotExist:
+                pai = None
         
-        noticia.resposta_set.create(texto=texto, data_criacao=data_criacao, usuario=usuario)
+        noticia.resposta_set.create(texto=texto, data_criacao=data_criacao, usuario=usuario, pai=pai)
 
         return redirect('ler_noticia', id=noticia.id)
     
@@ -122,3 +143,13 @@ def login_view(request):
 def deslogar(request):
     logout(request)
     return redirect('login')
+
+class RespostaViewSet(viewsets.ModelViewSet):
+    queryset = Resposta.objects.all()
+    serializer_class = RespostaSerializer
+
+    def perform_create(self, serializer):
+        # verifica se é pai
+        parent_id = self.request.data.get("pai")
+        parent = Resposta.objects.get(id=parent_id) if parent_id else None
+        serializer.save(usuario=self.request.user, pai=parent)

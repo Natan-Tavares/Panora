@@ -3,7 +3,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Responder Notícia - JCPE</title>
+    <title>Responder - JCPE</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
 </head>
@@ -16,10 +16,17 @@
     </header>
 
     <main>
-        <h2>Responder à Notícia</h2>
+        <h1>Responder</h1>
 
-        <h3>{{ noticia.titulo }}</h3>
-        <p>{{ noticia.materia }}</p>
+        {% if pai %}
+            <p><strong>Respondendo ao comentário:</strong></p>
+            <blockquote style="border-left: 3px solid #ccc; padding-left: 10px; color: #555;">
+                {{ pai.usuario }}: {{ pai.texto }}
+            </blockquote>
+        {% else %}
+            <p><strong>Respondendo à notícia:</strong> {{ noticia.titulo }}</p>
+        {% endif %}
+
         <hr>
 
         <form method="post">
