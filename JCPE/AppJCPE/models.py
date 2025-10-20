@@ -39,6 +39,13 @@ class Historico(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
         return f"usuario: {self.usuario.username} acessou {self.noticia}"
+    
+    
+class Noticias_salvas(models.Model):
+    noticia = models.ForeignKey(Noticia, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return f"usuario: {self.usuario.username} salvou {self.noticia}"
 
     
     '''

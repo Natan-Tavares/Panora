@@ -33,6 +33,9 @@ urlpatterns = [
     path('cadastro/', views.cadastro, name='cadastro'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.deslogar, name='logout'),
+    path('salvar_noticia/<int:id>/', views.salvar_noticia, name='salvar_noticia'),
+    path('noticas_salvas/', views.vizualizar_noticias_salvas, name='vizualizar_salvos'),
+    path('noticas_salvas/remover/<int:id>/', views.remover_noticias_salvas, name='apagar_salvos'),
 ]
 
 urlpatterns += router.urls

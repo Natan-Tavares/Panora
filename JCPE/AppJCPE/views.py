@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404,redirect
-from .models import Noticia, Resposta, Historico
+from .models import Noticia, Resposta, Historico,Noticias_salvas
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.utils.timezone import now
@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.http import HttpResponse, Http404
 from rest_framework import viewsets
 from .serializers import RespostaSerializer
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def criar_noticia(request):
@@ -29,6 +30,7 @@ def ler_noticia(request,id):
     if request.user.is_authenticated:
         usuario=request.user
         Historico.objects.create(noticia=noticia_individual,usuario=usuario)
+
     return render(request,'noticia.html', {'noticia':noticia_individual})
 
 def apagar_noticia(request,id):
@@ -156,3 +158,28 @@ class RespostaViewSet(viewsets.ModelViewSet):
         parent_id = self.request.data.get("pai")
         parent = Resposta.objects.get(id=parent_id) if parent_id else None
         serializer.save(usuario=self.request.user, pai=parent)
+
+@login_required
+def salvar_noticia(request,id):
+    noticia_individual = get_object_or_404(Noticia, id=id)
+    if request.method=="POST":
+        usuario=request.user
+        Noticias_salvas.objects.create(noticia=noticia_individual,usuario=usuario)
+    return redirect('ler_noticia',id=id)
+
+
+@login_required
+def vizualizar_noticias_salvas(request):
+    usuario = request.user
+    noticias=Noticias_salvas.objects.filter(usuario=usuario)
+    return render(request,'noticias_salvas.html', {'noticias_salvas': noticias})
+
+
+
+@login_required
+def remover_noticias_salvas(request,id):
+    usuario = request.user
+    noticias=Noticias_salvas.objects.filter(id=id,usuario=usuario)
+    if request.method == 'POST':
+        noticias.delete()
+    return redirect('vizualizar_salvos')

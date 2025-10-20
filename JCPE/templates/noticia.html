@@ -49,7 +49,11 @@
             {% endfor %}
         {% endwith %}
 
-        
+        <form action="{% url 'salvar_noticia' noticia.id %}" method="POST" style="text-align: center; margin-top: 20px;">
+            {% csrf_token %}
+            <button type="submit" class="button">⭐ Salvar notícia</button>
+        </form>
+
 
         <div class="links-centrais">
             <a href="{% url 'inserir_resposta' noticia.id %}" class="button">💬 Responder</a>
