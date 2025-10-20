@@ -33,10 +33,19 @@ class Resposta(models.Model):
 
     def __str__(self):
         return "[" + str(self.id) + "] " + self.texto
+
+class Historico(models.Model):
+    noticia = models.ForeignKey(Noticia, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return f"usuario: {self.usuario.username} acessou {self.noticia}"
+
+    
     '''
 class Usuario_comum(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE,null=True)
     descricao = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.usuario.username if self.usuario else "Usuário sem conta"'''
+        return self.usuario.username
+    '''
