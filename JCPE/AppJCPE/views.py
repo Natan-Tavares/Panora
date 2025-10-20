@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404,redirect
-from .models import Noticia, Resposta
+from .models import Noticia, Resposta, Historico
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.utils.timezone import now
@@ -26,6 +26,9 @@ def inicial(request):
 
 def ler_noticia(request,id):
     noticia_individual = get_object_or_404(Noticia, id=id)
+    if request.user.is_authenticated:
+        usuario=request.user
+        Historico.objects.create(noticia=noticia_individual,usuario=usuario)
     return render(request,'noticia.html', {'noticia':noticia_individual})
 
 def apagar_noticia(request,id):
