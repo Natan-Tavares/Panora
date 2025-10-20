@@ -164,7 +164,7 @@ def salvar_noticia(request,id):
     noticia_individual = get_object_or_404(Noticia, id=id)
     if request.method=="POST":
         usuario=request.user
-        Noticias_salvas.objects.create(noticia=noticia_individual,usuario=usuario)
+        Noticias_salvas.objects.get_or_create(noticia=noticia_individual,usuario=usuario)
     return redirect('ler_noticia',id=id)
 
 
