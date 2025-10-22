@@ -186,3 +186,14 @@ def remover_noticias_salvas(request,id):
 
 def conta(request):
     return render(request, 'conta.html')
+
+@login_required
+def editar_perfil(request):
+    if request.method == "POST":
+        user = request.user
+        user.username = request.POST.get("username")
+        user.email = request.POST.get("email")
+        user.save()
+        return redirect("conta")
+
+    return render(request, "editar_perfil.html")

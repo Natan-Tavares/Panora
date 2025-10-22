@@ -32,7 +32,7 @@
                 <div>
                     <h2>Bem-vindo, {{ user.username }}!</h2>
                     <p>Membro desde {{ user.date_joined|date:"d/m/Y" }}</p>
-                    <a href="" class="button">Editar perfil</a>
+                    <a href="{% url 'editar_conta' %}" class="button">Editar perfil</a>
                 </div>
             </div>
 

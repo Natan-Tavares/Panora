@@ -192,3 +192,52 @@ footer {
     margin: 0 auto;
     border-radius: 50%;
 }
+
+.editar-perfil-section {
+    text-align: center;
+}
+
+.foto-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.foto-label {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.foto-label:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.foto-perfil {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--jcpe-azul);
+    transition: border-color 0.3s;
+}
+
+.foto-perfil:hover {
+    border-color: var(--jcpe-azul-escuro);
+}
+
+.foto-texto {
+    font-size: 0.9rem;
+    color: var(--jcpe-cinza-escuro);
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.editar-botoes {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
