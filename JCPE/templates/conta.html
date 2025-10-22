@@ -1,0 +1,58 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <header>
+        <a href="{% url 'inicial' %}">
+            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        </a>
+        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
+        <form action="{% url 'logout' %}" method="post" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="excluir">Sair</button>
+        </form>
+    </header>
+
+    <main>
+        <section>
+            <div>
+                <img src="https://placehold.co/200x200">
+                <div>
+                    <h2>Bem-vindo, {{ user.username }}!</h2>
+                    <p>Membro desde {{ user.date_joined|date:"d/m/Y" }}</p>
+                    <a href="" class="button">Editar perfil</a>
+                </div>
+            </div>
+
+            <div>
+                <h3>Informações da Conta</h3>
+                <ul>
+                    <li><strong>Usuário:</strong> {{ user.username }}</li>
+                    <li><strong>Email:</strong> {{ user.email }}</li>
+                    <li><strong>Último login:</strong> {{ user.last_login|date:"d/m/Y H:i" }}</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h3>Ações rápidas</h3>
+            <div class="button">
+                <a href="{% url 'criar_noticia' %}" class="button">Criar notícia</a>
+                <a href="" class="button">Notícias salvas</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
+</html>

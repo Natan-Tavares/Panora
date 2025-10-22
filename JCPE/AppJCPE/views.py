@@ -183,3 +183,6 @@ def remover_noticias_salvas(request,id):
     if request.method == 'POST':
         noticias.delete()
     return redirect('vizualizar_salvos')
+
+def conta(request):
+    return render(request, 'conta.html')

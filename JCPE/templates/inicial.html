@@ -13,20 +13,19 @@
             <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
         </a>
         <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
-    
-        <a action="{% url 'logout' %}" method="post" style="margin:0;">
+        <form action="{% url 'conta' %}" method="post" style="margin:0;">
             {% csrf_token %}
-            <button type="submit" class="button" style="background-color: var(--jcpe-vermelho);">
-                Logout
+            <button type="submit" class="button">
+                Conta
             </button>
-        </a>
+        </form>
     </header>
 
     <main>
         <h2>Últimas Notícias</h2>
 
         <div class="links-centrais">
-            <a href="{% url 'criar_noticia' %}" class="button">➕ Criar Nova Notícia</a>
+            <a href="{% url 'criar_noticia' %}" class="button">➕ Criar Nova Notícia</a>            
         </div>
         <br>
 
