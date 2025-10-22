@@ -6,65 +6,49 @@
     <title>Notícias Salvas - JCPE</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
-    <style>
-        /* Pequeno estilo inline para o exemplo — remova se usar seu css */
-        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
-        .card { border: 1px solid #ddd; padding: 16px; border-radius: 8px; margin-bottom: 14px; background: #fff; }
-        .card h2 { margin: 0 0 8px; font-size: 1.25rem; }
-        .meta { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
-        .excerpt { margin-bottom: 12px; color: #333; }
-        .actions { display: flex; gap: 8px; }
-        .button { display: inline-block; padding: 8px 12px; border-radius: 6px; text-decoration: none; border: 1px solid #ccc; background:#f5f5f5; }
-        .button.excluir { border-color: #e74c3c; color: #e74c3c; }
-        .empty { text-align: center; color:#555; padding: 30px 0; }
-    </style>
 </head>
 <body>
-    <header class="container">
+    <header>
         <a href="{% url 'inicial' %}">
-            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo" style="height:56px;">
+            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
         </a>
-        <h1>JCPE - Notícias salvas</h1>
+        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
     </header>
 
-    <main class="container">
+    <main>
+        <h2>Minhas Notícias Salvas</h2>
+        <br>
+
         {% if noticias_salvas %}
-            {% for item in noticias_salvas %}
-                <article class="card">
-                    <h2>{{ item.noticia.titulo }}</h2>
-                    <div class="meta">
-                        Autor: {{ item.noticia.autor }} |
-                        Publicada: {{ item.noticia.data_criacao|date:"d/m/Y H:i" }}
-                    </div>
-
-                    <p class="excerpt">
-                        {% if item.noticia.materia|length > 300 %}
-                            {{ item.noticia.materia|slice:":300" }}...
-                        {% else %}
-                            {{ item.noticia.materia }}
-                        {% endif %}
-                    </p>
-
-                    <div class="actions">
-                        <a href="{% url 'ler_noticia' item.noticia.id %}" class="button">🔍 Ler</a>
-
-                        <form action="{% url 'apagar_salvos' item.id %}" method="POST" style="display:inline;">
+            <ul>
+                {% for item in noticias_salvas %}
+                    <li>
+                        <h3>
+                            <a href="{% url 'ler_noticia' item.noticia.id %}">
+                                {{ item.noticia.titulo }}
+                            </a>
+                        </h3>
+                        <p>{{ item.noticia.materia|truncatewords:20 }}</p>
+                        <small>
+                            Autor: {{ item.noticia.autor }} |
+                            Publicada em: {{ item.noticia.data_criacao|date:"d/m/Y H:i" }}
+                        </small>
+                        <form action="{% url 'apagar_salvos' item.id %}" method="post" style="margin-top:10px;">
                             {% csrf_token %}
-                            <button type="submit" class="button excluir">❌ Remover</button>
+                            <button type="submit" class="excluir">Remover dos salvos</button>
                         </form>
-                    </div>
-                </article>
-            {% endfor %}
+                    </li>
+                {% endfor %}
+            </ul>
         {% else %}
-            <div class="empty">
-                <p>Você ainda não salvou nenhuma notícia.</p>
-                <p><a href="{% url 'inicial' %}" class="button">Voltar à página inicial</a></p>
-            </div>
+            <p>Você ainda não salvou nenhuma notícia.</p>
         {% endif %}
+        <div class="links-centrais">                
+            <a href="{% url 'conta' %}" class="button">⬅ Voltar à Conta</a>
+        </div>
     </main>
 
-
-    <footer class="container" style="text-align:center; margin-top:30px;">
+    <footer>
         &copy; 2025 JCPE - Todos os direitos reservados.
     </footer>
 </body>
