@@ -28,7 +28,12 @@
     <main>
         <section>
             <div>
-                <img src="https://placehold.co/200x200"  class="perfil-img">
+                {% if user.perfil.foto %}
+                    <img src="{{ user.perfil.foto.url }}" alt="Foto de perfil" class="perfil-img">
+                {% else %}
+                    <img src="https://placehold.co/200x200" alt="Foto padrão" class="perfil-img">
+                {% endif %}
+
                 <div>
                     <h2>Bem-vindo, {{ user.username }}!</h2>
                     <p>Membro desde {{ user.date_joined|date:"d/m/Y" }}</p>

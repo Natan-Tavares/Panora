@@ -189,11 +189,18 @@ def conta(request):
 
 @login_required
 def editar_perfil(request):
+    user = request.user
+    perfil = user.perfil  # vem do OneToOneField
+
     if request.method == "POST":
-        user = request.user
         user.username = request.POST.get("username")
         user.email = request.POST.get("email")
+
+        if 'foto' in request.FILES:
+            perfil.foto = request.FILES['foto']
+
         user.save()
+        perfil.save()
         return redirect("conta")
 
-    return render(request, "editar_perfil.html")
+    return render(request, "editar_perfil.html", {"perfil": perfil})

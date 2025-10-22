@@ -27,26 +27,28 @@
                 
                 <div class="foto-upload-container">
                     <label for="foto" class="foto-label">
-                        <img src="https://placehold.co/200x200" 
-                             alt="Foto de perfil" 
-                             class="foto-perfil" 
-                             id="foto-preview">
+                        {% if perfil.foto %}
+                            <img src="{{ perfil.foto.url }}" alt="Foto de perfil" class="foto-perfil" id="foto-preview">
+                        {% else %}
+                            <img src="https://placehold.co/200x200" alt="Foto padrão" class="foto-perfil" id="foto-preview">
+                        {% endif %}
                     </label>
                     <input type="file" id="foto" name="foto" accept="image/*" hidden>
                     <p class="foto-texto">Clique na imagem para alterar</p>
                 </div>
-
+            
                 <label for="username">Nome de usuário:</label>
                 <input type="text" id="username" name="username" value="{{ user.username }}" required>
-
+            
                 <label for="email">E-mail:</label>
                 <input type="email" id="email" name="email" value="{{ user.email }}" required>
-
+            
                 <div class="editar-botoes">
                     <button type="submit" class="button">Salvar alterações</button>
-                    <button href="{% url 'conta' %}" class="excluir">Cancelar</button>
+                    <a href="{% url 'conta' %}" class="excluir">Cancelar</a>
                 </div>
             </form>
+            
         </section>
     </main>
 

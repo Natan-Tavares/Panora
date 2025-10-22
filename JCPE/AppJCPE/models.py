@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 class Tags(models.Model):
@@ -46,6 +48,22 @@ class Noticias_salvas(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
         return f"usuario: {self.usuario.username} salvou {self.noticia}"
+    
+class Perfil(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    foto = models.ImageField(upload_to='fotos_perfil/', blank=True, null=True)
+
+    def __str__(self):
+        return f"Perfil de {self.usuario.username}"
+
+
+@receiver(post_save, sender=User)
+def criar_ou_atualizar_perfil(sender, instance, created, **kwargs):
+    if created:
+        Perfil.objects.create(usuario=instance)
+    else:
+        instance.perfil.save()
+
 
     
     '''

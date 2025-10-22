@@ -188,9 +188,12 @@ footer {
 }
 
 .perfil-img {
+    width: 200px;
+    height: 200px;
     display: block;
     margin: 0 auto;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 .editar-perfil-section {
@@ -220,12 +223,7 @@ footer {
     height: 200px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid var(--jcpe-azul);
     transition: border-color 0.3s;
-}
-
-.foto-perfil:hover {
-    border-color: var(--jcpe-azul-escuro);
 }
 
 .foto-texto {
