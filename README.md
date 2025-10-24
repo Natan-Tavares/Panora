@@ -44,6 +44,9 @@ O projeto está em desenvolvimento contínuo, com entregas feitas em ciclos áge
 - Atualização e finalização do modelo de dados (Models no Django);
 - Criação de um Trello para melhor organização e gestão de tarefas.
 
+### 📅 20/10
+
+https://panora-xj0t.onrender.com
 
 ---
 ## 🤝 Equipe

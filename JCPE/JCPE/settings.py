@@ -29,6 +29,7 @@ SECRET_KEY = 'django-insecure-6ldn5ux9p_&oa=1y1-wdjt(a=hou+_pa5ck8=z1^9&kl!-%k0@
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ['https://panora-xj0t.onrender.com']
 
 
 # Application definition
