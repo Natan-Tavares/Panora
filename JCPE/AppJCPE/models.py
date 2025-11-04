@@ -8,7 +8,7 @@ class Tags(models.Model):
     tag = models.CharField(max_length=50)
 
     def __str__(self):
-        return f"[{self.tag}]"
+        return f"{self.tag}"
 
 class Noticia(models.Model):
     titulo = models.CharField(max_length=200, null=False)

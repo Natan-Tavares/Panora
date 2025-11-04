@@ -25,9 +25,18 @@
 
             <label for="materia">Matéria:</label>
             <textarea id="materia" name="materia" rows="6" required></textarea>
+            <label for="tag">Tag:</label>
+            <select id="tag" name="tag">
+                <option value="">-- Selecione uma tag --</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}">{{ tag.tag }}</option>
+                {% endfor %}
+            </select>
+
 
             <button type="submit">Publicar</button>
         </form>
+        
 
         <div class="links-centrais">
             <a href="{% url 'inicial' %}" class="button">⬅ Voltar</a>

@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404,redirect
-from .models import Noticia, Resposta, Historico,Noticias_salvas
+from .models import Noticia, Resposta, Historico,Noticias_salvas,Tags
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.utils.timezone import now
@@ -12,18 +12,25 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def criar_noticia(request):
+    todas_tags = Tags.objects.all() 
     if request.method == "POST":
         titulo=request.POST.get("titulo")
         materia=request.POST.get("materia")
         autor=request.user
+        tag_escolhida = request.POST.get('tag')
+        tag = Tags.objects.get(id=tag_escolhida)
         data=now()
-        Noticia.objects.create(titulo=titulo,materia=materia,autor=autor,data_criacao=data)
+        Noticia.objects.create(titulo=titulo,materia=materia,autor=autor,data_criacao=data,tag=tag)
     
-    return render(request,'criar_noticia.html')
+    return render(request,'criar_noticia.html', {'tags': todas_tags})
 
 def inicial(request):
+    id_tag = request.GET.get("tag")
     noticias=Noticia.objects.all()
-    return render(request,'inicial.html', {'noticias':noticias})
+    if id_tag:
+        noticias = noticias.filter(tag_id=id_tag)
+    todas_tags = Tags.objects.all() 
+    return render(request, 'inicial.html', {'noticias': noticias, 'tags': todas_tags})
 
 def ler_noticia(request,id):
     noticia_individual = get_object_or_404(Noticia, id=id)

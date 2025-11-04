@@ -21,6 +21,9 @@
         <small>
             Autor: {{ noticia.autor }} |
             Publicada em: {{ noticia.data_criacao|date:"d/m/Y H:i" }}
+            {% if noticia.tag %}
+                <p><strong>Tag:</strong> {{ noticia.tag }}</p>
+            {% endif %}
         </small>
 
         <hr>

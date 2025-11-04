@@ -27,6 +27,21 @@
         <div class="links-centrais">
             <a href="{% url 'criar_noticia' %}" class="button">➕ Criar Nova Notícia</a>            
         </div>
+
+        <div class="filtro-tags" style="margin-top:20px;">
+            <form method="get" action="{% url 'inicial' %}">
+                <label for="tag">Filtrar por Tag:</label>
+                <select name="tag" id="tag">
+                    <option value="">Todas</option>
+                    {% for tag in tags %}
+                        <option value="{{ tag.id }}" {% if request.GET.tag == tag.id|stringformat:"s" %}selected{% endif %}>
+                            {{ tag.tag }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Filtrar</button>
+            </form>
+        </div>
         <br>
 
         {% if noticias %}
