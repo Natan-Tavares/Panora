@@ -211,3 +211,11 @@ def editar_perfil(request):
         return redirect("conta")
 
     return render(request, "editar_perfil.html", {"perfil": perfil})
+
+
+def criar_tag(request):
+    if request.method == "POST":
+        tag=request.POST.get("tag")
+        Tags.objects.get_or_create(tag=tag)
+    
+    return render(request,'Criar_tag.html')
