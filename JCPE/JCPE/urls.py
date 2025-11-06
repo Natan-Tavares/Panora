@@ -28,6 +28,7 @@ router.register(r"respostas", RespostaViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('criar/', views.criar_noticia,name='criar_noticia'),
+    path('criar_tag/', views.criar_tag,name='criar_tag'),
     path('', views.inicial,name='inicial'),
     path('noticia/<int:id>', views.ler_noticia,name='ler_noticia'),
     path('noticia/<int:id>/apagar', views.apagar_noticia,name='apagar_noticia'),
