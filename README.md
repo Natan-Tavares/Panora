@@ -44,9 +44,29 @@ O projeto está em desenvolvimento contínuo, com entregas feitas em ciclos áge
 - Atualização e finalização do modelo de dados (Models no Django);
 - Criação de um Trello para melhor organização e gestão de tarefas.
 
-### 📅 20/10
+ ### 📅 14/10
 
-https://panora-xj0t.onrender.com
+- Implementação de histótia "Adicionar Notícia";
+- Entrega do Wireframe (Design).
+
+### 📅 23/10
+
+- Segue link do Deploy: https://panora-xj0t.onrender.com
+
+### 📅 30/10
+
+- Atualização do Google Sites;
+- Marca do Artefato;
+- Atualização do BugTracker;
+- Deployment de uma nova história, utilizando Testes Automatizados;
+- Implementação de nova história de usuário com uso de Testes Automatizados (FRONT-END);
+- Implementação de nova história de usuário com uso de Testes Automatizados (BACK-END);
+- Implementaçaõ de Testes Automatizados para as histórias anteriores.
+
+
+### 📅 06/11
+
+
 
 ---
 ## 🤝 Equipe
