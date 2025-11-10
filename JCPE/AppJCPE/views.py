@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404,redirect
-from .models import Noticia, Resposta, Historico,Noticias_salvas,Tags
+from .models import Noticia, Resposta, Historico,Noticias_salvas,Tags,Categoria
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.utils.timezone import now
@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 
 def criar_noticia(request):
     todas_tags = Tags.objects.all() 
+    categoria = Categoria.objects.all() 
     if request.method == "POST":
         titulo=request.POST.get("titulo")
         materia=request.POST.get("materia")
@@ -20,10 +21,28 @@ def criar_noticia(request):
         tag_escolhida = request.POST.get('tag')
         tag = Tags.objects.get(id=tag_escolhida)
         data=now()
-        noticia = Noticia.objects.create(titulo=titulo,materia=materia,autor=autor,data_criacao=data,)
+        local=request.POST.get("local")
+        fontes=request.POST.get("fontes")
+        subtitulo=request.POST.get("subtitulo")
+        cat_id=request.POST.get("categoria")
+        cat = Categoria.objects.get(id=cat_id)if cat_id else None
+        imagem = request.FILES.get("imagem")
+        capa = request.FILES.get("capa")
+        noticia = Noticia.objects.create(
+                            titulo=titulo,
+                            subtitulo=subtitulo,
+                            materia=materia,
+                            autor=autor,
+                            data_criacao=data,
+                            local=local,
+                            fontes=fontes,
+                            categoria=cat,
+                            imagem=imagem,
+                            capa=capa
+                        )
         noticia.tags.add(tag)
     
-    return render(request,'criar_noticia.html', {'tags': todas_tags})
+    return render(request,'criar_noticia.html', {'tags': todas_tags, 'categorias':categoria})
 
 def inicial(request):
     id_tag = request.GET.get("tag")
