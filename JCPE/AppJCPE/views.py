@@ -218,5 +218,6 @@ def criar_tag(request):
     if request.method == "POST":
         tag=request.POST.get("tag")
         Tags.objects.get_or_create(tag=tag)
+    tags=Tags.objects.all()
     
-    return render(request,'Criar_tag.html')
+    return render(request,'Criar_tag.html',{'tags':tags})
