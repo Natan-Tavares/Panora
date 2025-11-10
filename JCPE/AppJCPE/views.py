@@ -20,7 +20,8 @@ def criar_noticia(request):
         tag_escolhida = request.POST.get('tag')
         tag = Tags.objects.get(id=tag_escolhida)
         data=now()
-        Noticia.objects.create(titulo=titulo,materia=materia,autor=autor,data_criacao=data,tag=tag)
+        noticia = Noticia.objects.create(titulo=titulo,materia=materia,autor=autor,data_criacao=data,)
+        noticia.tags.add(tag)
     
     return render(request,'criar_noticia.html', {'tags': todas_tags})
 
@@ -28,7 +29,7 @@ def inicial(request):
     id_tag = request.GET.get("tag")
     noticias=Noticia.objects.all()
     if id_tag:
-        noticias = noticias.filter(tag_id=id_tag)
+        noticias = noticias.filter(tags__id=id_tag)
     todas_tags = Tags.objects.all() 
     return render(request, 'inicial.html', {'noticias': noticias, 'tags': todas_tags})
 

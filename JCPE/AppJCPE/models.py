@@ -9,13 +9,26 @@ class Tags(models.Model):
 
     def __str__(self):
         return f"{self.tag}"
+    
+class Categoria(models.Model):
+    categoria= models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.categoria}"
 
 class Noticia(models.Model):
     titulo = models.CharField(max_length=200, null=False)
+    subtitulo = models.CharField(max_length=200, null=True)
+    local = models.CharField(max_length=200, null=True)
     materia = models.TextField(null=False)
     data_criacao = models.DateTimeField("Criado em ", auto_now_add=True)
     autor = models.CharField(max_length=200, null=False)
-    tag = models.ForeignKey(Tags, on_delete=models.CASCADE,null=True)
+    tags = models.ManyToManyField(Tags)
+    fontes = models.CharField(max_length=200, null=True)
+    subtitulo = models.CharField(max_length=200, null=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE,null=True)
+    imagem=models.ImageField(upload_to='noticias/imagens/', height_field=None, width_field=None, max_length=None,null=True)
+    capa=models.ImageField(upload_to='noticias/imagens/', height_field=None, width_field=None, max_length=None,null=True)
     
     def __str__(self):
         return "[" + str(self.id) + "] " + self.titulo
