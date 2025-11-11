@@ -18,14 +18,25 @@
     <main>
         <h1>Responder</h1>
 
-        {% if pai %}
-            <p><strong>Respondendo ao comentário:</strong></p>
-            <blockquote style="border-left: 3px solid #ccc; padding-left: 10px; color: #555;">
-                {{ pai.usuario }}: {{ pai.texto }}
-            </blockquote>
-        {% else %}
-            <p><strong>Respondendo à notícia:</strong> {{ noticia.titulo }}</p>
-        {% endif %}
+    {% if pai %}
+        <p><strong>Respondendo ao comentário:</strong></p>
+        <blockquote style="border-left: 3px solid #ccc; padding-left: 10px; color: #555;">
+            {{ pai.usuario }}: {{ pai.texto }}
+            <p>{{ resposta.texto }}</p>
+            <p>❤️ {{ resposta.total_curtidas }} curtidas</p>
+
+            <br>
+            <form action="{% url 'curtir_resposta' pai.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                {% if user in pai.curtidas.all %}
+                    <button type="submit" class="like-btn">💔 Descurtir ({{ pai.total_curtidas }})</button>
+                {% else %}
+                    <button type="submit" class="like-btn">❤️ Curtir ({{ pai.total_curtidas }})</button>
+                {% endif %}
+            </form>
+        </blockquote>
+    {% endif %}
+
 
         <hr>
 

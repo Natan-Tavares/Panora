@@ -45,6 +45,10 @@ class Resposta(models.Model):
         related_name="comentarios_filho")
     data_criacao = models.DateTimeField("Criado em ", auto_now_add=True)
     usuario = models.CharField(max_length=200, null=False)
+    curtidas = models.ManyToManyField(User, related_name='curtidas', blank=True)
+
+    def num_curtidas(self):
+        return self.curtidas.count
 
     def __str__(self):
         return "[" + str(self.id) + "] " + self.texto

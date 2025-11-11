@@ -40,7 +40,8 @@ urlpatterns = [
     path('noticas_salvas/', views.vizualizar_noticias_salvas, name='vizualizar_salvos'),
     path('noticas_salvas/remover/<int:id>/', views.remover_noticias_salvas, name='apagar_salvos'),
     path('conta/', views.conta, name='conta'),
-    path('editar_conta/', views.editar_perfil, name='editar_conta')
+    path('editar_conta/', views.editar_perfil, name='editar_conta'),
+    path('curtir/<int:resposta_id>/', views.curtir_resposta, name='curtir_resposta')
 ]
 
 urlpatterns += router.urls

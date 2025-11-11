@@ -211,6 +211,21 @@ def remover_noticias_salvas(request,id):
         noticias.delete()
     return redirect('vizualizar_salvos')
 
+@login_required
+
+def curtir_resposta(request,resposta_id):
+    resposta =  get_object_or_404(Resposta, id=resposta_id)
+
+    if request.user in resposta.curtidas.all():
+        resposta.curtidas.remove(request.user)
+
+    else:
+        resposta.curtidas.add(request.user)
+
+    
+    return redirect(request.META.get('HTTP_REFERER', 'inicial'))
+
+
 def conta(request):
     return render(request, 'conta.html')
 
