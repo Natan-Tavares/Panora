@@ -240,3 +240,11 @@ def criar_tag(request):
     tags=Tags.objects.all()
     
     return render(request,'Criar_tag.html',{'tags':tags})
+
+def criar_categoria(request):
+    if request.method == "POST":
+        cat=request.POST.get("categoria")
+        Categoria.objects.get_or_create(categoria=cat)
+    cats=Categoria.objects.all()
+    
+    return render(request,'Criar_categoria.html',{'cats':cats})

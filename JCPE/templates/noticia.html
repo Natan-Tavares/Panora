@@ -41,11 +41,18 @@
                 <b>Autor:</b> {{ noticia.autor }} |
                 <b>Publicada em:</b> {{ noticia.data_criacao|date:"d/m/Y H:i" }}
             </p>
-            {% if noticia.tag %}
-                <p><strong>Tag:</strong> {{ noticia.tag }}</p>
-            {% endif %}
             {% if noticia.local %}
                 <p><strong>Local:</strong> {{ noticia.local }}</p>
+            {% endif %}
+            {% if noticia.categoria %}
+                <p><strong>Categoria:</strong> {{ noticia.categoria.categoria }}</p>
+            {% endif %}
+            {% if noticia.tags.all %}
+                <p><strong>Tags:</strong>
+                    {% for tag in noticia.tags.all %}
+                        {{ tag.tag }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
             {% endif %}
             {% if noticia.fontes %}
                 <p><strong>Fontes:</strong> {{ noticia.fontes }}</p>
