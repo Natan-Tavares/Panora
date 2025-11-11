@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Notícia - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+</head>
+<body>
+    <header>
+        <a href="{% url 'inicial' %}">
+            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        </a>
+        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
+    </header>
+
+    <main>
+        <h2>Editar Notícia</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" value="{{ noticia.titulo }}" required>
+
+            <label for="subtitulo">Subtítulo:</label>
+            <input type="text" id="subtitulo" name="subtitulo" value="{{ noticia.subtitulo }}">
+
+            <label for="materia">Matéria:</label>
+            <textarea id="materia" name="materia" rows="6" required>{{ noticia.materia }}</textarea>
+
+            <label for="local">Local:</label>
+            <input type="text" id="local" name="local" value="{{ noticia.local }}">
+
+            <label for="fontes">Fontes:</label>
+            <textarea id="fontes" name="fontes" rows="2">{{ noticia.fontes }}</textarea>
+
+            <label for="categoria">Categoria:</label>
+            <select id="categoria" name="categoria">
+                <option value="">-- Selecione uma categoria --</option>
+                {% for c in categorias %}
+                    <option value="{{ c.id }}" {% if noticia.categoria and noticia.categoria.id == c.id %}selected{% endif %}>
+                        {{ c.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="tag">Tag:</label>
+            <select id="tag" name="tag">
+                <option value="">-- Selecione uma tag --</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}" {% if noticia.tags.first and noticia.tags.first.id == tag.id %}selected{% endif %}>
+                        {{ tag.tag }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="imagem">Imagem:</label>
+            {% if noticia.imagem %}
+                <p>Imagem atual: <img src="{{ noticia.imagem.url }}" alt="Imagem da notícia" width="150"></p>
+            {% endif %}
+            <input type="file" id="imagem" name="imagem" accept="image/*">
+
+            <label for="capa">Capa:</label>
+            {% if noticia.capa %}
+                <p>Capa atual: <img src="{{ noticia.capa.url }}" alt="Capa da notícia" width="150"></p>
+            {% endif %}
+            <input type="file" id="capa" name="capa" accept="image/*">
+
+            <button type="submit">Salvar Alterações</button>
+        </form>
+
+        <div class="links-centrais">
+            <a href="{% url 'inicial' %}" class="button">⬅ Voltar</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
+</html>

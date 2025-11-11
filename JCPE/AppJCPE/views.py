@@ -44,6 +44,33 @@ def criar_noticia(request):
     
     return render(request,'criar_noticia.html', {'tags': todas_tags, 'categorias':categoria})
 
+
+def editar_noticia(request,id):
+    noticia = get_object_or_404(Noticia, id=id)
+    todas_tags = Tags.objects.all() 
+    categoria = Categoria.objects.all() 
+    if request.method == "POST":
+        noticia.titulo = request.POST.get("titulo")
+        noticia.materia = request.POST.get("materia")
+        noticia.subtitulo = request.POST.get("subtitulo")
+        noticia.local = request.POST.get("local")
+        noticia.fontes = request.POST.get("fontes")
+        tag_escolhida = request.POST.get('tag')
+        tag = Tags.objects.get(id=tag_escolhida)
+        cat_id=request.POST.get("categoria")
+        noticia.categoria = Categoria.objects.get(id=cat_id) if cat_id else None
+        if 'imagem' in request.FILES:
+            noticia.imagem = request.FILES['imagem']
+        if 'capa' in request.FILES:
+            noticia.capa = request.FILES['capa']
+        if tag_escolhida:
+            tag = Tags.objects.get(id=tag_escolhida)
+            noticia.tags.set([tag])
+        noticia.save()
+        return redirect('inicial')
+    
+    return render(request,'editar_noticia.html', {'noticia': noticia,'tags': todas_tags, 'categorias':categoria})
+
 def inicial(request):
     id_tag = request.GET.get("tag")
     noticias=Noticia.objects.all()
