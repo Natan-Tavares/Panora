@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Categoria - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+</head>
+<body>
+    <header>
+        <a href="{% url 'inicial' %}">
+            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        </a>
+        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
+        <form action="{% url 'conta' %}" method="post" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="button">
+                Conta
+            </button>
+        </form>
+    </header>
+
+    <main>
+        <h2>Criar Nova Categoria</h2>
+
+        <div class="form-container" style="margin-top: 20px;">
+            <form method="post" action="{% url 'criar_categoria' %}">
+                {% csrf_token %}
+                <label for="categoria">Nome da Categoria:</label><br>
+                <input type="text" id="categoria" name="categoria" required placeholder="Ex: Política, Esportes, Economia" style="width: 300px; padding: 8px; margin-top: 5px;"><br><br>
+                <button type="submit" class="button">Salvar Categoria</button>
+            </form>
+        </div>
+
+        <hr style="margin: 30px 0;">
+
+        <h3>Categorias Existentes</h3>
+
+        {% if cats %}
+            <ul>
+                {% for cat in cats %}
+                    <li style="margin-bottom: 5px;">📂 {{ cat.categoria }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhuma categoria cadastrada ainda.</p>
+        {% endif %}
+
+        <div class="links-centrais" style="margin-top: 30px;">
+            <a href="{% url 'inicial' %}" class="button">⬅ Voltar à Página Inicial</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
+</html>
