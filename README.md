@@ -66,7 +66,13 @@ O projeto está em desenvolvimento contínuo, com entregas feitas em ciclos áge
 
 ### 📅 06/11
 
-Link do deploy atualizado: https://panora-xj0t.onrender.com/
+- Recebemos orientações sobre o andamento do Front-End, Figma de Alta e  Wireframe;
+- Aplicações da marca em positivo e negativo, mais gama cromática (RGB e CMYK;
+- Definir paleta de cores da interface com base na regra 60, 30, 10, mais a iconografia;
+- Implementação e deployment de uma nova história de usuário, com uso de Testes Automatizados;
+- Implementação de CI/CD com build e deployment automatizado (pipeline criada no Github);
+
+- Link do Deploy atualizado: https://panora-xj0t.onrender.com/
 
 
 ---
