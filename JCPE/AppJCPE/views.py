@@ -9,6 +9,8 @@ from django.http import HttpResponse, Http404
 from rest_framework import viewsets
 from .serializers import RespostaSerializer
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 # Create your views here.
 
 def criar_noticia(request):
@@ -251,6 +253,19 @@ def curtir_resposta(request,resposta_id):
 
     
     return redirect(request.META.get('HTTP_REFERER', 'inicial'))
+
+@login_required
+def denunciar_comentario(request, resposta_id):
+    resposta = get_object_or_404(Resposta, id=resposta_id)
+
+    resposta.denuncias += 1
+    resposta.save()
+
+    messages.success(request, "Comentário denunciado com sucesso!")
+
+
+    return redirect(request.META.get('HTTP_REFERER', 'inicial'))
+
 
 
 def conta(request):

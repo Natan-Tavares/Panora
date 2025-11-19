@@ -8,6 +8,14 @@
     <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
 </head>
 <body>
+    {% if messages %}
+    <div class="mensagens">
+        {% for message in messages %}
+            <p class="msg {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <header>
         <a href="{% url 'inicial' %}">
             <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
@@ -34,6 +42,12 @@
                     <button type="submit" class="like-btn">❤️ Curtir ({{ pai.total_curtidas }})</button>
                 {% endif %}
             </form>
+
+            <form action="{% url 'denunciar_comentario' pai.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="report-btn">🚩 Denunciar</button>
+            </form>
+
         </blockquote>
     {% endif %}
 
