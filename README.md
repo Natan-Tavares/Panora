@@ -75,6 +75,9 @@ O projeto está em desenvolvimento contínuo, com entregas feitas em ciclos áge
 - Link do Deploy atualizado: https://panora-xj0t.onrender.com/
 
 
+### 📅 13/11
+
+- Relatório de programação em par : https://drive.google.com/file/d/1iGKrQkKYgBWV0NOh8qslKnSssHqqrX9l/view?usp=sharing
 ---
 ## 🤝 Equipe
 
