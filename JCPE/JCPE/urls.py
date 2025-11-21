@@ -44,7 +44,8 @@ urlpatterns = [
     path('conta/', views.conta, name='conta'),
     path('editar_conta/', views.editar_perfil, name='editar_conta'),
     path('curtir/<int:resposta_id>/', views.curtir_resposta, name='curtir_resposta'),
-    path('denunciar/<int:resposta_id>/', views.denunciar_comentario, name='denunciar_comentario')
+    path('denunciar/<int:resposta_id>/', views.denunciar_comentario, name='denunciar_comentario'),
+    path('categoria/<int:id>/', views.noticias_por_categoria, name='noticias_por_categoria')
 
 ]
 

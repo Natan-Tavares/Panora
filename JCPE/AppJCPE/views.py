@@ -305,3 +305,12 @@ def criar_categoria(request):
     cats=Categoria.objects.all()
     
     return render(request,'Criar_categoria.html',{'cats':cats})
+
+def noticias_por_categoria(request, id):
+    categoria = get_object_or_404(Categoria, id=id)
+    noticias = Noticia.objects.filter(categoria=categoria)
+
+    return render(request, 'noticias_por_categoria.html', {
+        'categoria': categoria,
+        'noticias': noticias
+    })

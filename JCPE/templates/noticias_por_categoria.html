@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ categoria.categoria }}</title>
+</head>
+<body>
+
+<h2>Categoria: {{ categoria.categoria }}</h2>
+
+{% for noticia in noticias %}
+    <div style="background:#fff;padding:15px;margin:10px;border-radius:15px;">
+        <h3>{{ noticia.titulo }}</h3>
+        <p>{{ noticia.descricao }}</p>
+    </div>
+{% empty %}
+    <p>Nenhuma notícia nesta categoria.</p>
+{% endfor %}
+
+</body>
+</html>
