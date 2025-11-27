@@ -127,7 +127,6 @@
 
   function openSidebar(){
     sidebar.classList.add('open'); overlay.classList.add('visible'); sidebar.setAttribute('aria-hidden','false'); overlay.setAttribute('aria-hidden','false');
-    // foco acessível
     sidebar.querySelector('input, button, [tabindex]')?.focus();
   }
   function closeSidebar(){
@@ -140,21 +139,20 @@
   overlay.addEventListener('click', closeSidebar);
   document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar(); });
 
-  // login button (demo) -> aqui você conecta à sua API/auth
   loginBtn.addEventListener('click', ()=>{
     const username = document.getElementById('username').value.trim();
     const email = document.getElementById('email').value.trim();
-    // validação simples
+
     if(!username || !email){
       alert('Preencha pelo menos nome e e-mail (demo).');
       return;
     }
-    // simula envio
+
     alert('Dados enviados (demo): ' + username + ' — ' + email);
     closeSidebar();
   });
 
-  // mudança de foto com preview
+
   changePhotoBtn.addEventListener('click', ()=> photoInput.click());
   photoInput.addEventListener('change', (ev)=>{
     const file = ev.target.files && ev.target.files[0];
@@ -164,12 +162,11 @@
     reader.readAsDataURL(file);
   });
 
-  // tags toggle
   document.querySelectorAll('.tag').forEach(tag => {
     tag.addEventListener('click', ()=> tag.classList.toggle('active'));
   });
 
-  // socials (demo) — abre em nova aba
+
   document.querySelectorAll('.socials button[data-link]').forEach(btn=>{
     btn.addEventListener('click', ()=> window.open(btn.dataset.link, '_blank'));
   });
