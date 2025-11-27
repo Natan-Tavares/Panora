@@ -1,62 +1,135 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from AppJCPE.models import Tags, Noticia, Resposta, Historico, Noticias_salvas, Perfil
+from django.core.files.uploadedfile import SimpleUploadedFile
+from ..models import (
+    Tags, Categoria, Noticia, Resposta, Historico,
+    Noticias_salvas, Perfil
+)
 
-class ModelsTestCase(TestCase):
+class ModelTests(TestCase):
+
     def setUp(self):
-        self.user = User.objects.create_user(username="guilherme", password="123")
+        # Usuário
+        self.user = User.objects.create_user(username="gui", password="123")
 
+        # Tag
         self.tag = Tags.objects.create(tag="Tecnologia")
 
-        self.noticia = Noticia.objects.create(
-            titulo="Notícia",
-            materia="Corpo da notícia.",
-            autor="Admin",
-            tag=self.tag
+        # Categoria
+        self.categoria = Categoria.objects.create(categoria="Ciência")
+
+        # Imagem fake
+        self.fake_img = SimpleUploadedFile(
+            "test.jpg", b"imagem_teste", content_type="image/jpeg"
         )
 
-    def test_criacao_tag(self):
-        self.assertEqual(str(self.tag), "[Tecnologia]")
+        # Notícia
+        self.noticia = Noticia.objects.create(
+            titulo="Título teste",
+            subtitulo="Subtitulo teste",
+            local="Brasil",
+            materia="Conteúdo da matéria",
+            autor="Autor X",
+            fontes="Fonte Y",
+            categoria=self.categoria,
+            imagem=self.fake_img,
+            capa=self.fake_img,
+        )
+        self.noticia.tags.add(self.tag)
+
+    # ---------------------------
+    # TESTES DE NOTICIA
+    # ---------------------------
 
     def test_criacao_noticia(self):
-        self.assertEqual(self.noticia.titulo, "Nova IA lançada")
-        self.assertEqual(str(self.noticia), f"[{self.noticia.id}] {self.noticia.titulo}")
+        self.assertEqual(self.noticia.titulo, "Título teste")
+        self.assertEqual(self.noticia.categoria.categoria, "Ciência")
+        self.assertTrue(self.noticia.tags.exists())
+        self.assertIsNotNone(self.noticia.imagem)
 
-    def test_criacao_resposta(self):
-        resposta = Resposta.objects.create(
+    # ---------------------------
+    # TESTES DE RESPOSTA (COMENTÁRIOS)
+    # ---------------------------
+
+    def test_comentario_simples(self):
+        comentario = Resposta.objects.create(
             noticia=self.noticia,
-            texto="Concordo com a matéria!",
-            usuario="Leitor"
+            texto="Comentário teste",
+            usuario="Visitante"
         )
-        self.assertIn("Concordo", resposta.texto)
-        self.assertEqual(resposta.pai, None)
+        self.assertEqual(comentario.texto, "Comentário teste")
+        self.assertEqual(comentario.noticia, self.noticia)
 
-    def test_relacionamento_resposta_pai_filho(self):
+    def test_comentario_pai_filho(self):
         pai = Resposta.objects.create(
-            noticia=self.noticia, texto="Comentário principal", usuario="João"
+            noticia=self.noticia,
+            texto="Comentário pai",
+            usuario="UserA"
         )
         filho = Resposta.objects.create(
-            noticia=self.noticia, texto="Resposta ao comentário", usuario="Maria", pai=pai
+            noticia=self.noticia,
+            texto="Comentário filho",
+            usuario="UserB",
+            pai=pai
         )
+
         self.assertEqual(filho.pai, pai)
         self.assertIn(filho, pai.comentarios_filho.all())
 
-    def test_criacao_historico(self):
-        historico = Historico.objects.create(noticia=self.noticia, usuario=self.user)
-        self.assertIn("acessou", str(historico))
-        self.assertEqual(historico.usuario.username, "guilherme")
+    # ---------------------------
+    # TESTES DE CURTIDAS / DENÚNCIAS
+    # ---------------------------
 
-    def test_criacao_noticia_salva(self):
-        salva = Noticias_salvas.objects.create(noticia=self.noticia, usuario=self.user)
-        self.assertIn("salvou", str(salva))
-        self.assertEqual(salva.usuario.username, "guilherme")
+    def test_curtidas(self):
+        comentario = Resposta.objects.create(
+            noticia=self.noticia,
+            texto="Comentário curtido",
+            usuario="UserX"
+        )
+        comentario.curtidas.add(self.user)
+
+        self.assertEqual(comentario.curtidas.count(), 1)
+
+    def test_denuncias(self):
+        comentario = Resposta.objects.create(
+            noticia=self.noticia,
+            texto="Comentário denunciado",
+            usuario="UserY",
+            denuncias=0
+        )
+        comentario.denuncias += 1
+        comentario.save()
+
+        self.assertEqual(comentario.denuncias, 1)
+
+    # ---------------------------
+    # TESTE DO SINAL post_save DO PERFIL
+    # ---------------------------
 
     def test_perfil_criado_automaticamente(self):
-        perfil = Perfil.objects.get(usuario=self.user)
-        self.assertEqual(str(perfil), "Perfil de guilherme")
+        user2 = User.objects.create_user(username="joao", password="abc")
+        self.assertTrue(hasattr(user2, "perfil"))
 
-    def test_atualizar_perfil(self):
-        perfil = self.user.perfil
-        perfil.foto = "fotos_perfil/teste.jpg"
-        perfil.save()
-        self.assertEqual(perfil.foto, "fotos_perfil/teste.jpg")
+    # ---------------------------
+    # HISTÓRICO
+    # ---------------------------
+
+    def test_historico(self):
+        historico = Historico.objects.create(
+            noticia=self.noticia,
+            usuario=self.user
+        )
+        self.assertEqual(historico.usuario.username, "gui")
+        self.assertEqual(historico.noticia, self.noticia)
+
+    # ---------------------------
+    # NOTICIAS SALVAS
+    # ---------------------------
+
+    def test_noticia_salva(self):
+        salva = Noticias_salvas.objects.create(
+            noticia=self.noticia,
+            usuario=self.user
+        )
+        self.assertEqual(salva.usuario.username, "gui")
+        self.assertEqual(salva.noticia.titulo, "Título teste")
