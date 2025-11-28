@@ -75,11 +75,14 @@ def editar_noticia(request,id):
 
 def inicial(request):
     id_tag = request.GET.get("tag")
-    noticias=Noticia.objects.all()
+    noticias=Noticia.objects.all().order_by('-data_criacao')
     if id_tag:
         noticias = noticias.filter(tags__id=id_tag)
     todas_tags = Tags.objects.all() 
-    return render(request, 'inicial.html', {'noticias': noticias, 'tags': todas_tags})
+    noticias_salvas_ids = []
+    if request.user.is_authenticated:
+        noticias_salvas_ids = Noticias_salvas.objects.filter(usuario=request.user).values_list('noticia_id', flat=True)
+    return render(request, 'inicial.html', {'noticias': noticias, 'tags': todas_tags,'noticias_salvas_ids': noticias_salvas_ids})
 
 def ler_noticia(request,id):
     noticia_individual = get_object_or_404(Noticia, id=id)
@@ -215,7 +218,7 @@ class RespostaViewSet(viewsets.ModelViewSet):
         parent = Resposta.objects.get(id=parent_id) if parent_id else None
         serializer.save(usuario=self.request.user, pai=parent)
 
-@login_required
+@login_required(login_url='login')
 def salvar_noticia(request,id):
     noticia_individual = get_object_or_404(Noticia, id=id)
     if request.method=="POST":
@@ -224,7 +227,7 @@ def salvar_noticia(request,id):
     return redirect('ler_noticia',id=id)
 
 
-@login_required
+@login_required(login_url='login')
 def vizualizar_noticias_salvas(request):
     usuario = request.user
     noticias=Noticias_salvas.objects.filter(usuario=usuario)
@@ -232,7 +235,7 @@ def vizualizar_noticias_salvas(request):
 
 
 
-@login_required
+@login_required(login_url='login')
 def remover_noticias_salvas(request,id):
     usuario = request.user
     noticias=Noticias_salvas.objects.filter(id=id,usuario=usuario)
@@ -240,7 +243,7 @@ def remover_noticias_salvas(request,id):
         noticias.delete()
     return redirect('vizualizar_salvos')
 
-@login_required
+@login_required(login_url='login')
 
 def curtir_resposta(request,resposta_id):
     resposta =  get_object_or_404(Resposta, id=resposta_id)
@@ -254,7 +257,7 @@ def curtir_resposta(request,resposta_id):
     
     return redirect(request.META.get('HTTP_REFERER', 'inicial'))
 
-@login_required
+@login_required(login_url='login')
 def denunciar_comentario(request, resposta_id):
     resposta = get_object_or_404(Resposta, id=resposta_id)
 
@@ -271,7 +274,7 @@ def denunciar_comentario(request, resposta_id):
 def conta(request):
     return render(request, 'conta.html')
 
-@login_required
+@login_required(login_url='login')
 def editar_perfil(request):
     user = request.user
     perfil = user.perfil  # vem do OneToOneField
