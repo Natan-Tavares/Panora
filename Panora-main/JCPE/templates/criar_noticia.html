@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Notícia - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+</head>
+<body>
+    <header>
+        <a href="{% url 'inicial' %}">
+            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        </a>
+        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
+    </header>
+
+    <main>
+        <h2>Nova Notícia</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" required>
+
+            <label for="subtitulo">Subtítulo:</label>
+            <input type="text" id="subtitulo" name="subtitulo">
+
+            <label for="materia">Matéria:</label>
+            <textarea id="materia" name="materia" rows="6" required></textarea>
+
+            <label for="local">Local:</label>
+            <input type="text" id="local" name="local">
+
+            <label for="fontes">Fontes:</label>
+            <textarea id="fontes" name="fontes" rows="2"></textarea>
+
+            <label for="categoria">Categoria:</label>
+            <select id="categoria" name="categoria">
+                <option value="">-- Selecione uma categoria --</option>
+                {% for c in categorias %}
+                    <option value="{{ c.id }}">{{ c.categoria }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="tag">Tag:</label>
+            <select id="tag" name="tag">
+                <option value="">-- Selecione uma tag --</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.id }}">{{ tag.tag }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="imagem">Imagem:</label>
+            <input type="file" id="imagem" name="imagem" accept="image/*">
+
+            <label for="capa">Capa:</label>
+            <input type="file" id="capa" name="capa" accept="image/*">
+
+            <button type="submit">Publicar</button>
+        </form>
+
+        <div class="links-centrais">
+            <a href="{% url 'inicial' %}" class="button">⬅ Voltar</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
+</html>

@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Notícias - Tela Cheia</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* --- Variáveis e Configurações de Base --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f8f8;
+            color: #111;
+            min-height: 100vh;
+            transition: filter 0.3s ease;
+        }
+
+        body.dimmed {
+            filter: brightness(0.7);
+        }
+
+        :root {
+            --primary-red: #BE0101; /* Vermelho original do seu código */
+            --header-bg-color: #020202; /* Preto original do seu código */
+            --header-text-color: #ffffff;
+            --secondary-red: #D20000; /* Vermelho de destaque/botão */
+        }
+
+        /* Removendo max-width do container para tela cheia */
+        .container {
+            width: 100%; /* Ocupa a largura total */
+            margin: 0 auto; /* Mantém centralizado se houver margens laterais */
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: filter 0.3s ease; /* Adicionado para escurecer apenas o container */
+        }
+
+        .container.dimmed {
+            filter: brightness(0.7); /* Escurece apenas o container */
+        }
+        
+        /* Adicionando padding lateral para o conteúdo principal */
+        main, .nav-menu {
+            padding: 25px 5%; /* Adiciona padding de 5% nas laterais */
+            max-width: 1200px; /* Limita a largura do conteúdo para melhor leitura */
+            margin: 0 auto; /* Centraliza o conteúdo dentro do body */
+        }
+        header {
+            padding: 12px 5%; /* Ajusta padding do header também */
+        }
+
+        /* --- 1. HEADER REFINADO (ADAPTAÇÃO) --- */
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+            border-bottom: 5px solid var(--primary-red); 
+            position: relative;
+        }
+
+        header .header-group {
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center;
+        }
+        
+        header .buttons-group {
+            position: absolute;
+            right: 5%; /* Ajustado para 5% do lado direito */
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 0px;
+        }
+
+        /* Título Principal (Adaptação do H1) */
+        header h1 {
+            font-family: 'Merriweather', serif; 
+            font-size: 1.8rem;
+            margin: 5px 0 0 0;
+            color: var(--header-text-color);
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        /* Logo do Jornal do Commercio (substituindo placeholder) */
+        .header-logo {
+            max-height: 45px;
+            width: auto; /* Mantém a proporção */
+        }
+        
+        /* Botões */
+        .button {
+            background-color: var(--secondary-red);
+            color: white;
+            padding: 9px 18px;
+            text-decoration: none;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            transition: background-color 0.2s ease;
+        }
+        .button:hover {
+            background-color: #A00000;
+        }
+        header .buttons-group form {
+            background-color: transparent;
+            margin: 0;
+            display: inline-block;
+        }
+
+        /* --- 2. NAVEGAÇÃO SUPERIOR --- */
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 15px 5%; /* Ajusta padding lateral */
+            border-bottom: 1px solid #ddd;
+            max-width: none; /* Permite que o menu se estenda */
+            background-color: white; /* Fundo branco para o menu */
+        }
+
+        .nav-item {
+            color: black;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-item:hover {
+            color: var(--primary-red);
+        }
+        
+        /* --- 3. MAIN CONTENT E TÍTULOS DE SEÇÃO --- */
+        main {
+            padding: 25px 0; /* Padding lateral gerenciado pelo container, padding vertical */
+        }
+        
+        h3.titulo-secao {
+            font-family: 'Roboto', sans-serif;
+            font-size: 2rem;
+            text-transform: uppercase;
+            color: #111;
+            border-bottom: 4px solid var(--primary-red);
+            padding-bottom: 6px;
+            margin-top: 45px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        /* --- 4. CARROSSEL DE DESTAQUES (APRIMORADO) --- */
+        .carrosel-destaques {
+            position: relative;
+            overflow: hidden;
+            width: 100%; /* Ocupa a largura total do container */
+            height: 550px; /* Aumenta a altura */
+            margin-bottom: 40px;
+            background-color: #fff;
+            /* box-shadow: 0 5px 15px rgba(0,0,0,0.05); - Removido para visual mais limpo */
+        }
+
+        .carrosel-inner {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+            height: 100%; /* Ocupa a altura total do carrossel */
+        }
+
+        .carrosel-slide {
+            flex: 0 0 100%; 
+            display: flex;
+            background-color: #fff;
+            height: 100%; /* Ocupa a altura total do carrossel */
+        }
+
+        .carrosel-slide .destaque-imagem {
+            flex-basis: 65%;
+            height: 100%;
+            background-color: #f0f0f0;
+        }
+        .carrosel-slide .destaque-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carrosel-slide .destaque-texto {
+            flex-basis: 35%;
+            padding: 40px; /* Mais padding */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 3px solid var(--primary-red); /* Borda inferior para o texto */
+        }
+        .carrosel-slide .destaque-texto .news-tag {
+            color: var(--primary-red); 
+            font-weight: bold; 
+            font-size: 0.95rem; 
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .carrosel-slide .destaque-texto h2 {
+            font-family: 'Merriweather', serif; 
+            font-size: 2.8rem; /* Fonte maior */
+            line-height: 1.15;
+            margin: 0 0 20px 0; /* Mais margem inferior */
+            font-weight: 900;
+        }
+        .carrosel-slide .destaque-texto p {
+             font-size: 1.05rem; /* Fonte um pouco maior */
+             color: #444;
+             margin-bottom: 20px;
+        }
+        .carrosel-slide .destaque-texto small {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* Navegação do Carrossel (dots) */
+        .carrosel-nav {
+            position: absolute;
+            bottom: 25px; /* Mais para cima */
+            right: 40px; /* Mais para a direita, alinhado com o padding do texto */
+            display: flex;
+            gap: 12px; /* Mais espaço entre os dots */
+        }
+        .carrosel-nav-dot {
+            width: 14px; /* Dots maiores */
+            height: 14px;
+            background-color: #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .carrosel-nav-dot.active, .carrosel-nav-dot:hover {
+            background-color: var(--primary-red);
+        }
+        
+        /* --- 5. GRID DE OUTRAS NOTÍCIAS --- */
+        .noticias-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 0; 
+            list-style-type: none;
+            border: 1px solid #ddd;
+            background-color: #fff;
+        }
+
+        .noticia-card {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .noticias-grid .noticia-card:not(:nth-child(3n+1)) {
+            border-left: 1px solid #eee;
+        }
+        .noticias-grid .noticia-card:nth-last-child(-n+3) {
+             border-bottom: none;
+        }
+
+        .noticia-card:hover {
+            background-color: #f5f5f5;
+        }
+
+        .noticia-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #f0f0f0;
+            margin-bottom: 15px; 
+        }
+
+        .noticia-card-conteudo {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .noticia-card-conteudo h4 {
+            font-family: 'Roboto', sans-serif; 
+            font-size: 1.35rem;
+            line-height: 1.35;
+            margin: 0 0 8px 0;
+            font-weight: 700;
+        }
+
+        .noticia-card-conteudo p {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .noticia-card-conteudo small {
+            font-size: 0.8rem;
+            color: #888;
+            display: block;
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+            width: 100%;
+        }
+        
+        /* --- OUTRAS SEÇÕES --- */
+        .banner {
+            width: 100%;
+            height: 150px;
+            background-color: #d9d9d9;
+            margin: 40px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+        }
+        
+        .veja-tambem-title {
+            font-size: 2rem;
+            text-align: center;
+            margin: 40px 0 20px 0;
+        }
+        
+        .veja-tambem-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 30px;
+            justify-items: center;
+            margin: 0 10%;
+        }
+
+        .veja-item {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #d9d9d9;
+        }
+        
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 30px 5%;
+            background-color: #f0f0f0;
+            color: #888;
+            margin-top: 50px;
+            border-top: 1px solid #eee;
+            width: 100%; /* Ocupa largura total */
+        }
+        
+        /* Estilos de link para o carrossel e grid */
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        a:hover h2, a:hover h4 {
+            color: var(--primary-red);
+            transition: color 0.2s;
+        }
+
+        /* --- BOTÃO DO MENU - AGORA NO CANTO SUPERIOR ESQUERDO --- */
+        .menu-button {
+            position: fixed;
+            top: 12px;
+            left: 20px; /* Alterado para esquerda */
+            right: auto; /* Remove right positioning */
+            background: #d32f2f;
+            color: white;
+            border: none;
+            width: 60px; /* Aumentado em 25% */
+            height: 60px; /* Aumentado em 25% */
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 22.5px; /* Aumentado em 25% */
+            z-index: 1001;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .menu-button:hover {
+            background: white;
+            color: #d32f2f;
+            transform: scale(1.1);
+        }
+
+        .menu-button.open {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            width: 60px; /* Aumentado em 25% */
+            height: 60px; /* Aumentado em 25% */
+            border-radius: 50%;
+            font-size: 25px; /* Aumentado em 25% */
+            opacity: 0; /* Botão fica invisível quando aberto */
+            pointer-events: none; /* Remove interação quando invisível */
+        }
+
+        .menu-button.open:hover {
+            background: white;
+            color: #d32f2f;
+            transform: scale(1.1);
+        }
+
+        /* --- SIDEBAR - AGORA ABRE DA ESQUERDA --- */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: -315px; /* Alterado para esquerda e aumentado em 25% */
+            right: auto; /* Remove right positioning */
+            width: 315px; /* Aumentado em 25% */
+            height: 110vh;
+            background: white;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1); /* Sombra normal */
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Transição para left */
+            z-index: 1002;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0 22.5px 18.75px 0; /* Bordas aumentadas 20% no canto superior direito */
+        }
+
+        .sidebar.open {
+            left: 0; /* Alterado para left */
+        }
+
+        /* CABEÇALHO DO SIDEBAR REMOVIDO/VISÍVEL */
+        .sidebar-header {
+            display: none; /* Remove completamente o cabeçalho */
+        }
+
+        .sidebar-content {
+            padding: 10px; /* Padding reduzido */
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding-top: 0px; /* Adiciona espaço no topo já que o cabeçalho foi removido */
+            border: none; /* Remove contorno do conteúdo do sidebar */
+        }
+
+        /* --- GRUPO MESCLADO DE BOTÕES - SUB-TABS E CATEGORIAS JUNTOS --- */
+        .merged-buttons-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 14.06px; /* Aumentado em 25% */
+            border: none; /* Remove contorno */
+            border-radius: 0; /* Remove bordas arredondadas */
+            overflow: hidden;
+        }
+
+        .menu-button-item {
+            background: white;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid #e0e0e0; /* Linha separadora mais espessa */
+            padding: 15px 14.06px; /* Mais padding vertical para aumentar altura */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            border: none;
+            font-family: inherit;
+        }
+
+        .menu-button-item:last-child {
+            border-bottom: 2px solid #e0e0e0; /* Mantém linha no último item */
+        }
+
+        .menu-button-item:hover {
+            background: #d32f2f;
+        }
+
+        .menu-button-item:hover h3 {
+            color: white;
+        }
+
+        .menu-button-item:hover .menu-button-icon {
+            color: white;
+        }
+
+        .menu-button-item h3 {
+            font-size: 16px; /* Aumentado tamanho da fonte em 2px */
+            font-weight: 700; /* Negrito mais forte */
+            color: #000000;
+            opacity: 0.9;
+            text-align: left;
+            flex: 1;
+            margin: 0;
+            transition: color 0.3s ease;
+        }
+
+        .menu-button-icon {
+            transition: all 0.3s ease;
+            color: #000000;
+            opacity: 0.8;
+            width: 13.125px; /* Aumentado em 25% */
+            text-align: left;
+            font-size: 11.25px; /* Aumentado em 25% */
+        }
+
+        /* REMOVIDA A FUNCIONALIDADE DE EXPANSÃO */
+        .menu-button-content {
+            display: none; /* Remove completamente os conteúdos expansíveis */
+        }
+
+        /* --- BOTÕES CIRCULARES MODIFICADOS - SEM FUNDO VERMELHO --- */
+        .circular-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 2px; /* Aumentado em 25% */
+            margin-top: 14.06px; /* Aumentado em 25% */
+        }
+
+        .circular-button {
+            background: transparent; /* Fundo transparente */
+            color: white;
+            border: none;
+            width: 50px; /* Aumentado em 25% */
+            height: 50px; /* Aumentado em 25% */
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: left;
+            justify-content: left;
+            box-shadow: none; /* Remove sombra */
+            border: none; /* Remove borda */
+            overflow: hidden;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .circular-button:hover {
+            background: transparent; /* Mantém transparente */
+            transform: translateY(-2px) scale(1.1);
+            box-shadow: none; /* Remove sombra no hover */
+        }
+
+        .circular-button:hover .social-icon {
+            filter: none; /* Remove filtro no hover */
+        }
+
+        .circular-button:active {
+            transform: translateY(0) scale(1);
+        }
+
+        .social-icon {
+            width: 35.625px; /* Aumentado em 25% */
+            height: 35.625px; /* Aumentado em 25% */
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+
+        /* --- BOTÃO "ANUNCIE NO JC" --- */
+        .anuncie-button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            display: block;
+            width: 150px;
+            height: 30px;
+            margin: 20px auto 0 auto;
+            text-align: center; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .anuncie-button:hover {
+            background: white;
+            color: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .anuncie-button:active {
+            transform: translateY(0);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .overlay.active {
+            opacity: 0.3;
+            visibility: visible;
+        }
+
+        /* --- NOVOS ESTILOS PARA AS ALTERAÇÕES SOLICITADAS --- */
+        
+        /* Remover setas dos botões fixos */
+        .menu-button-item.fixed .menu-button-icon {
+            display: none;
+        }
+        
+        /* Estilo para a frase "Nossos Parceiros" */
+        .parceiros-title {
+            text-align: center;
+            color: #000000;
+            font-weight: 700; /* Negrito mais forte */
+            font-size: 16px; /* Aumentado tamanho da fonte */
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Media Queries para Desktop - OTIMIZAÇÃO PRINCIPAL */
+        @media (max-width: 1024px) {
+            /* Ajustes para telas menores que 1024px */
+            .sidebar {
+                width: 280px; /* Ligeiramente menor para telas menores */
+                left: -280px;
+            }
+            
+            .menu-button {
+                width: 55px;
+                height: 55px;
+                font-size: 20px;
+            }
+            
+            .menu-button.open {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+        }
+
+        /* Media Queries para Mobile - DESATIVADA A OTIMIZAÇÃO PRINCIPAL */
+        @media (max-width: 768px) {
+            /* Manter o design desktop mesmo em mobile */
+            .sidebar {
+                width: 280px;
+                left: -280px;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .menu-button {
+                width: 55px;
+                height: 55px;
+                font-size: 20px;
+                top: 15px;
+                left: 15px;
+            }
+            
+            .menu-button.open {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botão do menu AGORA COM "≡" -->
+    <button class="menu-button" id="menuButton">
+        &#x2630;
+    </button>
+
+    <div class="container" id="mainContainer">
+        <header>
+            <div class="header-group">
+                 <a href="{% url 'inicial' %}">
+                    <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo Jornal do Commercio" class="header-logo">
+                </a>
+                <h1>Jornal do Commercio</h1>
+            </div>
+            
+            <div class="buttons-group">
+                <form action="{% url 'conta' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="button perfil-button">
+                        <i class="fas fa-user"></i> Meu Perfil
+                    </button>
+                </form>
+            </div>
+        </header>
+        
+        <nav class="nav-menu">
+            <a href="#" class="nav-item">AO VIVO</a>
+            <a href="#" class="nav-item">PERNAMBUCO</a>
+            <a href="#" class="nav-item">ECONOMIA</a>
+            <a href="#" class="nav-item">CULTURA</a>
+            <a href="#" class="nav-item">MOBILIDADE</a>
+            <a href="#" class="nav-item">POLÍTICA</a>
+            <a href="#" class="nav-item">ESPORTES</a>
+        </nav>
+
+        <main>
+            
+            {% if noticias %}
+                <h3 class="titulo-secao">DESTAQUE DO DIA</h3>
+                
+                <div class="carrosel-destaques">
+                    <div class="carrosel-inner">
+                        {% for noticia in noticias|slice:":3" %}
+                            <div class="carrosel-slide" data-index="{{ forloop.counter0 }}">
+                                <div class="destaque-imagem">
+                                    {% if noticia.capa %}
+                                        <img src="{{ noticia.capa.url }}" alt="{{ noticia.titulo }}">
+                                    {% else %}
+                                        <img src="{% static 'img/placeholder_destaque.png' %}" alt="Placeholder de Notícia">
+                                    {% endif %}
+                                </div>
+                                <div class="destaque-texto">
+                                    <span class="news-tag">{{ noticia.tag|default:"GERAL" }}</span>
+                                    <h2>
+                                        <a href="{% url 'ler_noticia' noticia.id %}">
+                                            {{ noticia.titulo }}
+                                        </a>
+                                    </h2>
+                                    <p>{{ noticia.materia|truncatewords:25 }}</p> 
+                                    <small>Publicado: {{ noticia.data_criacao|date:"d/m/Y H:i" }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="carrosel-nav">
+                        {% for _ in noticias|slice:":3" %}
+                            <span class="carrosel-nav-dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}"></span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="banner">PUBLICIDADE HORIZONTAL (970x150)</div>
+                
+                <h3 class="titulo-secao">ÚLTIMAS NOTÍCIAS</h3>
+                <ul class="noticias-grid">
+                    {% for noticia in noticias|slice:"3:" %}
+                        <li class="noticia-card">
+
+                            {% if noticia.capa %}
+                                <img src="{{ noticia.capa.url }}" alt="{{ noticia.titulo }}">
+                            {% else %}
+                                <img src="{% static 'img/placeholder_card.png' %}" alt="Placeholder de Notícia">
+                            {% endif %}
+
+                            <div class="noticia-card-conteudo">
+                                <span class="news-tag">{{ noticia.tag|default:"GERAL" }}</span>
+                                <h4>
+                                    <a href="{% url 'ler_noticia' noticia.id %}">
+                                        {{ noticia.titulo }}
+                                    </a>
+                                </h4>
+                                <p>{{ noticia.materia|truncatewords:20 }}</p>
+                                <small>
+                                    Por: {{ noticia.autor }} | {{ noticia.data_criacao|date:"d/m/Y H:i" }}
+                                </small>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+            {% else %}
+                <p>Nenhuma notícia cadastrada.</p>
+            {% endif %}
+
+            <h2 class="veja-tambem-title">VEJA TAMBÉM:</h2>
+            
+            <div class="veja-tambem-grid">
+                <div class="veja-item"></div>
+                <div class="veja-item"></div>
+                <div class="veja-item"></div>
+                <div class="veja-item"></div>
+            </div>
+            
+        </main>
+        
+        <footer>
+            &copy; 2025 JCPE - Todos os direitos reservados.
+        </footer>
+    </div>
+
+    <!-- Menu Lateral - AGORA ABRE DA ESQUERDA -->
+    <div class="sidebar" id="sidebar">
+        <!-- CABEÇALHO REMOVIDO - AGORA TRANSPARENTE -->
+        <div class="sidebar-content">
+            <!-- GRUPO MESCLADO DE BOTÕES - SUB-TABS E CATEGORIAS JUNTOS -->
+            <div class="merged-buttons-group">
+                <!-- Botões que eram sub-tabs -->
+                <div class="menu-button-item fixed" id="btnAoVivo">
+                    <h3>🔴 Ao Vivo</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnJornal">
+                    <h3>🕮 Jornal Digital</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnColunistas">
+                    <h3>߷ Colunistas</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnUltimas">
+                    <h3>♨ Últimas Notícias</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+
+                <!-- Botões que eram categorias -->
+                <div class="menu-button-item fixed" id="btnPolitica">
+                    <h3># Política</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnMundo">
+                    <h3># Mundo</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnEducacao">
+                    <h3># Educação</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnMobilidade">
+                    <h3># Mobilidade</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnSeguranca">
+                    <h3># Segurança</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnEconomia">
+                    <h3># Economia</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnCultura">
+                    <h3># Cultura</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+                
+                <div class="menu-button-item fixed" id="btnPernambuco">
+                    <h3># Pernambuco</h3>
+                    <span class="menu-button-icon"></span>
+                </div>
+            </div>
+
+            <!-- Frase "Nossos Parceiros" adicionada -->
+            <div class="parceiros-title">Nossos Parceiros</div>
+
+            <div class="circular-buttons">
+                <a href="https://jc.uol.com.br/blog-do-torcedor" class="circular-button" target="_blank" id="btnBlogTorcedor">
+                    <img src="c:\Users\magda\OneDrive\Área de Trabalho\Imagens menu\blogTorcedor.png" class="social-icon" alt="Blog do Torcedor">
+                </a>
+                <a href="https://ne10.uol.com.br/" class="circular-button" target="_blank" id="btnNe10">
+                    <img src="c:\Users\magda\OneDrive\Área de Trabalho\Imagens menu\ne10.png" class="social-icon" alt="Ne10">
+                </a>
+                <a href="https://receitadaboa.com.br/" class="circular-button" target="_blank" id="btnReceitaBoa">
+                    <img src="c:\Users\magda\OneDrive\Área de Trabalho\Imagens menu\receita da boa.png" class="social-icon" alt="Receita da Boa">
+                </a>
+                <a href="https://jc.uol.com.br/social1" class="circular-button" target="_blank" id="btnSocial1">
+                    <img src="c:\Users\magda\OneDrive\Área de Trabalho\Imagens menu\Social1.png" class="social-icon" alt="Social1">
+                </a>
+            </div>
+
+            <!-- BOTÃO "ANUNCIE NO JC" ADICIONADO -->
+            <button class="anuncie-button" id="btnAnuncie">
+                Anuncie no JC
+            </button>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const carroselInner = document.querySelector('.carrosel-inner');
+            const carroselDots = document.querySelectorAll('.carrosel-nav-dot');
+            const totalSlides = carroselDots.length;
+            let currentIndex = 0;
+            const slideInterval = 6000; // 6 segundos
+
+            if (totalSlides === 0) return;
+
+            function updateCarrosel(index) {
+                if (index < 0) {
+                    currentIndex = totalSlides - 1;
+                } else if (index >= totalSlides) {
+                    currentIndex = 0;
+                } else {
+                    currentIndex = index;
+                }
+                
+                carroselInner.style.transform = `translateX(${-currentIndex * 100}%)`;
+                
+                carroselDots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentIndex);
+                });
+            }
+
+            function nextSlide() {
+                updateCarrosel(currentIndex + 1);
+            }
+
+            let autoSlide = setInterval(nextSlide, slideInterval);
+
+            carroselDots.forEach(dot => {
+                dot.addEventListener('click', (event) => {
+                    clearInterval(autoSlide);
+                    
+                    const index = parseInt(event.target.getAttribute('data-index'));
+                    updateCarrosel(index);
+                    
+                    autoSlide = setInterval(nextSlide, slideInterval);
+                });
+            });
+
+            updateCarrosel(0); 
+        });
+
+        // Script para o menu lateral
+        const menuButton = document.getElementById('menuButton');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const mainContainer = document.getElementById('mainContainer'); // Adicionado para escurecer apenas o container
+        let isOpen = false;
+
+        // Elementos dos botões do menu
+        const btnAoVivo = document.getElementById('btnAoVivo');
+        const btnJornal = document.getElementById('btnJornal');
+        const btnColunistas = document.getElementById('btnColunistas');
+        const btnUltimas = document.getElementById('btnUltimas');
+        const btnPolitica = document.getElementById('btnPolitica');
+        const btnMundo = document.getElementById('btnMundo');
+        const btnEducacao = document.getElementById('btnEducacao');
+        const btnMobilidade = document.getElementById('btnMobilidade');
+        const btnSeguranca = document.getElementById('btnSeguranca');
+        const btnEconomia = document.getElementById('btnEconomia');
+        const btnCultura = document.getElementById('btnCultura');
+        const btnPernambuco = document.getElementById('btnPernambuco');
+        const btnAnuncie = document.getElementById('btnAnuncie');
+
+        function toggleSidebar() {
+            isOpen = !isOpen;
+            
+            if (isOpen) {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                menuButton.classList.add('open');
+                menuButton.innerHTML = '✕';
+                mainContainer.classList.add('dimmed'); // Apenas o container escurece
+                document.body.style.overflow = 'hidden';
+            } else {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                menuButton.classList.remove('open');
+                menuButton.innerHTML = '&#x2630;';
+                mainContainer.classList.remove('dimmed'); // Remove escurecimento do container
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Função para lidar com cliques nos botões
+        function handleMenuClick(buttonId) {
+            alert(`Você clicou em: ${buttonId}`);
+            // Aqui você pode adicionar a lógica para navegar para a página correspondente
+        }
+
+        // Função para lidar com clique no botão "Anuncie no JC"
+        function handleAnuncieClick() {
+            alert('Anuncie no JC - Entre em contato conosco para mais informações sobre publicidade!');
+            // Aqui você pode adicionar a lógica para redirecionar para página de anúncios
+        }
+
+        // Evento do botão principal
+        menuButton.addEventListener('click', toggleSidebar);
+
+        // Fechar ao clicar no overlay
+        overlay.addEventListener('click', toggleSidebar);
+
+        // Fechar ao pressionar ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isOpen) {
+                toggleSidebar();
+            }
+        });
+
+        // Eventos para os botões fixos
+        btnAoVivo.addEventListener('click', () => handleMenuClick('Ao Vivo'));
+        btnJornal.addEventListener('click', () => handleMenuClick('Jornal Digital'));
+        btnColunistas.addEventListener('click', () => handleMenuClick('Colunistas'));
+        btnUltimas.addEventListener('click', () => handleMenuClick('Últimas Notícias'));
+        btnPolitica.addEventListener('click', () => handleMenuClick('Política'));
+        btnMundo.addEventListener('click', () => handleMenuClick('Mundo'));
+        btnEducacao.addEventListener('click', () => handleMenuClick('Educação'));
+        btnMobilidade.addEventListener('click', () => handleMenuClick('Mobilidade'));
+        btnSeguranca.addEventListener('click', () => handleMenuClick('Segurança'));
+        btnEconomia.addEventListener('click', () => handleMenuClick('Economia'));
+        btnCultura.addEventListener('click', () => handleMenuClick('Cultura'));
+        btnPernambuco.addEventListener('click', () => handleMenuClick('Pernambuco'));
+        btnAnuncie.addEventListener('click', handleAnuncieClick);
+
+        // Garantir que os botões de redes sociais sejam sempre visíveis
+        window.addEventListener('load', function() {
+            const socialButtons = document.querySelectorAll('.circular-button');
+            socialButtons.forEach(button => {
+                button.style.display = 'flex';
+                button.style.alignItems = 'center';
+                button.style.justifyContent = 'center';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,538 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Notícias - Tela Cheia</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* --- Variáveis e Configurações de Base --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f8f8;
+            color: #111;
+            min-height: 100vh;
+        }
+
+        :root {
+            --primary-red: #BE0101; /* Vermelho original do seu código */
+            --header-bg-color: #020202; /* Preto original do seu código */
+            --header-text-color: #ffffff;
+            --secondary-red: #D20000; /* Vermelho de destaque/botão */
+        }
+
+        /* Removendo max-width do container para tela cheia */
+        .container {
+            width: 100%; /* Ocupa a largura total */
+            margin: 0 auto; /* Mantém centralizado se houver margens laterais */
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Adicionando padding lateral para o conteúdo principal */
+        main, .nav-menu {
+            padding: 25px 5%; /* Adiciona padding de 5% nas laterais */
+            max-width: 1200px; /* Limita a largura do conteúdo para melhor leitura */
+            margin: 0 auto; /* Centraliza o conteúdo dentro do body */
+        }
+        header {
+            padding: 12px 5%; /* Ajusta padding do header também */
+        }
+
+
+        /* --- 1. HEADER REFINADO (ADAPTAÇÃO) --- */
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
+            border-bottom: 5px solid var(--primary-red); 
+            position: relative;
+        }
+
+        header .header-group {
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center;
+        }
+        
+        header .buttons-group {
+            position: absolute;
+            right: 5%; /* Ajustado para 5% do lado direito */
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Título Principal (Adaptação do H1) */
+        header h1 {
+            font-family: 'Merriweather', serif; 
+            font-size: 1.8rem;
+            margin: 5px 0 0 0;
+            color: var(--header-text-color);
+            text-transform: uppercase;
+            font-weight: 900;
+        }
+
+        /* Logo do Jornal do Commercio (substituindo placeholder) */
+        .header-logo {
+            max-height: 45px;
+            width: auto; /* Mantém a proporção */
+        }
+        
+        /* Botões */
+        .button {
+            background-color: var(--secondary-red);
+            color: white;
+            padding: 9px 18px;
+            text-decoration: none;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            transition: background-color 0.2s ease;
+        }
+        .button:hover {
+            background-color: #A00000;
+        }
+        header .buttons-group form {
+            background-color: transparent;
+            margin: 0;
+            display: inline-block;
+        }
+
+        /* --- 2. NAVEGAÇÃO SUPERIOR --- */
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 15px 5%; /* Ajusta padding lateral */
+            border-bottom: 1px solid #ddd;
+            max-width: none; /* Permite que o menu se estenda */
+            background-color: white; /* Fundo branco para o menu */
+        }
+
+        .nav-item {
+            color: black;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-item:hover {
+            color: var(--primary-red);
+        }
+        
+        /* --- 3. MAIN CONTENT E TÍTULOS DE SEÇÃO --- */
+        main {
+            padding: 25px 0; /* Padding lateral gerenciado pelo container, padding vertical */
+        }
+        
+        h3.titulo-secao {
+            font-family: 'Roboto', sans-serif;
+            font-size: 2rem;
+            text-transform: uppercase;
+            color: #111;
+            border-bottom: 4px solid var(--primary-red);
+            padding-bottom: 6px;
+            margin-top: 45px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        /* --- 4. CARROSSEL DE DESTAQUES (APRIMORADO) --- */
+        .carrosel-destaques {
+            position: relative;
+            overflow: hidden;
+            width: 100%; /* Ocupa a largura total do container */
+            height: 550px; /* Aumenta a altura */
+            margin-bottom: 40px;
+            background-color: #fff;
+            /* box-shadow: 0 5px 15px rgba(0,0,0,0.05); - Removido para visual mais limpo */
+        }
+
+        .carrosel-inner {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+            height: 100%; /* Ocupa a altura total do carrossel */
+        }
+
+        .carrosel-slide {
+            flex: 0 0 100%; 
+            display: flex;
+            background-color: #fff;
+            height: 100%; /* Ocupa a altura total do carrossel */
+        }
+
+        .carrosel-slide .destaque-imagem {
+            flex-basis: 65%;
+            height: 100%;
+            background-color: #f0f0f0;
+        }
+        .carrosel-slide .destaque-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carrosel-slide .destaque-texto {
+            flex-basis: 35%;
+            padding: 40px; /* Mais padding */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-bottom: 3px solid var(--primary-red); /* Borda inferior para o texto */
+        }
+        .carrosel-slide .destaque-texto .news-tag {
+            color: var(--primary-red); 
+            font-weight: bold; 
+            font-size: 0.95rem; 
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .carrosel-slide .destaque-texto h2 {
+            font-family: 'Merriweather', serif; 
+            font-size: 2.8rem; /* Fonte maior */
+            line-height: 1.15;
+            margin: 0 0 20px 0; /* Mais margem inferior */
+            font-weight: 900;
+        }
+        .carrosel-slide .destaque-texto p {
+             font-size: 1.05rem; /* Fonte um pouco maior */
+             color: #444;
+             margin-bottom: 20px;
+        }
+        .carrosel-slide .destaque-texto small {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* Navegação do Carrossel (dots) */
+        .carrosel-nav {
+            position: absolute;
+            bottom: 25px; /* Mais para cima */
+            right: 40px; /* Mais para a direita, alinhado com o padding do texto */
+            display: flex;
+            gap: 12px; /* Mais espaço entre os dots */
+        }
+        .carrosel-nav-dot {
+            width: 14px; /* Dots maiores */
+            height: 14px;
+            background-color: #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .carrosel-nav-dot.active, .carrosel-nav-dot:hover {
+            background-color: var(--primary-red);
+        }
+        
+        /* --- 5. GRID DE OUTRAS NOTÍCIAS --- */
+        .noticias-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 0; 
+            list-style-type: none;
+            border: 1px solid #ddd;
+            background-color: #fff;
+        }
+
+        .noticia-card {
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .noticias-grid .noticia-card:not(:nth-child(3n+1)) {
+            border-left: 1px solid #eee;
+        }
+        .noticias-grid .noticia-card:nth-last-child(-n+3) {
+             border-bottom: none;
+        }
+
+        .noticia-card:hover {
+            background-color: #f5f5f5;
+        }
+
+        .noticia-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #f0f0f0;
+            margin-bottom: 15px; 
+        }
+
+        .noticia-card-conteudo {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .noticia-card-conteudo h4 {
+            font-family: 'Roboto', sans-serif; 
+            font-size: 1.35rem;
+            line-height: 1.35;
+            margin: 0 0 8px 0;
+            font-weight: 700;
+        }
+
+        .noticia-card-conteudo p {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .noticia-card-conteudo small {
+            font-size: 0.8rem;
+            color: #888;
+            display: block;
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+            width: 100%;
+        }
+        
+        /* --- OUTRAS SEÇÕES --- */
+        .banner {
+            width: 100%;
+            height: 150px;
+            background-color: #d9d9d9;
+            margin: 40px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+        }
+        
+        .veja-tambem-title {
+            font-size: 2rem;
+            text-align: center;
+            margin: 40px 0 20px 0;
+        }
+        
+        .veja-tambem-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 30px;
+            justify-items: center;
+            margin: 0 10%;
+        }
+
+        .veja-item {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #d9d9d9;
+        }
+        
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 30px 5%;
+            background-color: #f0f0f0;
+            color: #888;
+            margin-top: 50px;
+            border-top: 1px solid #eee;
+            width: 100%; /* Ocupa largura total */
+        }
+        
+        /* Estilos de link para o carrossel e grid */
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        a:hover h2, a:hover h4 {
+            color: var(--primary-red);
+            transition: color 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-group">
+                 <a href="{% url 'inicial' %}">
+                    <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo Jornal do Commercio" class="header-logo">
+                </a>
+                <h1>Jornal do Commercio</h1>
+            </div>
+            
+            <div class="buttons-group">
+                <form action="{% url 'conta' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="button perfil-button">
+                        <i class="fas fa-user"></i> Meu Perfil
+                    </button>
+                </form>
+            </div>
+        </header>
+        
+        <nav class="nav-menu">
+            <a href="#" class="nav-item">AO VIVO</a>
+            <a href="#" class="nav-item">PERNAMBUCO</a>
+            <a href="#" class="nav-item">ECONOMIA</a>
+            <a href="#" class="nav-item">CULTURA</a>
+            <a href="#" class="nav-item">MOBILIDADE</a>
+            <a href="#" class="nav-item">POLÍTICA</a>
+            <a href="#" class="nav-item">ESPORTES</a>
+        </nav>
+
+        <main>
+            
+            {% if noticias %}
+                <h3 class="titulo-secao">DESTAQUE DO DIA</h3>
+                
+                <div class="carrosel-destaques">
+                    <div class="carrosel-inner">
+                        {% for noticia in noticias|slice:":3" %}
+                            <div class="carrosel-slide" data-index="{{ forloop.counter0 }}">
+                                <div class="destaque-imagem">
+                                    {% if noticia.capa %}
+                                        <img src="{{ noticia.capa.url }}" alt="{{ noticia.titulo }}">
+                                    {% else %}
+                                        <img src="{% static 'img/placeholder_destaque.png' %}" alt="Placeholder de Notícia">
+                                    {% endif %}
+                                </div>
+                                <div class="destaque-texto">
+                                    <span class="news-tag">{{ noticia.tag|default:"GERAL" }}</span>
+                                    <h2>
+                                        <a href="{% url 'ler_noticia' noticia.id %}">
+                                            {{ noticia.titulo }}
+                                        </a>
+                                    </h2>
+                                    <p>{{ noticia.materia|truncatewords:25 }}</p> 
+                                    <small>Publicado: {{ noticia.data_criacao|date:"d/m/Y H:i" }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="carrosel-nav">
+                        {% for _ in noticias|slice:":3" %}
+                            <span class="carrosel-nav-dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}"></span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="banner">PUBLICIDADE HORIZONTAL (970x150)</div>
+                
+                <h3 class="titulo-secao">ÚLTIMAS NOTÍCIAS</h3>
+                <ul class="noticias-grid">
+                    {% for noticia in noticias|slice:"3:" %}
+                        <li class="noticia-card">
+
+                            {% if noticia.capa %}
+                                <img src="{{ noticia.capa.url }}" alt="{{ noticia.titulo }}">
+                            {% else %}
+                                <img src="{% static 'img/placeholder_card.png' %}" alt="Placeholder de Notícia">
+                            {% endif %}
+
+                            <div class="noticia-card-conteudo">
+                                <span class="news-tag">{{ noticia.tag|default:"GERAL" }}</span>
+                                <h4>
+                                    <a href="{% url 'ler_noticia' noticia.id %}">
+                                        {{ noticia.titulo }}
+                                    </a>
+                                </h4>
+                                <p>{{ noticia.materia|truncatewords:20 }}</p>
+                                <small>
+                                    Por: {{ noticia.autor }} | {{ noticia.data_criacao|date:"d/m/Y H:i" }}
+                                </small>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+            {% else %}
+                <p>Nenhuma notícia cadastrada.</p>
+            {% endif %}
+
+            <h2 class="veja-tambem-title">VEJA TAMBÉM:</h2>
+            
+            <div class="veja-tambem-grid">
+                <div class="veja-item"></div>
+                <div class="veja-item"></div>
+                <div class="veja-item"></div>
+                <div class="veja-item"></div>
+            </div>
+            
+        </main>
+        
+        <footer>
+            &copy; 2025 JCPE - Todos os direitos reservados.
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const carroselInner = document.querySelector('.carrosel-inner');
+            const carroselDots = document.querySelectorAll('.carrosel-nav-dot');
+            const totalSlides = carroselDots.length;
+            let currentIndex = 0;
+            const slideInterval = 6000; // 6 segundos
+
+            if (totalSlides === 0) return;
+
+            function updateCarrosel(index) {
+                if (index < 0) {
+                    currentIndex = totalSlides - 1;
+                } else if (index >= totalSlides) {
+                    currentIndex = 0;
+                } else {
+                    currentIndex = index;
+                }
+                
+                carroselInner.style.transform = `translateX(${-currentIndex * 100}%)`;
+                
+                carroselDots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentIndex);
+                });
+            }
+
+            function nextSlide() {
+                updateCarrosel(currentIndex + 1);
+            }
+
+            let autoSlide = setInterval(nextSlide, slideInterval);
+
+            carroselDots.forEach(dot => {
+                dot.addEventListener('click', (event) => {
+                    clearInterval(autoSlide);
+                    
+                    const index = parseInt(event.target.getAttribute('data-index'));
+                    updateCarrosel(index);
+                    
+                    autoSlide = setInterval(nextSlide, slideInterval);
+                });
+            });
+
+            updateCarrosel(0); 
+        });
+    </script>
+</body>
+</html>

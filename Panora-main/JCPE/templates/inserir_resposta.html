@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Responder - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+</head>
+<body>
+    {% if messages %}
+    <div class="mensagens">
+        {% for message in messages %}
+            <p class="msg {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <header>
+        <a href="{% url 'inicial' %}">
+            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        </a>
+        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
+    </header>
+
+    <main>
+        <h1>Responder</h1>
+
+    {% if pai %}
+        <p><strong>Respondendo ao comentário:</strong></p>
+        <blockquote style="border-left: 3px solid #ccc; padding-left: 10px; color: #555;">
+            {{ pai.usuario }}: {{ pai.texto }}
+            <p>{{ resposta.texto }}</p>
+            <p>❤️ {{ resposta.total_curtidas }} curtidas</p>
+
+            <br>
+            <form action="{% url 'curtir_resposta' pai.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                {% if user in pai.curtidas.all %}
+                    <button type="submit" class="like-btn">💔 Descurtir ({{ pai.total_curtidas }})</button>
+                {% else %}
+                    <button type="submit" class="like-btn">❤️ Curtir ({{ pai.total_curtidas }})</button>
+                {% endif %}
+            </form>
+
+            <form action="{% url 'denunciar_comentario' pai.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="report-btn">🚩 Denunciar</button>
+            </form>
+
+        </blockquote>
+    {% endif %}
+
+
+        <hr>
+
+        <form method="post">
+            {% csrf_token %}
+            <label for="texto">Sua resposta:</label>
+            <textarea name="texto" id="texto" placeholder="Escreva sua resposta aqui..." required></textarea>
+            <button type="submit">Enviar Resposta</button>
+        </form>
+
+        <div class="links-centrais">
+            <a href="{% url 'ler_noticia' noticia.id %}" class="button">⬅ Voltar</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
+</html>

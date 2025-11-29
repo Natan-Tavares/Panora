@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>{{ categoria.categoria }} - JCPE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        background: #f4f4f4;
+    }
+
+    /* HEADER VERMELHO */
+    .header {
+        background: #c40000;
+        color: white;
+        padding: 16px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        position: relative;
+    }
+
+    .header a {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        text-decoration: none;
+        font-size: 18px;
+    }
+
+    /* TABS (somente visual, igual exemplo) */
+    .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        background: white;
+        padding: 10px 0;
+        font-weight: 600;
+    }
+
+    .tab.active {
+        position: relative;
+    }
+
+    .tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #c40000;
+        border-radius: 10px;
+    }
+
+    /* CONTAINER */
+    .container {
+        padding: 20px 15px 90px;
+        max-width: 430px;
+        margin: auto;
+    }
+
+    /* CARD NOTÍCIA */
+    .news-card {
+        background: white;
+        padding: 15px;
+        border-radius: 18px;
+        margin-bottom: 15px;
+        box-shadow: 0px 4px 8px rgba(0,0,0,0.08);
+    }
+
+    .news-card img {
+        width: 100%;
+        border-radius: 14px;
+        margin-bottom: 10px;
+    }
+
+    .news-card h3 {
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .news-card p {
+        font-size: 14px;
+        color: #555;
+        margin-top: 5px;
+    }
+
+    /* BOTÃO GRANDE (tipo o example) */
+    .btn-ver {
+        display: block;
+        width: 90%;
+        background: #c40000;
+        color: white;
+        text-decoration: none;
+        text-align: center;
+        padding: 14px;
+        border-radius: 22px;
+        margin: 20px auto 0;
+        font-weight: 600;
+    }
+
+    /* NAVBAR INFERIOR */
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: white;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        border-top: 1px solid #ddd;
+    }
+
+    .bottom-nav i {
+        font-size: 20px;
+        color: #c40000;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <a href="{% url 'inicial' %}">
+        <i class="fa fa-arrow-left"></i>
+    </a>
+    {{ categoria.categoria }}
+</div>
+
+<!-- TABS (estático, igual ao print modelo) -->
+<div class="tabs">
+    <span class="tab active">Notícias</span>
+    <span class="tab">Destaques</span>
+</div>
+
+<div class="container">
+
+    {% for noticia in noticias %}
+
+    <div class="news-card">
+
+        {% if noticia.capa %}
+            <img src="{{ noticia.capa.url }}" alt="{{ noticia.titulo }}">
+        {% endif %}
+
+        <h3>{{ noticia.titulo }}</h3>
+
+        <p>{{ noticia.materia|truncatechars:120 }}</p>
+
+        <a href="{% url 'ler_noticia' noticia.id %}" class="btn-ver">
+            Ver notícia
+        </a>
+    </div>
+
+    {% empty %}
+
+        <p style="text-align:center;">Nenhuma notícia cadastrada nesta categoria.</p>
+
+    {% endfor %}
+
+</div>
+
+<!-- NAVBAR -->
+<div class="bottom-nav">
+    <a href="{% url 'inicial' %}"><i class="fa fa-home"></i></a>
+    <a href="{% url 'criar_categoria' %}"><i class="fa fa-list"></i></a>
+    <a href="#"><i class="fa fa-bookmark"></i></a>
+    <a href="{% url 'conta' %}"><i class="fa fa-user"></i></a>
+</div>
+
+</body>
+</html>

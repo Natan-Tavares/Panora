@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Tag - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+</head>
+<body>
+    <header>
+        <a href="{% url 'inicial' %}">
+            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        </a>
+        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
+    </header>
+
+    <main>
+        <h2>Criar Nova Tag</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            <label for="tag">Nome da Tag:</label>
+            <input type="text" id="tag" name="tag" placeholder="Ex: Política, Esportes, Economia..." required>
+            <button type="submit">Criar Tag</button>
+        </form>
+
+        {% if tags %}
+            <section class="lista-tags">
+                <h3>Tags já criadas</h3>
+                <ul>
+                    {% for t in tags %}
+                        <li>{{ t.tag }}</li>
+                    {% empty %}
+                        <li>Nenhuma tag cadastrada ainda.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+        {% else %}
+            <p>Ainda não há tags cadastradas.</p>
+        {% endif %}
+
+        <div class="links-centrais">
+            <a href="{% url 'inicial' %}" class="button">⬅ Voltar</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
+</html>

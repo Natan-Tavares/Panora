@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastrar - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+</head>
+<body>
+    <header>
+        <a href="{% url 'inicial' %}">
+            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        </a>
+        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
+    </header>
+
+    <main>
+        <h2>Criar Conta</h2>
+
+        <form action="{% url 'cadastro' %}" method="post">
+            {% csrf_token %}
+            <label for="username">Usuário:</label>
+            <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
+
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required>
+
+            <input type="submit" value="Cadastrar">
+        </form>
+
+        <div class="links-centrais">
+            <a href="{% url 'login' %}" class="button">⬅ Já tenho conta</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
+</html>

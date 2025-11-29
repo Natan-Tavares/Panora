@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Notícias Salvas - JCPE</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+</head>
+<body>
+    <header>
+        <a href="{% url 'inicial' %}">
+            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
+        </a>
+        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
+    </header>
+
+    <main>
+        <h2>Minhas Notícias Salvas</h2>
+        <br>
+
+        {% if noticias_salvas %}
+            <ul>
+                {% for item in noticias_salvas %}
+                    <li>
+                        <h3>
+                            <a href="{% url 'ler_noticia' item.noticia.id %}">
+                                {{ item.noticia.titulo }}
+                            </a>
+                        </h3>
+                        <p>{{ item.noticia.materia|truncatewords:20 }}</p>
+                        <small>
+                            Autor: {{ item.noticia.autor }} |
+                            Publicada em: {{ item.noticia.data_criacao|date:"d/m/Y H:i" }}
+                        </small>
+                        <form action="{% url 'apagar_salvos' item.id %}" method="post" style="margin-top:10px;">
+                            {% csrf_token %}
+                            <button type="submit" class="excluir">Remover dos salvos</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Você ainda não salvou nenhuma notícia.</p>
+        {% endif %}
+        <div class="links-centrais">                
+            <a href="{% url 'conta' %}" class="button">⬅ Voltar à Conta</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 JCPE - Todos os direitos reservados.
+    </footer>
+</body>
+</html>
