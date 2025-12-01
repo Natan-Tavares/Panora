@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404,redirect
-from .models import Noticia, Resposta, Historico,Noticias_salvas,Tags,Categoria
+from .models import Noticia, Resposta, Historico,Noticias_salvas,Tag,Categoria
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.utils.timezone import now
@@ -14,14 +14,14 @@ from django.contrib import messages
 # Create your views here.
 
 def criar_noticia(request):
-    todas_tags = Tags.objects.all() 
+    todas_tags = Tag.objects.all() 
     categoria = Categoria.objects.all() 
     if request.method == "POST":
         titulo=request.POST.get("titulo")
         materia=request.POST.get("materia")
         autor=request.user
         tag_escolhida = request.POST.get('tag')
-        tag = Tags.objects.get(id=tag_escolhida)
+        tag = Tag.objects.get(id=tag_escolhida)
         data=now()
         local=request.POST.get("local")
         fontes=request.POST.get("fontes")
@@ -49,7 +49,7 @@ def criar_noticia(request):
 
 def editar_noticia(request,id):
     noticia = get_object_or_404(Noticia, id=id)
-    todas_tags = Tags.objects.all() 
+    todas_tags = Tag.objects.all() 
     categoria = Categoria.objects.all() 
     if request.method == "POST":
         noticia.titulo = request.POST.get("titulo")
@@ -58,7 +58,7 @@ def editar_noticia(request,id):
         noticia.local = request.POST.get("local")
         noticia.fontes = request.POST.get("fontes")
         tag_escolhida = request.POST.get('tag')
-        tag = Tags.objects.get(id=tag_escolhida)
+        tag = Tag.objects.get(id=tag_escolhida)
         cat_id=request.POST.get("categoria")
         noticia.categoria = Categoria.objects.get(id=cat_id) if cat_id else None
         if 'imagem' in request.FILES:
@@ -66,7 +66,7 @@ def editar_noticia(request,id):
         if 'capa' in request.FILES:
             noticia.capa = request.FILES['capa']
         if tag_escolhida:
-            tag = Tags.objects.get(id=tag_escolhida)
+            tag = Tag.objects.get(id=tag_escolhida)
             noticia.tags.set([tag])
         noticia.save()
         return redirect('inicial')
@@ -78,7 +78,7 @@ def inicial(request):
     noticias=Noticia.objects.all().order_by('-data_criacao')
     if id_tag:
         noticias = noticias.filter(tags__id=id_tag)
-    todas_tags = Tags.objects.all() 
+    todas_tags = Tag.objects.all() 
     noticias_salvas_ids = []
     if request.user.is_authenticated:
         noticias_salvas_ids = Noticias_salvas.objects.filter(usuario=request.user).values_list('noticia_id', flat=True)
@@ -180,30 +180,21 @@ def cadastro(request):
 
 
 def login_view(request):
-    if request.method == "GET":
-        return render(request, 'login.html')
-    
-    username = request.POST.get("username")
-    senha = request.POST.get("senha")
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-    user = authenticate(request, username=username, password=senha)
+        user = authenticate(request, username=username, password=password)
 
-    if user:
-        login(request, user)
-        return render(request, 'mensagem.html', {
-            'titulo': 'Usuário autenticado com sucesso!',
-            'mensagem': 'Bem-vindo(a) de volta.',
-            'link': '/',
-            'link_text': 'Ir para página inicial'
-        })
-    else:
-        return render(request, 'mensagem.html', {
-            'titulo': 'Erro no login',
-            'mensagem': 'Usuário ou senha inválidos.',
-            'link': '/login',
-            'link_text': 'Tentar novamente'
-        })
-    
+        if user is not None:
+            login(request, user)
+            return redirect("inicial")
+        else:
+            messages.error(request, "Usuário ou senha incorretos.")
+
+    return render(request, "login.html")
+
+
 def deslogar(request):
     logout(request)
     return redirect('login')
@@ -296,8 +287,8 @@ def editar_perfil(request):
 def criar_tag(request):
     if request.method == "POST":
         tag=request.POST.get("tag")
-        Tags.objects.get_or_create(tag=tag)
-    tags=Tags.objects.all()
+        Tag.objects.get_or_create(tag=tag)
+    tags=Tag.objects.all()
     
     return render(request,'Criar_tag.html',{'tags':tags})
 
@@ -317,3 +308,121 @@ def noticias_por_categoria(request, id):
         'categoria': categoria,
         'noticias': noticias
     })
+
+# views.py
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+import json
+
+@login_required
+@require_POST
+def update_profile(request):
+    """Atualiza informações do perfil do usuário."""
+    try:
+        data = json.loads(request.body)
+        field = data.get('field')
+        value = data.get('value')
+        
+        user = request.user
+        
+        if field == 'username':
+            if value != user.username:
+                # Verificar se o username já existe
+                from django.contrib.auth.models import User
+                if User.objects.filter(username=value).exclude(id=user.id).exists():
+                    return JsonResponse({
+                        'success': False, 
+                        'error': 'Este nome de usuário já está em uso.'
+                    })
+                user.username = value
+        
+        elif field == 'email':
+            if value != user.email:
+                # Verificar se o email já existe
+                from django.contrib.auth.models import User
+                if User.objects.filter(email=value).exclude(id=user.id).exists():
+                    return JsonResponse({
+                        'success': False, 
+                        'error': 'Este e-mail já está em uso.'
+                    })
+                user.email = value
+        
+        elif field == 'password':
+            user.set_password(value)
+        
+        user.save()
+        return JsonResponse({'success': True})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required
+@require_POST
+def update_profile_photo(request):
+    """Atualiza a foto de perfil do usuário."""
+    try:
+        avatar = request.FILES.get('avatar')
+        if avatar:
+            # Verificar se o arquivo é uma imagem
+            if not avatar.content_type.startswith('image/'):
+                return JsonResponse({
+                    'success': False, 
+                    'error': 'O arquivo deve ser uma imagem.'
+                })
+            
+            # Verificar tamanho do arquivo (máximo 5MB)
+            if avatar.size > 5 * 1024 * 1024:
+                return JsonResponse({
+                    'success': False, 
+                    'error': 'A imagem deve ter no máximo 5MB.'
+                })
+            
+            # Aqui você precisaria ter um modelo Profile com campo avatar
+            # Exemplo:
+            # profile, created = Profile.objects.get_or_create(user=request.user)
+            # profile.avatar = avatar
+            # profile.save()
+            
+            # Por enquanto, apenas simular sucesso
+            return JsonResponse({
+                'success': True,
+                'avatar_url': '/media/avatars/default.png'  # URL da imagem padrão
+            })
+        
+        return JsonResponse({
+            'success': False, 
+            'error': 'Nenhuma imagem enviada.'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required
+@require_POST
+def update_user_tags(request):
+    """Atualiza as tags de interesse do usuário."""
+    try:
+        data = json.loads(request.body)
+        tag_id = data.get('tag_id')
+        action = data.get('action')  # 'add' ou 'remove'
+        
+        # Aqui você implementaria a lógica para adicionar/remover tags
+        # Exemplo com modelo Tag:
+        # 
+        # from .models import Tag
+        # try:
+        #     tag = Tag.objects.get(id=tag_id)
+        #     if action == 'add':
+        #         request.user.tags.add(tag)
+        #     else:
+        #         request.user.tags.remove(tag)
+        #     return JsonResponse({'success': True})
+        # except Tag.DoesNotExist:
+        #     return JsonResponse({'success': False, 'error': 'Tag não encontrada.'})
+        
+        # Por enquanto, apenas simular sucesso
+        return JsonResponse({'success': True})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

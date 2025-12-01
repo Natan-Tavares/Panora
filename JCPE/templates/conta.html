@@ -1,177 +1,913 @@
-{% load static %}
-
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Painel de Perfil (interativo)</title>
-<style>
-  :root{ --accent:#e1a722; --bg:#f3f3f3; }
-  body { margin: 0; font-family: Arial, sans-serif; background: #e6e6e6; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil / Login Sidebar</title>
 
-  /* botão que abre a sidebar (exemplo) */
-  .open-btn{
-    position: fixed; top: 16px; right: 16px; z-index: 60;
-    background: var(--accent); color: white; border: none; padding: 10px 12px; border-radius: 8px; cursor: pointer;
-  }
+    <style>
+        /* --- ESTILOS BASE E SIDEBAR --- */
+        body {
+            margin: 0;
+            background: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
 
-  /* overlay (aparece quando a sidebar abre) */
-  .overlay{
-    position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 50; opacity: 0; pointer-events: none; transition: opacity .25s ease;
-  }
-  .overlay.visible{ opacity: 1; pointer-events: auto; }
+        /* 1. BOTÃO PRINCIPAL (Sempre abre a sidebar) */
+        .open-sidebar-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #b30000;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 200; 
+        }
+        
+        .open-sidebar-btn:hover {
+            background: #8a0000;
+        }
 
-  .sidebar {
-    position: fixed; top: 0; right: 0; width: 50vw; max-width: 560px; height: 100vh; background: var(--bg);
-    border-left: 4px solid var(--accent); box-shadow: -8px 0 30px rgba(0,0,0,0.25); padding: 24px; overflow-y: auto;
-    transform: translateX(110%); transition: transform .32s cubic-bezier(.2,.9,.3,1); z-index: 55; border-bottom-left-radius: 20px; border-top-left-radius: 20px;
-  }
-  .sidebar.open{ transform: translateX(0%); }
+        /* 2. OVERLAY ESCURO */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+            z-index: 999;
+        }
 
-  .perfil-header{ display:flex; flex-direction:column; align-items:center; gap:8px; }
-  .perfil-icon{ width:86px; height:86px; border-radius:50%; background:#ddd; display:flex; align-items:center; justify-content:center; font-size:30px; color:#666; overflow:hidden; }
-  .perfil-icon img{ width:100%; height:100%; object-fit:cover; }
-  .small-link{ color:#b22222; font-size:13px; cursor:pointer; }
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
 
-  .input-group{ margin-top:14px; }
-  label{ display:block; font-size:13px; color:#666; margin-bottom:6px; }
-  input[type=text], input[type=email], input[type=password]{ width:100%; padding:10px; border-radius:8px; border:none; background:#d9d9d9; }
+        /* 3. SIDEBAR CONTAINER */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -380px;
+            width: 380px; 
+            height: 100%;
+            background: white;
+            padding: 30px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+            transition: 0.3s;
+            z-index: 1000;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
 
-  .tags{ margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
-  .tag{ padding:7px 12px; background:#d0d0d0; border-radius:12px; font-size:13px; cursor:pointer; user-select:none; }
-  .tag.active{ background: #bfa06e; color:white; }
+        .sidebar.active {
+            right: 0;
+        }
 
-  .login-btn{ display:block; width:100%; margin:20px 0 8px; padding:12px; border:none; background:white; border-radius:10px; color:#8a0000; font-weight:700; cursor:pointer; }
-  .alt-text{ text-align:center; font-size:13px; color:#666; margin-top:-4px; }
-  .socials{ display:flex; justify-content:center; gap:18px; margin-top:16px; }
-  .socials button{ background:transparent;border:none;font-size:20px; cursor:pointer; }
+        /* --- ESTILOS DE FORMULÁRIO E COMPONENTES --- */
 
-  .close-btn{ position:absolute; top:10px; right:12px; background:transparent; border:2px solid rgba(0,0,0,0.08); padding:6px; border-radius:8px; cursor:pointer; }
+        /* Título */
+        .sidebar h2 {
+            text-align: center;
+            color: #a40000;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 26px;
+        }
+        
+        /* Mensagens de Erro */
+        .messages {
+            margin-bottom: 12px;
+        }
 
-  /* responsivo */
-  @media(max-width:600px){ .sidebar{ width: 90vw; } }
-</style>
+        .messages p {
+            background: #ffd2d2;
+            padding: 10px;
+            border-radius: 8px;
+            color: #8a0000;
+            font-size: 14px;
+        }
+
+        /* Inputs para Login */
+        .input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: #e4edff;
+            margin-bottom: 14px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        /* Botão principal (Entrar / Sair) */
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: #b30000;
+            color: white;
+            font-size: 17px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        
+        .btn-action:hover {
+            background: #8a0000;
+        }
+
+        /* Botão secundário (Criar conta) */
+        .btn-secondary {
+            margin-top: 15px;
+            width: 100%;
+            display: block;
+            padding: 12px;
+            color: #b30000;
+            border: 2px solid #b30000;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        .btn-secondary:hover {
+            background: #ffeaea;
+        }
+
+        /* --- ESTILOS DE PERFIL (Para Usuário Logado) --- */
+        .profile-container {
+            padding: 10px 0;
+        }
+
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: #ccc; 
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        .change-photo-link {
+            color: #b30000;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .change-photo-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Blocos de Campos (Nome, Email, Senha) */
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            color: #444;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .display-field {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: none;
+            background: #e9e9e9;
+            margin-bottom: 5px;
+            font-size: 15px;
+            color: #333;
+            pointer-events: none;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .display-field.editable {
+            background: #e4edff;
+            border: 1px solid #b30000;
+            pointer-events: auto;
+        }
+
+        .change-link {
+            color: #b30000;
+            text-decoration: none;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .change-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Botões de confirmação/cancelar */
+        .edit-buttons {
+            display: none;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .edit-buttons.active {
+            display: flex;
+        }
+
+        .btn-save {
+            flex: 1;
+            padding: 8px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-save:hover {
+            background: #218838;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 8px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-cancel:hover {
+            background: #5a6268;
+        }
+
+        /* --- MODAL PARA FOTO DE PERFIL --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .modal h3 {
+            color: #a40000;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #b30000;
+            color: white;
+        }
+
+        .btn-secondary-modal {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* --- ESTILOS PARA TAGS --- */
+        .tags-container {
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+
+        .tags-container h3 {
+            color: #444;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-item {
+            background: #e9e9e9; 
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: #333;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            user-select: none;
+            border: none;
+        }
+
+        .tag-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Tag selecionada (vermelha com X) */
+        .tag-item.selected {
+            background: #b30000;
+            color: white;
+            padding-right: 8px;
+            position: relative;
+        }
+
+        .tag-item.selected::after {
+            content: "×";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            margin-left: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .tag-item.selected:hover::after {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Rodapé: Botões e Redes Sociais */
+        .footer-buttons {
+            margin-top: 40px;
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .social-links a {
+            color: #b30000;
+            font-size: 30px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .social-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .logout-button-container {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logout-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Estilos para mensagens temporárias */
+        .temp-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 3000;
+            animation: slideDown 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 14px;
+            text-align: center;
+            min-width: 200px;
+            max-width: 300px;
+        }
+
+        @keyframes slideDown {
+            from {
+                top: -50px;
+                opacity: 0;
+            }
+            to {
+                top: 20px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+    </style>
 </head>
 <body>
 
-<button class="open-btn" id="openBtn">Perfil</button>
-<div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
+    <button class="open-sidebar-btn" onclick="openSidebar()" id="sidebarBtn">Login</button>
 
-<aside class="sidebar" id="sidebar" aria-hidden="true" role="dialog" aria-label="Painel do usuário">
-  <button class="close-btn" id="closeBtn" aria-label="Fechar">✕</button>
+    <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
 
-  <div class="perfil-header">
-    <div class="perfil-icon" id="avatar">
-      <img id="avatarImg" src="" alt="Avatar" style="display:none;">
-      <span id="avatarPlaceholder">👤</span>
-    </div>
-    <div class="small-link" id="changePhotoBtn">Alterar foto de perfil</div>
-    <input type="file" id="photoInput" accept="image/*" style="display:none;" />
-  </div>
-
-  <form id="profileForm" onsubmit="return false;" aria-describedby="formHelp">
-    <div class="input-group">
-      <label for="username">Nome de Usuário</label>
-      <input id="username" type="text" placeholder="Alterar nome de usuário" />
+    <!-- Modal para foto de perfil -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content">
+            <h3>Alterar Foto de Perfil</h3>
+            <p>Selecione uma nova imagem para seu perfil:</p>
+            <input type="file" id="photoInput" accept="image/*" style="margin: 15px 0; width: 100%;">
+            <div class="modal-buttons">
+                <button class="modal-btn btn-primary" onclick="savePhoto()">Salvar</button>
+                <button class="modal-btn btn-secondary-modal" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
     </div>
 
-    <div class="input-group">
-      <label for="email">E-mail</label>
-      <input id="email" type="email" placeholder="Alterar e-mail" />
+    <div id="sidebar" class="sidebar">
+        <div id="loginContent">
+            <h2>Entrar</h2>
+            <form id="loginForm">
+                <input type="text" id="loginUsername" placeholder="Usuário" class="input" required>
+                <input type="password" id="loginPassword" placeholder="Senha" class="input" required>
+                <button type="submit" class="btn-action">Entrar</button>
+                <a href="#" class="btn-secondary" onclick="showRegister()">Criar conta</a>
+            </form>
+        </div>
+
+        <div id="profileContent" style="display: none;">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar" title="Clique para alterar" onclick="openPhotoModal()">👤</div>
+                    <a href="#" class="change-photo-link" onclick="openPhotoModal(); return false;">Alterar foto de perfil</a>
+                </div>
+
+                <div class="form-group" id="usernameGroup">
+                    <label>Nome de Usuário</label>
+                    <input type="text" id="usernameInput" value="Usuário Teste" class="display-field" readonly>
+                    <a href="#" class="change-link" onclick="enableEdit('username'); return false;">Alterar nome de usuário</a>
+                    <div class="edit-buttons" id="usernameButtons">
+                        <button class="btn-save" onclick="saveEdit('username')">Salvar</button>
+                        <button class="btn-cancel" onclick="cancelEdit('username')">Cancelar</button>
+                    </div>
+                </div>
+                
+                <div class="form-group" id="emailGroup">
+                    <label>E-mail</label>
+                    <input type="email" id="emailInput" value="email@exemplo.com" class="display-field" readonly>
+                    <a href="#" class="change-link" onclick="enableEdit('email'); return false;">Alterar e-mail</a>
+                    <div class="edit-buttons" id="emailButtons">
+                        <button class="btn-save" onclick="saveEdit('email')">Salvar</button>
+                        <button class="btn-cancel" onclick="cancelEdit('email')">Cancelar</button>
+                    </div>
+                </div>
+
+                <div class="form-group" id="passwordGroup">
+                    <label>Senha</label>
+                    <input type="password" id="passwordInput" value="********" class="display-field" readonly>
+                    <a href="#" class="change-link" onclick="enableEdit('password'); return false;">Alterar senha</a>
+                    <div class="edit-buttons" id="passwordButtons">
+                        <button class="btn-save" onclick="saveEdit('password')">Salvar</button>
+                        <button class="btn-cancel" onclick="cancelEdit('password')">Cancelar</button>
+                    </div>
+                </div>
+
+                <div class="tags-container">
+                    <h3>Tags de Interesse</h3>
+                    <div class="tags-list" id="tagsList">
+                        <!-- Tags serão carregadas via JavaScript -->
+                        <div class="loading-tags">Carregando tags...</div>
+                    </div>
+                    <p style="font-size: 11px; color: #666; margin-top: 10px;">
+                        As tags são salvas automaticamente no seu navegador.
+                    </p>
+                </div>
+
+                <div class="footer-buttons">
+                    <div class="logout-button-container">
+                         <button class="btn-action" style="margin-top: 0; background: #b30000;" onclick="logout()">Sair da Conta</button>
+                         <p class="logout-text">Opções de conta</p>
+                    </div>
+
+                    <div class="social-links">
+                        <a href="#">📸</a>
+                        <a href="#">💬</a>
+                        <a href="#">🎶</a>
+                        <a href="#">📧</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="input-group">
-      <label for="senha">Senha</label>
-      <input id="senha" type="password" placeholder="Alterar senha" />
-    </div>
+    <script>
+        // Sistema de autenticação SIMULADO
+        let isLoggedIn = false;
+        let currentUser = null;
 
-    <p style="margin-top:14px; font-weight:700; color:#8a0000;">Tags</p>
-    <div class="tags" id="tags">
-      <div class="tag">jornalismo</div>
-      <div class="tag">política</div>
-      <div class="tag">esportes</div>
-      <div class="tag">cultura</div>
-      <div class="tag">mundo</div>
-      <div class="tag">tecnologia</div>
-    </div>
+        // Dados de exemplo
+        const SAMPLE_USER = {
+            username: 'Usuário Teste',
+            email: 'email@exemplo.com'
+        };
 
-    <button class="login-btn" id="loginBtn" type="button">Fazer login</button>
-    <p class="alt-text">Ou cadastre-se</p>
+        // Sistema de tags usando apenas JavaScript e localStorage
+        const TAGS_DATA = [
+            {id: 'educacao', name: 'Educação'},
+            {id: 'cinema', name: 'Cinema'},
+            {id: 'esportes', name: 'Esportes'},
+            {id: 'mundo', name: 'Mundo'},
+            {id: 'tech', name: 'Tech'},
+            {id: 'politica', name: 'Política'},
+            {id: 'musica', name: 'Música'},
+            {id: 'games', name: 'Games'},
+            {id: 'arte', name: 'Arte'},
+            {id: 'ciencia', name: 'Ciência'}
+        ];
 
-    <div class="socials">
-      <button type="button" aria-label="Instagram" data-link="https://www.instagram.com/jc_pe/?hl=en">
-        <img src="{% static 'img/instagram.png' %}" alt="Instagram" style="width:26px; height:26px;">
-      </button>
-      <button type="button" aria-label="X" data-link="https://x.com/jc_pe?lang=en">
-        <img src="{% static 'img/x.png' %}" style="width:26px; height:26px;">
-      </button>
-      <button type="button" aria-label="TikTok" data-link="https://www.tiktok.com/@jc_pe?lang=en">
-        <img src="{% static 'img/tiktok.png' %}" alt="TikTok" style="width:26px; height:26px;">
-      </button>
-    </div>
-  </form>
+        // Funções da Sidebar
+        function openSidebar() {
+            document.getElementById("sidebar").classList.add("active");
+            document.getElementById("overlay").classList.add("active");
+            
+            // Carregar tags quando abrir a sidebar
+            if (isLoggedIn) {
+                loadTags();
+            }
+        }
 
-</aside>
+        function closeSidebar() {
+            document.getElementById("sidebar").classList.remove("active");
+            document.getElementById("overlay").classList.remove("active");
+        }
 
-<script>
-  const openBtn = document.getElementById('openBtn');
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('overlay');
-  const closeBtn = document.getElementById('closeBtn');
-  const loginBtn = document.getElementById('loginBtn');
-  const changePhotoBtn = document.getElementById('changePhotoBtn');
-  const photoInput = document.getElementById('photoInput');
-  const avatarImg = document.getElementById('avatarImg');
-  const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+        // Sistema de login/logout SIMULADO
+        function checkLoginStatus() {
+            // Verificar se há usuário salvo no localStorage
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                isLoggedIn = true;
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('sidebarBtn').textContent = 'Minha Conta';
+                document.getElementById('loginContent').style.display = 'none';
+                document.getElementById('profileContent').style.display = 'block';
+                
+                // Preencher dados do usuário
+                document.getElementById('usernameInput').value = currentUser.username;
+                document.getElementById('emailInput').value = currentUser.email;
+            } else {
+                isLoggedIn = false;
+                currentUser = null;
+                document.getElementById('sidebarBtn').textContent = 'Login';
+                document.getElementById('loginContent').style.display = 'block';
+                document.getElementById('profileContent').style.display = 'none';
+            }
+        }
 
-  function openSidebar(){
-    sidebar.classList.add('open'); overlay.classList.add('visible'); sidebar.setAttribute('aria-hidden','false'); overlay.setAttribute('aria-hidden','false');
-    sidebar.querySelector('input, button, [tabindex]')?.focus();
-  }
-  function closeSidebar(){
-    sidebar.classList.remove('open'); overlay.classList.remove('visible'); sidebar.setAttribute('aria-hidden','true'); overlay.setAttribute('aria-hidden','true');
-    openBtn.focus();
-  }
+        // Formulário de login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (username && password) {
+                // Simulação de login bem-sucedido
+                currentUser = {
+                    username: username,
+                    email: `${username}@exemplo.com`
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showMessage('Login realizado com sucesso!', 'success');
+                checkLoginStatus();
+                closeSidebar();
+            } else {
+                showMessage('Preencha todos os campos.', 'error');
+            }
+        });
 
-  openBtn.addEventListener('click', openSidebar);
-  closeBtn.addEventListener('click', closeSidebar);
-  overlay.addEventListener('click', closeSidebar);
-  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar(); });
+        function logout() {
+            localStorage.removeItem('currentUser');
+            isLoggedIn = false;
+            currentUser = null;
+            showMessage('Logout realizado com sucesso!', 'success');
+            checkLoginStatus();
+            closeSidebar();
+        }
 
-  loginBtn.addEventListener('click', ()=>{
-    const username = document.getElementById('username').value.trim();
-    const email = document.getElementById('email').value.trim();
+        function showRegister() {
+            showMessage('Funcionalidade de registro em desenvolvimento.', 'info');
+        }
 
-    if(!username || !email){
-      alert('Preencha pelo menos nome e e-mail (demo).');
-      return;
-    }
+        // Funções do Modal de Foto
+        function openPhotoModal() {
+            document.getElementById("photoModal").classList.add("active");
+        }
 
-    alert('Dados enviados (demo): ' + username + ' — ' + email);
-    closeSidebar();
-  });
+        function closeModal() {
+            document.getElementById("photoModal").classList.remove("active");
+            document.getElementById("photoInput").value = '';
+        }
 
+        function savePhoto() {
+            const fileInput = document.getElementById("photoInput");
+            const file = fileInput.files[0];
+            
+            if (file) {
+                // Simulação para teste
+                showMessage('Foto alterada com sucesso! (Simulação)', 'success');
+                document.querySelector('.profile-avatar').innerHTML = '🖼️';
+                closeModal();
+            } else {
+                alert('Por favor, selecione uma imagem.');
+            }
+        }
 
-  changePhotoBtn.addEventListener('click', ()=> photoInput.click());
-  photoInput.addEventListener('change', (ev)=>{
-    const file = ev.target.files && ev.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e){ avatarImg.src = e.target.result; avatarImg.style.display='block'; avatarPlaceholder.style.display='none'; };
-    reader.readAsDataURL(file);
-  });
+        // Funções de Edição de Campos
+        function enableEdit(field) {
+            const input = document.getElementById(field + 'Input');
+            const buttons = document.getElementById(field + 'Buttons');
+            const changeLink = input.nextElementSibling;
+            
+            window.originalValues = window.originalValues || {};
+            window.originalValues[field] = input.value;
+            
+            input.classList.add('editable');
+            input.readOnly = false;
+            
+            if (field === 'password') {
+                input.type = 'password';
+                input.value = '';
+                input.placeholder = 'Digite a nova senha';
+            }
+            
+            changeLink.style.display = 'none';
+            buttons.classList.add('active');
+            input.focus();
+        }
 
-  document.querySelectorAll('.tag').forEach(tag => {
-    tag.addEventListener('click', ()=> tag.classList.toggle('active'));
-  });
+        function saveEdit(field) {
+            const input = document.getElementById(field + 'Input');
+            const buttons = document.getElementById(field + 'Buttons');
+            const changeLink = buttons.previousElementSibling;
+            const newValue = input.value.trim();
+            
+            if (!newValue) {
+                alert('Por favor, preencha o campo.');
+                return;
+            }
+            
+            // Validações básicas
+            if (field === 'email' && !validateEmail(newValue)) {
+                alert('Por favor, insira um e-mail válido.');
+                return;
+            }
+            
+            if (field === 'password' && newValue.length < 6) {
+                alert('A senha deve ter pelo menos 6 caracteres.');
+                return;
+            }
+            
+            // Simulação de salvamento
+            showMessage(`${field === 'username' ? 'Nome de usuário' : field === 'email' ? 'E-mail' : 'Senha'} atualizado com sucesso!`, 'success');
+            
+            if (field === 'password') {
+                input.type = 'password';
+                input.value = '********';
+                input.placeholder = '';
+            } else {
+                // Atualizar usuário no localStorage
+                if (currentUser) {
+                    currentUser[field] = newValue;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+            }
+            
+            input.classList.remove('editable');
+            input.readOnly = true;
+            buttons.classList.remove('active');
+            changeLink.style.display = 'inline-block';
+        }
 
+        function cancelEdit(field) {
+            const input = document.getElementById(field + 'Input');
+            const buttons = document.getElementById(field + 'Buttons');
+            const changeLink = buttons.previousElementSibling;
+            
+            if (field === 'password') {
+                input.value = '********';
+                input.type = 'password';
+            } else if (window.originalValues && window.originalValues[field]) {
+                input.value = window.originalValues[field];
+            }
+            
+            input.classList.remove('editable');
+            input.readOnly = true;
+            buttons.classList.remove('active');
+            changeLink.style.display = 'inline-block';
+        }
 
-  document.querySelectorAll('.socials button[data-link]').forEach(btn=>{
-    btn.addEventListener('click', ()=> window.open(btn.dataset.link, '_blank'));
-  });
-  document.getElementById('emailBtn').addEventListener('click', ()=> location.href = 'mailto:contato@exemplo.com');
+        // Validação de e-mail
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
 
-</script>
+        // Sistema de tags
+        function loadTags() {
+            const tagsList = document.getElementById('tagsList');
+            if (!tagsList) return;
+            
+            // Carregar tags selecionadas do localStorage
+            const savedTags = JSON.parse(localStorage.getItem('selectedTags') || '[]');
+            
+            // Limpar conteúdo de loading
+            tagsList.innerHTML = '';
+            
+            // Adicionar tags
+            TAGS_DATA.forEach(tag => {
+                const isSelected = savedTags.includes(tag.id);
+                const tagElement = document.createElement('button');
+                tagElement.type = 'button';
+                tagElement.className = 'tag-item';
+                if (isSelected) tagElement.classList.add('selected');
+                tagElement.setAttribute('data-tag', tag.id);
+                tagElement.setAttribute('data-name', tag.name);
+                tagElement.textContent = tag.name;
+                tagElement.title = `Clique para ${isSelected ? 'remover' : 'adicionar'} esta tag`;
+                tagsList.appendChild(tagElement);
+            });
+            
+            // Adicionar eventos às tags
+            setupTagEvents();
+        }
+
+        function setupTagEvents() {
+            const tags = document.querySelectorAll('.tag-item');
+            
+            tags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const tagId = this.getAttribute('data-tag');
+                    const tagName = this.getAttribute('data-name');
+                    const isSelected = this.classList.contains('selected');
+                    
+                    // Alternar visualmente
+                    this.classList.toggle('selected');
+                    
+                    // Atualizar localStorage
+                    updateLocalStorageTags();
+                    
+                    // Mostrar mensagem
+                    showMessage(
+                        `Tag "${tagName}" ${isSelected ? 'removida' : 'adicionada'}!`, 
+                        'success'
+                    );
+                });
+            });
+        }
+
+        function updateLocalStorageTags() {
+            const tags = document.querySelectorAll('.tag-item');
+            const selectedTags = [];
+            tags.forEach(tag => {
+                if (tag.classList.contains('selected')) {
+                    selectedTags.push(tag.getAttribute('data-tag'));
+                }
+            });
+            localStorage.setItem('selectedTags', JSON.stringify(selectedTags));
+        }
+
+        // Função para mostrar mensagens
+        function showMessage(text, type) {
+            // Remover mensagens anteriores
+            const existingMessages = document.querySelectorAll('.temp-message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            // Cores para diferentes tipos
+            const colors = {
+                'success': '#28a745',
+                'error': '#dc3545',
+                'info': '#17a2b8',
+                'warning': '#ffc107'
+            };
+            
+            // Criar nova mensagem
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `temp-message ${type}`;
+            messageDiv.textContent = text;
+            messageDiv.style.background = colors[type] || colors.info;
+            
+            document.body.appendChild(messageDiv);
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.style.animation = 'fadeOut 0.3s ease';
+                    setTimeout(() => {
+                        if (messageDiv.parentNode) {
+                            messageDiv.remove();
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        }
+
+        // Fechar sidebar e modal com ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.target.tagName !== 'INPUT' && event.key === 'Escape') {
+                closeSidebar();
+                closeModal();
+            }
+        });
+
+        // Fechar modal ao clicar fora
+        document.getElementById('photoModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
+
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+        });
+
+    </script>
+
 </body>
 </html>

@@ -45,7 +45,10 @@ urlpatterns = [
     path('editar_conta/', views.editar_perfil, name='editar_conta'),
     path('curtir/<int:resposta_id>/', views.curtir_resposta, name='curtir_resposta'),
     path('denunciar/<int:resposta_id>/', views.denunciar_comentario, name='denunciar_comentario'),
-    path('categoria/<int:id>/', views.noticias_por_categoria, name='noticias_por_categoria')
+    path('categoria/<int:id>/', views.noticias_por_categoria, name='noticias_por_categoria'),
+    path('api/update-profile/', views.update_profile, name='update_profile'),
+    path('api/update-profile-photo/', views.update_profile_photo, name='update_profile_photo'),
+    path('api/update-tags/', views.update_user_tags, name='update_user_tags')
 
 ]
 

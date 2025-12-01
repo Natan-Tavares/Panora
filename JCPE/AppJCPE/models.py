@@ -84,6 +84,30 @@ def criar_ou_atualizar_perfil(sender, instance, created, **kwargs):
         instance.perfil.save()
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    
+    def __str__(self):
+        return self.name
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
+    
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
+
+# Sinal para criar perfil automaticamente quando um usuário é criado
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
     
     '''
 class Usuario_comum(models.Model):
