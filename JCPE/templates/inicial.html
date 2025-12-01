@@ -24,6 +24,9 @@
                 <div class="menu-icon" onclick="toggleMenu()">
                     <i class="fas fa-bars"></i>
                 </div>
+                <button class="search-trigger" type="button" onclick="toggleSearchDrawer()" aria-controls="searchDrawer" aria-expanded="false" aria-label="Buscar">
+                    <i class="fas fa-search"></i>
+                </button>
                 <img src="https://jc.uol.com.br/img/logo.svg" alt="JC Logo" class="logo-jc">
             </div>
 
@@ -55,6 +58,87 @@
         </nav>
     </header>
 
+    <div class="search-drawer" id="searchDrawer" aria-hidden="true">
+        <div class="search-drawer-backdrop" onclick="closeSearchDrawer()"></div>
+        <div class="search-drawer-shell">
+            <div class="drawer-handle" onclick="toggleSearchDrawer()">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="search-card container">
+                <form class="search-form" action="{% url 'inicial' %}" method="get">
+                    <div class="search-bar-row">
+                        <button class="search-submit" type="submit" aria-label="Buscar">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <input type="text" id="searchInput" name="q" value="{{ q }}" placeholder="O que descobrir hoje?">
+                        <button class="search-close-btn" type="button" onclick="closeSearchDrawer()" aria-label="Fechar busca">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="search-suggestions">
+                        {% if recent_searches %}
+                            <div class="suggestion-title">Buscas recentes</div>
+                            <div class="suggestion-chips">
+                                {% for term in recent_searches %}
+                                    <a href="{% url 'inicial' %}?q={{ term|urlencode }}" class="suggestion-chip">
+                                        <i class="far fa-clock"></i> {{ term }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="suggestion-title">Sugestoes</div>
+                            <div class="suggestion-chips">
+                                <a href="{% url 'inicial' %}?q=gasolina" class="suggestion-chip"><i class="far fa-clock"></i> Aumento gasolina hoje</a>
+                                <a href="{% url 'inicial' %}?q=Recife%20Antigo" class="suggestion-chip"><i class="far fa-clock"></i> Apresentacoes no Recife Antigo</a>
+                                <a href="{% url 'inicial' %}?q=metro%20Recife" class="suggestion-chip"><i class="far fa-clock"></i> Situacao metro do Recife</a>
+                                <a href="{% url 'inicial' %}?q=bolo%20de%20rolo" class="suggestion-chip"><i class="far fa-clock"></i> Receitas de bolo de rolo</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </form>
+
+                <div class="search-tags">
+                    <div class="search-tags-header">
+                        <span>TAGS</span>
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="tags-list">
+                        {% for t in tags %}
+                            <a href="{% url 'inicial' %}?tag={{ t.id }}" class="tag-chip">{{ t.tag|capfirst }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if noticias %}
+                <div class="search-highlights">
+                    <div class="search-highlights-header">Materias em Alta</div>
+                    <div class="search-highlight-list">
+                        {% for n in noticias|slice:":3" %}
+                        <a href="{% url 'ler_noticia' n.id %}" class="highlight-item">
+                            <div class="highlight-thumb">
+                                {% if n.imagem %}
+                                    <img src="{{ n.imagem.url }}" alt="{{ n.titulo }}">
+                                {% elif n.capa %}
+                                    <img src="{{ n.capa.url }}" alt="{{ n.titulo }}">
+                                {% else %}
+                                    <div class="placeholder-img-sm"></div>
+                                {% endif %}
+                            </div>
+                            <div class="highlight-meta">
+                                <span class="highlight-tag">{{ n.categoria.categoria|default:"Noticia" }}</span>
+                                <h4>{{ n.titulo|truncatechars:70 }}</h4>
+                                <span class="highlight-time">{{ n.data_criacao|timesince }} atras</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     <div class="sidebar" id="sidebar">
         <span class="close-btn" onclick="toggleMenu()">&times;</span>
         <div class="sidebar-header">
@@ -72,8 +156,46 @@
     </div>
 
     <main class="container content-container">
+        {% if q %}
+        <div class="search-result-banner">
+            <span>Resultados para "{{ q }}"</span>
+        </div>
+        {% endif %}
        
         {% if noticias %}
+            {% if q %}
+                <div class="news-grid-section search-results-grid">
+                    {% for n in noticias %}
+                    <div class="news-card">
+                        <a href="{% url 'ler_noticia' n.id %}">
+                            <div class="card-image">
+                                {% if n.imagem %}
+                                    <img src="{{ n.imagem.url }}" alt="{{ n.titulo }}">
+                                {% elif n.capa %}
+                                    <img src="{{ n.capa.url }}" alt="{{ n.titulo }}">
+                                {% else %}
+                                    <div class="placeholder-img-sm"></div>
+                                {% endif %}
+                            </div>
+                            <div class="card-content">
+                                <span class="card-category">{{ n.categoria.categoria|default:"Noticia" }}</span>
+                                <h3>{{ n.titulo|truncatechars:70 }}</h3>
+                                <span class="card-time">{{ n.data_criacao|timesince }} atras</span>
+                            </div>
+                        </a>
+                        <div class="card-actions icon-small">
+                             <a href="{% url 'salvar_noticia' n.id %}">
+                                {% if n.id in noticias_salvas_ids %}
+                                    <i class="fas fa-bookmark" style="color: var(--primary-red);"></i>
+                                {% else %}
+                                    <i class="far fa-bookmark"></i>
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
             <div class="carousel-wrapper">
                 <div class="carousel-container">
                     {% for n in noticias|slice:":3" %}
@@ -176,6 +298,7 @@
                     </div>
                 {% endfor %}
             </div>
+            {% endif %}
 
         {% else %}
             <div class="empty-state">

@@ -1,5 +1,10 @@
 from django.shortcuts import render,get_object_or_404,redirect
+<<<<<<< HEAD
 from .models import Noticia, Resposta, Historico,Noticias_salvas,Tag,Categoria
+=======
+from .models import Noticia, Resposta, Historico,Noticias_salvas,Tags,Categoria
+from django.db.models import Q
+>>>>>>> e249a81 (busca)
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.utils.timezone import now
@@ -75,14 +80,41 @@ def editar_noticia(request,id):
 
 def inicial(request):
     id_tag = request.GET.get("tag")
+    q = request.GET.get("q", "").strip()
     noticias=Noticia.objects.all().order_by('-data_criacao')
     if id_tag:
         noticias = noticias.filter(tags__id=id_tag)
+<<<<<<< HEAD
     todas_tags = Tag.objects.all() 
+=======
+    if q:
+        noticias = noticias.filter(
+            Q(titulo__icontains=q) |
+            Q(subtitulo__icontains=q) |
+            Q(materia__icontains=q) |
+            Q(tags__tag__icontains=q)
+        ).distinct()
+        # guarda historico simples de buscas recentes em sessao
+        recent = request.session.get("recent_searches", [])
+        recent = [q] + [term for term in recent if term.lower() != q.lower()]
+        request.session["recent_searches"] = recent[:5]
+    recent_searches = request.session.get("recent_searches", [])
+    todas_tags = Tags.objects.all() 
+>>>>>>> e249a81 (busca)
     noticias_salvas_ids = []
     if request.user.is_authenticated:
         noticias_salvas_ids = Noticias_salvas.objects.filter(usuario=request.user).values_list('noticia_id', flat=True)
-    return render(request, 'inicial.html', {'noticias': noticias, 'tags': todas_tags,'noticias_salvas_ids': noticias_salvas_ids})
+    return render(
+        request,
+        'inicial.html',
+        {
+            'noticias': noticias,
+            'tags': todas_tags,
+            'noticias_salvas_ids': noticias_salvas_ids,
+            'recent_searches': recent_searches,
+            'q': q,
+        }
+    )
 
 def ler_noticia(request,id):
     noticia_individual = get_object_or_404(Noticia, id=id)
