@@ -6,9 +6,268 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JC - Jornal do Commercio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/style_inicial.css' %}">
+    <style>
+        /* --- ESTILOS DO MENU LATERAL DO SEU DESIGN --- */
+        
+        /* Overlay para o menu */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 9998;
+        }
+        
+        .menu-overlay.active {
+            opacity: 0.3;
+            visibility: visible;
+        }
+        
+        /* Menu lateral - baseado no seu design */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -315px;
+            width: 315px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 9999;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0 22.5px 18.75px 0;
+        }
+        
+        .side-menu.open {
+            left: 0;
+        }
+
+        /* CABEÇALHO DO SIDEBAR REMOVIDO/VISÍVEL (como no seu design) */
+        .side-menu-header {
+            display: none;
+        }
+
+        .side-menu-content {
+            padding: 10px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding-top: 0px;
+            border: none;
+        }
+
+        /* --- GRUPO MESCLADO DE BOTÕES - SUB-TABS E CATEGORIAS JUNTOS --- */
+        .menu-buttons-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 14.06px;
+            border: none;
+            border-radius: 0;
+            overflow: hidden;
+            gap: 0;
+        }
+
+        .menu-btn-item {
+            background: white;
+            transition: all 0.3s ease;
+            padding: 15px 14.06px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            border: none;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .menu-btn-item:first-child {
+            border-top: none;
+        }
+
+        .menu-btn-item:last-child {
+            border-bottom: none;
+        }
+
+        /* HOVER QUE OCUPA TODO O ESPAÇO DO BOTÃO */
+        .menu-btn-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #d32f2f;
+            z-index: 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-btn-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .menu-btn-item h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000000;
+            opacity: 0.9;
+            text-align: left;
+            flex: 1;
+            margin: 0;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .menu-btn-item:hover h3 {
+            color: white;
+        }
+
+        .menu-btn-icon {
+            transition: all 0.3s ease;
+            color: #000000;
+            opacity: 0.8;
+            width: 13.125px;
+            text-align: left;
+            font-size: 11.25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .menu-btn-item:hover .menu-btn-icon {
+            color: white;
+        }
+
+        /* --- BOTÕES CIRCULARES MODIFICADOS - SEM FUNDO VERMELHO --- */
+        .circular-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            margin-top: 14.06px;
+            padding-top: 14.06px;
+        }
+
+        .circular-button {
+            background: transparent;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+            border: none;
+            overflow: hidden;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .circular-button:hover {
+            background: transparent;
+            transform: translateY(-2px) scale(1.1);
+        }
+
+        .social-icon {
+            width: 35.625px;
+            height: 35.625px;
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+
+        /* --- BOTÃO "ANUNCIE NO JC" --- */
+        .anuncie-button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+            height: 30px;
+            margin: 30px auto 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .anuncie-button:hover {
+            background: white;
+            color: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .parceiros-title {
+            text-align: center;
+            color: #000000;
+            font-weight: 700;
+            font-size: 16px;
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-top: 20px;
+        }
+        
+        /* Botão do menu hambúrguer - MANTIDO BRANCO */
+        .menu-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #ffffff; /* BRANCO */
+            margin-right: 15px;
+            transition: color 0.2s ease;
+        }
+        
+        .menu-icon:hover {
+            color: #f0f0f0;
+        }
+        
+        /* Botão X para fechar o menu */
+        .menu-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: #333;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
+        /* Efeito de escurecimento no conteúdo principal */
+        .content-container.dimmed {
+            filter: brightness(0.7);
+            transition: filter 0.3s ease;
+        }
+    </style>
 </head>
 <body>
 
@@ -21,9 +280,11 @@
     <header>
         <div class="top-bar container">
             <div class="menu-and-logo">
-                <div class="menu-icon" onclick="toggleMenu()">
+                <!-- Botão do menu hambúrguer - MANTIDO BRANCO -->
+                <div class="menu-icon" id="menuButton">
                     <i class="fas fa-bars"></i>
                 </div>
+                <!-- Botão de busca - MANTIDO -->
                 <button class="search-trigger" type="button" onclick="toggleSearchDrawer()" aria-controls="searchDrawer" aria-expanded="false" aria-label="Buscar">
                     <i class="fas fa-search"></i>
                 </button>
@@ -58,6 +319,136 @@
         </nav>
     </header>
 
+    <!-- MENU LATERAL DO SEU DESIGN -->
+    <div class="side-menu" id="sideMenu">
+        <!-- Botão de fechar -->
+        <button class="menu-close-btn" id="menuCloseBtn">&times;</button>
+        
+        <div class="side-menu-content">
+            <!-- GRUPO MESCLADO DE BOTÕES -->
+            <div class="menu-buttons-group">
+                <!-- Botões principais -->
+                <div class="menu-btn-item" id="btnAoVivo">
+                    <h3>🔴 Ao Vivo</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnJornal">
+                    <h3>🕮 Jornal Digital</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnColunistas">
+                    <h3>߷ Colunistas</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnUltimas">
+                    <h3>♨ Últimas Notícias</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <!-- Botões de categorias -->
+                <div class="menu-btn-item" id="btnPolitica">
+                    <h3># Política</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnMundo">
+                    <h3># Mundo</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnEducacao">
+                    <h3># Educação</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnMobilidade">
+                    <h3># Mobilidade</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnSeguranca">
+                    <h3># Segurança</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnEconomia">
+                    <h3># Economia</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnCultura">
+                    <h3># Cultura</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnPernambuco">
+                    <h3># Pernambuco</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+            </div>
+
+            <!-- Botões de funcionalidades do usuário -->
+            {% if user.is_authenticated %}
+            <div class="menu-buttons-group">
+                <div class="menu-btn-item" onclick="window.location.href='{% url 'criar_noticia' %}'">
+                    <h3>+ Criar Notícia</h3>
+                    <span class="menu-btn-icon"><i class="fas fa-plus"></i></span>
+                </div>
+                
+                <div class="menu-btn-item" onclick="window.location.href='{% url 'conta' %}'">
+                    <h3>Meu Perfil</h3>
+                    <span class="menu-btn-icon"><i class="fas fa-user"></i></span>
+                </div>
+                
+                <div class="menu-btn-item" onclick="window.location.href='{% url 'vizualizar_salvos' %}'">
+                    <h3>Notícias Salvas</h3>
+                    <span class="menu-btn-icon"><i class="fas fa-bookmark"></i></span>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Nossos Parceiros -->
+            <div class="parceiros-title">Nossos Parceiros</div>
+
+            <div class="circular-buttons">
+                <a href="https://jc.uol.com.br/blog-do-torcedor" class="circular-button" target="_blank" id="btnBlogTorcedor">
+                    <img src="https://via.placeholder.com/35x35?text=BT" class="social-icon" alt="Blog do Torcedor">
+                </a>
+                <a href="https://ne10.uol.com.br/" class="circular-button" target="_blank" id="btnNe10">
+                    <img src="https://via.placeholder.com/35x35?text=NE10" class="social-icon" alt="Ne10">
+                </a>
+                <a href="https://receitadaboa.com.br/" class="circular-button" target="_blank" id="btnReceitaBoa">
+                    <img src="https://via.placeholder.com/35x35?text=RB" class="social-icon" alt="Receita da Boa">
+                </a>
+                <a href="https://jc.uol.com.br/social1" class="circular-button" target="_blank" id="btnSocial1">
+                    <img src="https://via.placeholder.com/35x35?text=S1" class="social-icon" alt="Social1">
+                </a>
+            </div>
+
+            <!-- Botão "Anuncie no JC" -->
+            <button class="anuncie-button" id="btnAnuncie">
+                Anuncie no JC
+            </button>
+            
+            <!-- Botão de sair se estiver autenticado -->
+            {% if user.is_authenticated %}
+            <div class="menu-buttons-group" style="margin-top: 20px;">
+                <div class="menu-btn-item" onclick="window.location.href='{% url 'logout' %}'" style="background: #f5f5f5;">
+                    <h3 style="color: #d32f2f;">Sair</h3>
+                    <span class="menu-btn-icon"><i class="fas fa-sign-out-alt"></i></span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Overlay para o menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- SEARCH DRAWER (MANTIDO DO BASE.HTML) -->
     <div class="search-drawer" id="searchDrawer" aria-hidden="true">
         <div class="search-drawer-backdrop" onclick="closeSearchDrawer()"></div>
         <div class="search-drawer-shell">
@@ -139,23 +530,8 @@
         </div>
     </div>
 
-    <div class="sidebar" id="sidebar">
-        <span class="close-btn" onclick="toggleMenu()">&times;</span>
-        <div class="sidebar-header">
-            {% if user.is_authenticated %}Olá, {{ user.username }}{% else %}Menu{% endif %}
-        </div>
-        <a href="{% url 'criar_noticia' %}">+ Criar Notícia</a>
-        <a href="{% url 'conta' %}">Perfil</a>
-        <a href="{% url 'vizualizar_salvos' %}">Notícias Salvas</a>
-        <hr>
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">Sair</a>
-        {% else %}
-             <a href="{% url 'login' %}">Entrar</a>
-        {% endif %}
-    </div>
-
-    <main class="container content-container">
+    <!-- CONTEÚDO PRINCIPAL (MANTIDO DO BASE.HTML) -->
+    <main class="container content-container" id="mainContent">
         {% if q %}
         <div class="search-result-banner">
             <span>Resultados para "{{ q }}"</span>
@@ -405,5 +781,119 @@
     </footer>
 
     <script src="{% static 'js/script.js' %}"></script>
+    
+    <script>
+        // Script para o menu lateral - baseado no seu design
+        const menuButton = document.getElementById('menuButton');
+        const sideMenu = document.getElementById('sideMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const menuCloseBtn = document.getElementById('menuCloseBtn');
+        const mainContent = document.getElementById('mainContent');
+        let isMenuOpen = false;
+
+        // Elementos dos botões do menu (IDs dos seus botões)
+        const btnAoVivo = document.getElementById('btnAoVivo');
+        const btnJornal = document.getElementById('btnJornal');
+        const btnColunistas = document.getElementById('btnColunistas');
+        const btnUltimas = document.getElementById('btnUltimas');
+        const btnPolitica = document.getElementById('btnPolitica');
+        const btnMundo = document.getElementById('btnMundo');
+        const btnEducacao = document.getElementById('btnEducacao');
+        const btnMobilidade = document.getElementById('btnMobilidade');
+        const btnSeguranca = document.getElementById('btnSeguranca');
+        const btnEconomia = document.getElementById('btnEconomia');
+        const btnCultura = document.getElementById('btnCultura');
+        const btnPernambuco = document.getElementById('btnPernambuco');
+        const btnAnuncie = document.getElementById('btnAnuncie');
+
+        function toggleSideMenu() {
+            isMenuOpen = !isMenuOpen;
+            
+            if (isMenuOpen) {
+                sideMenu.classList.add('open');
+                menuOverlay.classList.add('active');
+                mainContent.classList.add('dimmed');
+                document.body.style.overflow = 'hidden';
+            } else {
+                sideMenu.classList.remove('open');
+                menuOverlay.classList.remove('active');
+                mainContent.classList.remove('dimmed');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Função para lidar com cliques nos botões do menu
+        function handleMenuClick(buttonId, buttonText, url = null) {
+            // Fecha o menu
+            toggleSideMenu();
+            
+            // Se houver uma URL definida, redireciona
+            if (url) {
+                window.location.href = url;
+                return;
+            }
+            
+            // Se for uma categoria, tenta encontrar a tag correspondente
+            if (buttonId.includes('Politica') || buttonId.includes('Mundo') || 
+                buttonId.includes('Educacao') || buttonId.includes('Mobilidade') ||
+                buttonId.includes('Seguranca') || buttonId.includes('Economia') ||
+                buttonId.includes('Cultura') || buttonId.includes('Pernambuco')) {
+                
+                // Aqui você pode implementar a lógica para buscar a tag correspondente
+                // e redirecionar para a página com a tag
+                console.log(`Redirecionar para notícias de: ${buttonText}`);
+                // Exemplo: window.location.href = `/noticias/?tag=${tagId}`;
+            }
+            
+            // Para outros botões, mostra alerta
+            alert(`Você clicou em: ${buttonText}`);
+        }
+
+        // Evento do botão principal do menu
+        menuButton.addEventListener('click', toggleSideMenu);
+
+        // Fechar ao clicar no botão X
+        menuCloseBtn.addEventListener('click', toggleSideMenu);
+
+        // Fechar ao clicar no overlay
+        menuOverlay.addEventListener('click', toggleSideMenu);
+
+        // Fechar ao pressionar ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isMenuOpen) {
+                toggleSideMenu();
+            }
+        });
+
+        // Eventos para os botões do menu
+        if (btnAoVivo) btnAoVivo.addEventListener('click', () => handleMenuClick('btnAoVivo', 'Ao Vivo'));
+        if (btnJornal) btnJornal.addEventListener('click', () => handleMenuClick('btnJornal', 'Jornal Digital'));
+        if (btnColunistas) btnColunistas.addEventListener('click', () => handleMenuClick('btnColunistas', 'Colunistas'));
+        if (btnUltimas) btnUltimas.addEventListener('click', () => handleMenuClick('btnUltimas', 'Últimas Notícias'));
+        if (btnPolitica) btnPolitica.addEventListener('click', () => handleMenuClick('btnPolitica', 'Política'));
+        if (btnMundo) btnMundo.addEventListener('click', () => handleMenuClick('btnMundo', 'Mundo'));
+        if (btnEducacao) btnEducacao.addEventListener('click', () => handleMenuClick('btnEducacao', 'Educação'));
+        if (btnMobilidade) btnMobilidade.addEventListener('click', () => handleMenuClick('btnMobilidade', 'Mobilidade'));
+        if (btnSeguranca) btnSeguranca.addEventListener('click', () => handleMenuClick('btnSeguranca', 'Segurança'));
+        if (btnEconomia) btnEconomia.addEventListener('click', () => handleMenuClick('btnEconomia', 'Economia'));
+        if (btnCultura) btnCultura.addEventListener('click', () => handleMenuClick('btnCultura', 'Cultura'));
+        if (btnPernambuco) btnPernambuco.addEventListener('click', () => handleMenuClick('btnPernambuco', 'Pernambuco'));
+        
+        // Botão "Anuncie no JC"
+        if (btnAnuncie) btnAnuncie.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Anuncie no JC - Entre em contato conosco para mais informações sobre publicidade!');
+        });
+
+        // Garantir que os botões de redes sociais sejam sempre visíveis
+        window.addEventListener('load', function() {
+            const socialButtons = document.querySelectorAll('.circular-button');
+            socialButtons.forEach(button => {
+                button.style.display = 'flex';
+                button.style.alignItems = 'center';
+                button.style.justifyContent = 'center';
+            });
+        });
+    </script>
 </body>
 </html>
