@@ -1,9 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil / Login Sidebar</title>
+    <title>Meu JC</title>
 
     <style>
         /* --- ESTILOS BASE E SIDEBAR --- */
@@ -82,6 +83,14 @@
             font-size: 26px;
         }
         
+        .sidebar h3 {
+            text-align: center;
+            color: #a40000;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
         /* Mensagens de Erro */
         .messages {
             margin-bottom: 12px;
@@ -129,7 +138,7 @@
             background: #8a0000;
         }
 
-        /* Botão secundário (Criar conta) */
+        /* Botão secundário (Criar conta / Voltar) */
         .btn-secondary {
             margin-top: 15px;
             width: 100%;
@@ -143,10 +152,42 @@
             text-align: center;
             box-sizing: border-box;
             background: white;
+            cursor: pointer;
         }
 
         .btn-secondary:hover {
             background: #ffeaea;
+        }
+
+        /* Texto de ajuda para login */
+        .login-hint {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .login-link {
+            color: #b30000;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: underline;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        .login-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Link para esqueci a senha */
+        .forgot-password-link {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 15px;
         }
 
         /* --- ESTILOS DE PERFIL (Para Usuário Logado) --- */
@@ -424,7 +465,7 @@
         .social-links a:hover {
             opacity: 0.8;
         }
-        
+
         .logout-button-container {
             background: #fff;
             padding: 10px;
@@ -477,6 +518,53 @@
             }
         }
 
+        /* Mensagem informativa no login */
+        .login-info {
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        /* Instruções para recuperação de senha */
+        .recovery-instructions {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Modal para recuperação de senha */
+        .recovery-success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Botão para mostrar/ocultar senha */
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .toggle-password:hover {
+            color: #b30000;
+        }
+
     </style>
 </head>
 <body>
@@ -499,16 +587,111 @@
     </div>
 
     <div id="sidebar" class="sidebar">
+        <!-- TELA DE LOGIN -->
         <div id="loginContent">
             <h2>Entrar</h2>
+            
+            <div class="login-info">
+                Use seu nome de usuário <strong>ou</strong> e-mail para fazer login
+            </div>
+            
             <form id="loginForm">
-                <input type="text" id="loginUsername" placeholder="Usuário" class="input" required>
-                <input type="password" id="loginPassword" placeholder="Senha" class="input" required>
+                <input type="text" id="loginIdentifier" placeholder="Nome de usuário ou E-mail" class="input" required>
+                
+                <div style="position: relative;">
+                    <input type="password" id="loginPassword" placeholder="Senha" class="input" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('loginPassword')">👁️</button>
+                </div>
+                
                 <button type="submit" class="btn-action">Entrar</button>
-                <a href="#" class="btn-secondary" onclick="showRegister()">Criar conta</a>
+                
+                <div class="forgot-password-link">
+                    <button type="button" class="login-link" onclick="showForgotPassword()">Esqueci minha senha</button>
+                </div>
+                
+                <div class="login-hint">
+                    Não tem uma conta? 
+                    <button class="login-link" onclick="showRegisterForm()">Criar conta</button>
+                </div>
             </form>
         </div>
 
+        <!-- TELA DE ESQUECI A SENHA -->
+        <div id="forgotPasswordContent" style="display: none;">
+            <h2>Recuperar Senha</h2>
+            
+            <div class="recovery-instructions">
+                Digite seu nome de usuário ou e-mail cadastrado.<br>
+                Enviaremos instruções para redefinir sua senha.
+            </div>
+            
+            <form id="forgotPasswordForm">
+                <input type="text" id="recoveryIdentifier" placeholder="Nome de usuário ou E-mail" class="input" required>
+                <button type="submit" class="btn-action">Enviar Instruções</button>
+                <button type="button" class="btn-secondary" onclick="showLoginForm()">Voltar para Login</button>
+            </form>
+            
+            <div id="recoverySuccess" class="recovery-success" style="display: none;">
+                <h3>✅ Instruções Enviadas!</h3>
+                <p>Enviamos um e-mail com as instruções para redefinir sua senha.</p>
+                <p><small>Verifique sua caixa de entrada e também a pasta de spam.</small></p>
+            </div>
+        </div>
+
+        <!-- TELA DE REDEFINIR SENHA -->
+        <div id="resetPasswordContent" style="display: none;">
+            <h2>Redefinir Senha</h2>
+            
+            <div class="recovery-instructions">
+                Digite o código de recuperação recebido por e-mail e sua nova senha.
+            </div>
+            
+            <form id="resetPasswordForm">
+                <input type="text" id="recoveryCode" placeholder="Código de recuperação" class="input" required>
+                
+                <div style="position: relative;">
+                    <input type="password" id="newPassword" placeholder="Nova senha (mínimo 6 caracteres)" class="input" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('newPassword')">👁️</button>
+                </div>
+                
+                <div style="position: relative;">
+                    <input type="password" id="confirmNewPassword" placeholder="Confirmar nova senha" class="input" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('confirmNewPassword')">👁️</button>
+                </div>
+                
+                <button type="submit" class="btn-action">Redefinir Senha</button>
+                <button type="button" class="btn-secondary" onclick="showForgotPassword()">Voltar</button>
+            </form>
+        </div>
+
+        <!-- TELA DE REGISTRO -->
+        <div id="registerContent" style="display: none;">
+            <h2>Criar Conta</h2>
+            
+            <div class="login-info">
+                Você poderá fazer login usando seu nome de usuário <strong>ou</strong> e-mail
+            </div>
+            
+            <form id="registerForm">
+                <input type="text" id="registerUsername" placeholder="Nome de usuário (mínimo 3 caracteres)" class="input" required>
+                <input type="email" id="registerEmail" placeholder="E-mail" class="input" required>
+                
+                <div style="position: relative;">
+                    <input type="password" id="registerPassword" placeholder="Senha (mínimo 6 caracteres)" class="input" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('registerPassword')">👁️</button>
+                </div>
+                
+                <div style="position: relative;">
+                    <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" class="input" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword('registerConfirmPassword')">👁️</button>
+                </div>
+                
+                <button type="submit" class="btn-action">Criar Conta</button>
+                <button type="button" class="btn-secondary" onclick="showLoginForm()">Voltar para Login</button>
+            </form>
+        </div>
+
+        <!-- TELA DE PERFIL (usuário logado) -->
         <div id="profileContent" style="display: none;">
             <div class="profile-container">
                 <div class="profile-header">
@@ -518,7 +701,7 @@
 
                 <div class="form-group" id="usernameGroup">
                     <label>Nome de Usuário</label>
-                    <input type="text" id="usernameInput" value="Usuário Teste" class="display-field" readonly>
+                    <input type="text" id="usernameInput" class="display-field" readonly>
                     <a href="#" class="change-link" onclick="enableEdit('username'); return false;">Alterar nome de usuário</a>
                     <div class="edit-buttons" id="usernameButtons">
                         <button class="btn-save" onclick="saveEdit('username')">Salvar</button>
@@ -528,7 +711,7 @@
                 
                 <div class="form-group" id="emailGroup">
                     <label>E-mail</label>
-                    <input type="email" id="emailInput" value="email@exemplo.com" class="display-field" readonly>
+                    <input type="email" id="emailInput" class="display-field" readonly>
                     <a href="#" class="change-link" onclick="enableEdit('email'); return false;">Alterar e-mail</a>
                     <div class="edit-buttons" id="emailButtons">
                         <button class="btn-save" onclick="saveEdit('email')">Salvar</button>
@@ -538,7 +721,10 @@
 
                 <div class="form-group" id="passwordGroup">
                     <label>Senha</label>
-                    <input type="password" id="passwordInput" value="********" class="display-field" readonly>
+                    <div style="position: relative;">
+                        <input type="password" id="passwordInput" value="********" class="display-field" readonly>
+                        <button type="button" class="toggle-password" onclick="togglePassword('passwordInput')" style="top: 12px;">👁️</button>
+                    </div>
                     <a href="#" class="change-link" onclick="enableEdit('password'); return false;">Alterar senha</a>
                     <div class="edit-buttons" id="passwordButtons">
                         <button class="btn-save" onclick="saveEdit('password')">Salvar</button>
@@ -563,12 +749,31 @@
                          <p class="logout-text">Opções de conta</p>
                     </div>
 
-                    <div class="social-links">
-                        <a href="#">📸</a>
-                        <a href="#">💬</a>
-                        <a href="#">🎶</a>
-                        <a href="#">📧</a>
-                    </div>
+                    <table style="margin: 0 auto; border-collapse: collapse; border-spacing: 0;">
+    <tr>
+        <td style="padding: 4px 8px;">
+            <a href="https://www.instagram.com/jc_pe/?hl=en" target="_blank" rel="noopener noreferrer" 
+               style="display: inline-block; text-decoration: none;">
+                <img src="{% static 'img/instagram.png' %}" alt="Instagram" 
+                     style="width: 30px; height: 30px; display: block;">
+            </a>
+        </td>
+        <td style="padding: 4px 8px;">
+            <a href="https://x.com/jc_pe?lang=en" target="_blank" rel="noopener noreferrer" 
+               style="display: inline-block; text-decoration: none;">
+                <img src="{% static 'img/x.png' %}" alt="X" 
+                     style="width: 30px; height: 30px; display: block;">
+            </a>
+        </td>
+        <td style="padding: 4px 8px;">
+            <a href="https://www.tiktok.com/@jc_pe" target="_blank" rel="noopener noreferrer" 
+               style="display: inline-block; text-decoration: none;">
+                <img src="{% static 'img/tiktok.png' %}" alt="TikTok" 
+                     style="width: 30px; height: 30px; display: block;">
+            </a>
+        </td>
+    </tr>
+</table>
                 </div>
             </div>
         </div>
@@ -578,12 +783,7 @@
         // Sistema de autenticação SIMULADO
         let isLoggedIn = false;
         let currentUser = null;
-
-        // Dados de exemplo
-        const SAMPLE_USER = {
-            username: 'Usuário Teste',
-            email: 'email@exemplo.com'
-        };
+        let recoveryUser = null; // Usuário que está recuperando senha
 
         // Sistema de tags usando apenas JavaScript e localStorage
         const TAGS_DATA = [
@@ -615,7 +815,59 @@
             document.getElementById("overlay").classList.remove("active");
         }
 
-        // Sistema de login/logout SIMULADO
+        // Alternar entre telas
+        function showForgotPassword() {
+            document.getElementById("loginContent").style.display = "none";
+            document.getElementById("registerContent").style.display = "none";
+            document.getElementById("forgotPasswordContent").style.display = "block";
+            document.getElementById("resetPasswordContent").style.display = "none";
+            document.getElementById("profileContent").style.display = "none";
+            document.getElementById("recoverySuccess").style.display = "none";
+            document.getElementById("forgotPasswordForm").reset();
+        }
+
+        function showResetPassword() {
+            document.getElementById("loginContent").style.display = "none";
+            document.getElementById("registerContent").style.display = "none";
+            document.getElementById("forgotPasswordContent").style.display = "none";
+            document.getElementById("resetPasswordContent").style.display = "block";
+            document.getElementById("profileContent").style.display = "none";
+            document.getElementById("resetPasswordForm").reset();
+        }
+
+        function showRegisterForm() {
+            document.getElementById("loginContent").style.display = "none";
+            document.getElementById("registerContent").style.display = "block";
+            document.getElementById("forgotPasswordContent").style.display = "none";
+            document.getElementById("resetPasswordContent").style.display = "none";
+            document.getElementById("profileContent").style.display = "none";
+            document.getElementById("registerForm").reset();
+        }
+
+        function showLoginForm() {
+            document.getElementById("loginContent").style.display = "block";
+            document.getElementById("registerContent").style.display = "none";
+            document.getElementById("forgotPasswordContent").style.display = "none";
+            document.getElementById("resetPasswordContent").style.display = "none";
+            document.getElementById("profileContent").style.display = "none";
+            // Limpar formulários
+            document.getElementById("loginForm").reset();
+            document.getElementById("forgotPasswordForm").reset();
+            document.getElementById("resetPasswordForm").reset();
+            document.getElementById("recoverySuccess").style.display = "none";
+        }
+
+        // Função para mostrar/ocultar senha
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+            } else {
+                input.type = "password";
+            }
+        }
+
+        // Sistema de login/logout
         function checkLoginStatus() {
             // Verificar se há usuário salvo no localStorage
             const savedUser = localStorage.getItem('currentUser');
@@ -624,6 +876,9 @@
                 currentUser = JSON.parse(savedUser);
                 document.getElementById('sidebarBtn').textContent = 'Minha Conta';
                 document.getElementById('loginContent').style.display = 'none';
+                document.getElementById('registerContent').style.display = 'none';
+                document.getElementById('forgotPasswordContent').style.display = 'none';
+                document.getElementById('resetPasswordContent').style.display = 'none';
                 document.getElementById('profileContent').style.display = 'block';
                 
                 // Preencher dados do usuário
@@ -633,8 +888,35 @@
                 isLoggedIn = false;
                 currentUser = null;
                 document.getElementById('sidebarBtn').textContent = 'Login';
-                document.getElementById('loginContent').style.display = 'block';
-                document.getElementById('profileContent').style.display = 'none';
+                showLoginForm();
+            }
+        }
+
+        // Carregar usuários do localStorage ou criar array vazio
+        function getUsers() {
+            const users = localStorage.getItem('registeredUsers');
+            return users ? JSON.parse(users) : [];
+        }
+
+        // Salvar usuários no localStorage
+        function saveUsers(users) {
+            localStorage.setItem('registeredUsers', JSON.stringify(users));
+        }
+
+        // Função para encontrar usuário por identificador (usuário ou email)
+        function findUserByIdentifier(identifier) {
+            const users = getUsers();
+            
+            // Verificar se é email
+            if (validateEmail(identifier)) {
+                return users.find(user => 
+                    user.email.toLowerCase() === identifier.toLowerCase()
+                );
+            } else {
+                // Buscar por nome de usuário
+                return users.find(user => 
+                    user.username.toLowerCase() === identifier.toLowerCase()
+                );
             }
         }
 
@@ -642,23 +924,238 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('loginUsername').value;
+            const identifier = document.getElementById('loginIdentifier').value.trim();
             const password = document.getElementById('loginPassword').value;
             
-            if (username && password) {
-                // Simulação de login bem-sucedido
-                currentUser = {
-                    username: username,
-                    email: `${username}@exemplo.com`
-                };
-                
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                showMessage('Login realizado com sucesso!', 'success');
-                checkLoginStatus();
-                closeSidebar();
-            } else {
-                showMessage('Preencha todos os campos.', 'error');
+            if (!identifier || !password) {
+                showMessage('Por favor, preencha todos os campos.', 'error');
+                return;
             }
+            
+            // Encontrar usuário
+            const user = findUserByIdentifier(identifier);
+            
+            if (!user) {
+                showMessage('Usuário ou e-mail não encontrado.', 'error');
+                return;
+            }
+            
+            // Verificar senha
+            if (user.password !== password) {
+                showMessage('Senha incorreta.', 'error');
+                return;
+            }
+            
+            // Login bem-sucedido
+            currentUser = {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                name: user.name || user.username
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showMessage(`Bem-vindo, ${user.username}!`, 'success');
+            checkLoginStatus();
+            
+            // Limpar formulário
+            document.getElementById('loginForm').reset();
+            
+            // Fechar sidebar após um pequeno delay
+            setTimeout(() => {
+                closeSidebar();
+            }, 1500);
+        });
+
+        // Formulário de recuperação de senha
+        document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const identifier = document.getElementById('recoveryIdentifier').value.trim();
+            
+            if (!identifier) {
+                showMessage('Por favor, digite seu nome de usuário ou e-mail.', 'error');
+                return;
+            }
+            
+            // Encontrar usuário
+            const user = findUserByIdentifier(identifier);
+            
+            if (!user) {
+                showMessage('Usuário ou e-mail não encontrado.', 'error');
+                return;
+            }
+            
+            // Salvar usuário para recuperação
+            recoveryUser = user;
+            
+            // Simular envio de e-mail (em produção, aqui enviaria um e-mail real)
+            // Gerar código de recuperação
+            const recoveryCode = generateRecoveryCode();
+            
+            // Salvar código no localStorage (simulação)
+            localStorage.setItem('recoveryCode_' + user.id, recoveryCode);
+            localStorage.setItem('recoveryUser', JSON.stringify(user));
+            
+            // Mostrar sucesso
+            document.getElementById('recoverySuccess').style.display = 'block';
+            
+            // Mostrar o código na mensagem (APENAS PARA DEMONSTRAÇÃO)
+            showMessage(`Código de recuperação: ${recoveryCode} (Simulação - em produção seria enviado por e-mail)`, 'info');
+            
+            // Mudar para tela de redefinição após 3 segundos
+            setTimeout(() => {
+                showResetPassword();
+            }, 4000);
+        });
+
+        // Formulário de redefinição de senha
+        document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('recoveryCode').value.trim();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            
+            // Recuperar usuário do localStorage
+            const savedRecoveryUser = JSON.parse(localStorage.getItem('recoveryUser') || 'null');
+            
+            if (!savedRecoveryUser) {
+                showMessage('Sessão de recuperação expirada. Por favor, inicie o processo novamente.', 'error');
+                showForgotPassword();
+                return;
+            }
+            
+            // Validar código
+            const savedCode = localStorage.getItem('recoveryCode_' + savedRecoveryUser.id);
+            
+            if (!savedCode || savedCode !== code) {
+                showMessage('Código de recuperação inválido.', 'error');
+                return;
+            }
+            
+            // Validar senha
+            if (newPassword.length < 6) {
+                showMessage('A senha deve ter pelo menos 6 caracteres.', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showMessage('As senhas não coincidem.', 'error');
+                return;
+            }
+            
+            // Atualizar senha no banco de dados (localStorage)
+            const users = getUsers();
+            const userIndex = users.findIndex(user => user.id === savedRecoveryUser.id);
+            
+            if (userIndex !== -1) {
+                users[userIndex].password = newPassword;
+                saveUsers(users);
+                
+                // Limpar dados de recuperação
+                localStorage.removeItem('recoveryCode_' + savedRecoveryUser.id);
+                localStorage.removeItem('recoveryUser');
+                
+                showMessage('Senha redefinida com sucesso! Faça login com sua nova senha.', 'success');
+                
+                // Voltar para login
+                setTimeout(() => {
+                    showLoginForm();
+                }, 2000);
+            } else {
+                showMessage('Usuário não encontrado.', 'error');
+            }
+        });
+
+        // Formulário de registro
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            // Validações
+            if (!username || !email || !password || !confirmPassword) {
+                showMessage('Por favor, preencha todos os campos.', 'error');
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                showMessage('Por favor, insira um e-mail válido.', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('A senha deve ter pelo menos 6 caracteres.', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('As senhas não coincidem.', 'error');
+                return;
+            }
+            
+            if (username.length < 3) {
+                showMessage('O nome de usuário deve ter pelo menos 3 caracteres.', 'error');
+                return;
+            }
+            
+            // Verificar se já existe um usuário com esse username ou email
+            const users = getUsers();
+            const usernameExists = users.some(user => 
+                user.username.toLowerCase() === username.toLowerCase()
+            );
+            
+            const emailExists = users.some(user => 
+                user.email.toLowerCase() === email.toLowerCase()
+            );
+            
+            if (usernameExists) {
+                showMessage('Este nome de usuário já está em uso.', 'error');
+                return;
+            }
+            
+            if (emailExists) {
+                showMessage('Este e-mail já está cadastrado.', 'error');
+                return;
+            }
+            
+            // Criar novo usuário
+            const newUser = {
+                id: Date.now(), // ID único baseado no timestamp
+                username: username,
+                email: email,
+                password: password,
+                name: username,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Adicionar usuário à lista
+            users.push(newUser);
+            saveUsers(users);
+            
+            // Fazer login automaticamente
+            currentUser = {
+                id: newUser.id,
+                username: newUser.username,
+                email: newUser.email,
+                name: newUser.name
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showMessage(`Conta criada com sucesso! Bem-vindo, ${username}!`, 'success');
+            checkLoginStatus();
+            
+            // Limpar formulário
+            document.getElementById('registerForm').reset();
+            
+            // Fechar sidebar após um pequeno delay
+            setTimeout(() => {
+                closeSidebar();
+            }, 2000);
         });
 
         function logout() {
@@ -667,11 +1164,14 @@
             currentUser = null;
             showMessage('Logout realizado com sucesso!', 'success');
             checkLoginStatus();
+            showLoginForm();
             closeSidebar();
         }
 
-        function showRegister() {
-            showMessage('Funcionalidade de registro em desenvolvimento.', 'info');
+        // Função para gerar código de recuperação
+        function generateRecoveryCode() {
+            // Gerar código de 6 dígitos
+            return Math.floor(100000 + Math.random() * 900000).toString();
         }
 
         // Funções do Modal de Foto
@@ -733,29 +1233,68 @@
             }
             
             // Validações básicas
-            if (field === 'email' && !validateEmail(newValue)) {
-                alert('Por favor, insira um e-mail válido.');
-                return;
+            if (field === 'email') {
+                if (!validateEmail(newValue)) {
+                    alert('Por favor, insira um e-mail válido.');
+                    return;
+                }
+                
+                // Verificar se o email já está em uso por outro usuário
+                const users = getUsers();
+                const emailExists = users.some(user => 
+                    user.email.toLowerCase() === newValue.toLowerCase() && 
+                    user.id !== currentUser.id
+                );
+                
+                if (emailExists) {
+                    alert('Este e-mail já está sendo usado por outro usuário.');
+                    return;
+                }
             }
-            
-            if (field === 'password' && newValue.length < 6) {
-                alert('A senha deve ter pelo menos 6 caracteres.');
-                return;
-            }
-            
-            // Simulação de salvamento
-            showMessage(`${field === 'username' ? 'Nome de usuário' : field === 'email' ? 'E-mail' : 'Senha'} atualizado com sucesso!`, 'success');
             
             if (field === 'password') {
-                input.type = 'password';
-                input.value = '********';
-                input.placeholder = '';
-            } else {
-                // Atualizar usuário no localStorage
-                if (currentUser) {
+                if (newValue.length < 6) {
+                    alert('A senha deve ter pelo menos 6 caracteres.');
+                    return;
+                }
+            }
+            
+            if (field === 'username') {
+                if (newValue.length < 3) {
+                    alert('O nome de usuário deve ter pelo menos 3 caracteres.');
+                    return;
+                }
+                
+                // Verificar se o username já está em uso por outro usuário
+                const users = getUsers();
+                const usernameExists = users.some(user => 
+                    user.username.toLowerCase() === newValue.toLowerCase() && 
+                    user.id !== currentUser.id
+                );
+                
+                if (usernameExists) {
+                    alert('Este nome de usuário já está sendo usado.');
+                    return;
+                }
+            }
+            
+            // Atualizar no localStorage
+            const users = getUsers();
+            const userIndex = users.findIndex(user => user.id === currentUser.id);
+            
+            if (userIndex !== -1) {
+                if (field === 'password') {
+                    users[userIndex].password = newValue;
+                    input.type = 'password';
+                    input.value = '********';
+                } else {
+                    users[userIndex][field] = newValue;
                     currentUser[field] = newValue;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 }
+                
+                saveUsers(users);
+                showMessage(`${field === 'username' ? 'Nome de usuário' : field === 'email' ? 'E-mail' : 'Senha'} atualizado com sucesso!`, 'success');
             }
             
             input.classList.remove('editable');
@@ -905,7 +1444,23 @@
         // Inicializar quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
             checkLoginStatus();
+            
+            // Adicionar funcionalidade de mostrar/ocultar senha em todos os campos
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                button.addEventListener('click', function() {
+                    const inputId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    togglePassword(inputId);
+                });
+            });
         });
+
+        // Função para abrir links sociais
+    function openSocialLink(button) {
+        const link = button.getAttribute('data-link');
+        if (link) {
+            window.open(link, '_blank', 'noopener,noreferrer');
+        }
+    }
 
     </script>
 
