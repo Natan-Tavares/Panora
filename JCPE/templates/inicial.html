@@ -415,7 +415,7 @@
 
             <div class="circular-buttons">
                 <a href="https://jc.uol.com.br/blog-do-torcedor" class="circular-button" target="_blank" id="btnBlogTorcedor">
-                    <img src="https://via.placeholder.com/35x35?text=BT" class="social-icon" alt="Blog do Torcedor">
+                    <img src="c:\Users\magda\OneDrive\Área de Trabalho\Imagens menu\blogTorcedor.png" class="social-icon" alt="Blog do Torcedor">
                 </a>
                 <a href="https://ne10.uol.com.br/" class="circular-button" target="_blank" id="btnNe10">
                     <img src="https://via.placeholder.com/35x35?text=NE10" class="social-icon" alt="Ne10">
@@ -865,9 +865,19 @@
             }
         });
 
-        // Eventos para os botões do menu
-        if (btnAoVivo) btnAoVivo.addEventListener('click', () => handleMenuClick('btnAoVivo', 'Ao Vivo'));
-        if (btnJornal) btnJornal.addEventListener('click', () => handleMenuClick('btnJornal', 'Jornal Digital'));
+        // Eventos para os botões do menu - MODIFICAÇÃO PARA O BOTÃO AO VIVO E JORNAL DIGITAL
+        if (btnAoVivo) btnAoVivo.addEventListener('click', () => {
+            // Fecha o menu
+            toggleSideMenu();
+            // Redireciona para o link Ao Vivo
+            window.open('https://dai.ly/x8tkmh4', '_blank');
+        });
+        if (btnJornal) btnJornal.addEventListener('click', () => {
+            // Fecha o menu
+            toggleSideMenu();
+            // Redireciona para o link do Jornal Digital
+            window.open('https://impresso.jc.uol.com.br/edicao.php?link=https://online.fliphtml5.com/lsait/asbh/', '_blank');
+        });
         if (btnColunistas) btnColunistas.addEventListener('click', () => handleMenuClick('btnColunistas', 'Colunistas'));
         if (btnUltimas) btnUltimas.addEventListener('click', () => handleMenuClick('btnUltimas', 'Últimas Notícias'));
         if (btnPolitica) btnPolitica.addEventListener('click', () => handleMenuClick('btnPolitica', 'Política'));
