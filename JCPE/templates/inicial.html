@@ -390,26 +390,6 @@
                 </div>
             </div>
 
-            <!-- Botões de funcionalidades do usuário -->
-            {% if user.is_authenticated %}
-            <div class="menu-buttons-group">
-                <div class="menu-btn-item" onclick="window.location.href='{% url 'criar_noticia' %}'">
-                    <h3>+ Criar Notícia</h3>
-                    <span class="menu-btn-icon"><i class="fas fa-plus"></i></span>
-                </div>
-                
-                <div class="menu-btn-item" onclick="window.location.href='{% url 'conta' %}'">
-                    <h3>Meu Perfil</h3>
-                    <span class="menu-btn-icon"><i class="fas fa-user"></i></span>
-                </div>
-                
-                <div class="menu-btn-item" onclick="window.location.href='{% url 'vizualizar_salvos' %}'">
-                    <h3>Notícias Salvas</h3>
-                    <span class="menu-btn-icon"><i class="fas fa-bookmark"></i></span>
-                </div>
-            </div>
-            {% endif %}
-
             <!-- Nossos Parceiros -->
             <div class="parceiros-title">Nossos Parceiros</div>
 
