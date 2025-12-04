@@ -35,7 +35,6 @@ urlpatterns = [
     path('noticia/<int:id>', views.ler_noticia,name='ler_noticia'),
     path('noticia/<int:id>/apagar', views.apagar_noticia,name='apagar_noticia'),
     path('noticia/<int:noticia_id>/responder', InserirRespostaView.as_view(), name='inserir_resposta'),
-    path('cadastro/', views.cadastro, name='cadastro'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.deslogar, name='logout'),
     path('ultimas_noticias/', views.ultimas_noticias, name='ultimas_noticias'),
