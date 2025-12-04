@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Noticia, Resposta, Historico, Noticias_salvas, Tag, Categoria
+from .models import Noticia, Resposta, Historico, Noticias_salvas, Tags, Categoria
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -15,11 +15,47 @@ from django.views.decorators.http import require_POST
 import json
 from datetime import datetime, timedelta
 
+categorias_noticias = [
+    "Pernambuco",
+    "Economia e Negócios",
+    "Mundo (Internacional)",
+    "Tecnologia e Inovação",
+    "Ciência e Saúde",
+    "Esportes",
+    "Entretenimento e Cultura",
+    "Meio Ambiente e Sustentabilidade",
+    "Cotidiano",
+    "Educação e Carreira"
+]
+
+tags_noticias = [
+    "Política Nacional",
+    "Mercado Financeiro",
+    "Relações Internacionais",
+    "Inteligência Artificial",
+    "Pesquisa Científica",
+    "Futebol",
+    "Cinema",
+    "Mudanças Climáticas",
+    "Segurança Pública",
+    "Ensino Superior"
+]
 # ---------------------------
 # CRIAR NOTICIA
 # ---------------------------
 def criar_noticia(request):
-    todas_tags = Tag.objects.all()
+    if not Tags.objects.exists():
+        Criar_tag = [
+            Tags(tag=nome) for nome in tags_noticias 
+        ]
+        Tags.objects.bulk_create(Criar_tag)
+    if not Categoria.objects.exists():
+        Criar_categoria = [
+            Categoria(categoria=nome) for nome in categorias_noticias
+        ]
+        Categoria.objects.bulk_create(Criar_categoria)
+
+    todas_tags = Tags.objects.all()
     categoria = Categoria.objects.all()
 
     if request.method == "POST":
@@ -27,7 +63,7 @@ def criar_noticia(request):
         materia = request.POST.get("materia")
         autor = request.user
         tag_escolhida = request.POST.get('tag')
-        tag = Tag.objects.get(id=tag_escolhida)
+        tag = Tags.objects.get(id=tag_escolhida)
         data = now()
         local = request.POST.get("local")
         fontes = request.POST.get("fontes")
@@ -60,7 +96,7 @@ def criar_noticia(request):
 # ---------------------------
 def editar_noticia(request, id):
     noticia = get_object_or_404(Noticia, id=id)
-    todas_tags = Tag.objects.all()
+    todas_tags = Tags.objects.all()
     categoria = Categoria.objects.all()
 
     if request.method == "POST":
@@ -72,7 +108,7 @@ def editar_noticia(request, id):
 
         tag_escolhida = request.POST.get('tag')
         if tag_escolhida:
-            tag = Tag.objects.get(id=tag_escolhida)
+            tag = Tags.objects.get(id=tag_escolhida)
             noticia.tags.set([tag])
 
         cat_id = request.POST.get("categoria")
@@ -121,7 +157,7 @@ def inicial(request):
         request.session["recent_searches"] = recent[:5]
 
     recent_searches = request.session.get("recent_searches", [])
-    todas_tags = Tag.objects.all()
+    todas_tags = Tags.objects.all()
     categorias = Categoria.objects.all()  # NOVA LINHA ADICIONADA
 
     noticias_salvas_ids = []
@@ -225,7 +261,7 @@ def ler_noticia(request, id):
     ).exclude(id=noticia_individual.id).distinct()[:5]
     
     # Buscar tags para o menu lateral
-    todas_tags = Tag.objects.all()
+    todas_tags = Tags.objects.all()
     
     return render(request, 'noticia.html', {  # <- MUDADO para 'noticia.html'
         'noticia': noticia_individual,
@@ -449,9 +485,9 @@ def editar_perfil(request):
 def criar_tag(request):
     if request.method == "POST":
         tag = request.POST.get("tag")
-        Tag.objects.get_or_create(tag=tag)
+        Tags.objects.get_or_create(tag=tag)
 
-    tags = Tag.objects.all()
+    tags = Tags.objects.all()
     return render(request, 'Criar_tag.html', {'tags': tags})
 
 
