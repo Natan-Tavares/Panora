@@ -1,103 +1,1310 @@
 {% load static %}
+
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>{{ noticia.titulo }} - JCPE</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="icon" href="{% static 'img/logo_jcpe.png' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ noticia.titulo }} | JC - Jornal do Commercio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style_inicial.css' %}">
+    <style>
+        /* --- ESTILOS DO MENU LATERAL --- */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 9998;
+        }
+        
+        .menu-overlay.active {
+            opacity: 0.3;
+            visibility: visible;
+        }
+        
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -315px;
+            width: 315px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 9999;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0 22.5px 18.75px 0;
+        }
+        
+        .side-menu.open {
+            left: 0;
+        }
+
+        .side-menu-content {
+            padding: 10px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding-top: 0px;
+            border: none;
+        }
+
+        .menu-buttons-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 14.06px;
+            border: none;
+            border-radius: 0;
+            overflow: hidden;
+            gap: 0;
+        }
+
+        .menu-btn-item {
+            background: white;
+            transition: all 0.3s ease;
+            padding: 15px 14.06px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            border: none;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .menu-btn-item:first-child {
+            border-top: none;
+        }
+
+        .menu-btn-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-btn-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #d32f2f;
+            z-index: 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-btn-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .menu-btn-item h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000000;
+            opacity: 0.9;
+            text-align: left;
+            flex: 1;
+            margin: 0;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .menu-btn-item:hover h3 {
+            color: white;
+        }
+
+        .menu-btn-icon {
+            transition: all 0.3s ease;
+            color: #000000;
+            opacity: 0.8;
+            width: 13.125px;
+            text-align: left;
+            font-size: 11.25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .menu-btn-item:hover .menu-btn-icon {
+            color: white;
+        }
+
+        .circular-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            margin-top: 14.06px;
+            padding-top: 14.06px;
+        }
+
+        .circular-button {
+            background: transparent;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+            border: none;
+            overflow: hidden;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .circular-button:hover {
+            background: transparent;
+            transform: translateY(-2px) scale(1.1);
+        }
+
+        .social-icon {
+            width: 35.625px;
+            height: 35.625px;
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+
+        .anuncie-button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+            height: 30px;
+            margin: 30px auto 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .anuncie-button:hover {
+            background: white;
+            color: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .parceiros-title {
+            text-align: center;
+            color: #000000;
+            font-weight: 700;
+            font-size: 16px;
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-top: 20px;
+        }
+        
+        .menu-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-right: 15px;
+            transition: color 0.2s ease;
+        }
+        
+        .menu-icon:hover {
+            color: #f0f0f0;
+        }
+        
+        .menu-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: #333;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
+        .content-container.dimmed {
+            filter: brightness(0.7);
+            transition: filter 0.3s ease;
+        }
+
+        /* --- ESTILOS ESPECÍFICOS DA PÁGINA DE NOTÍCIA --- */
+        .noticia-header {
+            background: linear-gradient(to right, #1a1a1a, #2c2c2c);
+            color: white;
+            padding: 25px 0;
+            margin-bottom: 30px;
+        }
+
+        .noticia-categoria {
+            background: #d32f2f;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .noticia-titulo {
+            font-family: 'Merriweather', serif;
+            font-size: 36px;
+            line-height: 1.2;
+            margin-bottom: 15px;
+        }
+
+        .noticia-subtitulo {
+            font-size: 20px;
+            color: #ccc;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .noticia-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .noticia-autor, .noticia-data, .noticia-local {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .noticia-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tag-noticia {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .noticia-conteudo {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .noticia-imagem-destaque {
+            width: 100%;
+            max-height: 600px;
+            border-radius: 10px;
+            margin: 30px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .noticia-imagem-destaque img {
+            width: 100%;
+            height: auto;
+            max-height: 600px;
+            object-fit: cover;
+        }
+
+        .noticia-corpo {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .noticia-corpo p {
+            margin-bottom: 25px;
+        }
+
+        .noticia-corpo strong {
+            color: #1a1a1a;
+        }
+
+        .noticia-fonte {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .interacao-botoes {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .interacao-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .interacao-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .interacao-btn.ativo {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .contador {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        /* --- COMENTÁRIOS --- */
+        .comentarios-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .comentarios-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .comentarios-header h2 {
+            font-size: 24px;
+            color: #1a1a1a;
+        }
+
+        .comentarios-count {
+            background: #d32f2f;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-comentar {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-comentar:hover {
+            background: #b71c1c;
+        }
+
+        .comentarios-lista {
+            margin-bottom: 30px;
+        }
+
+        .comentario {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comentario:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .comentario-cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comentario-autor {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .comentario-tempo {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .comentario-texto {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .comentario-acoes {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .acao-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .acao-btn:hover {
+            background: #f5f5f5;
+            color: #d32f2f;
+        }
+
+        /* --- NOTÍCIAS RELACIONADAS --- */
+        .relacionadas-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .relacionadas-container h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .relacionadas-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .relacionada-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .relacionada-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .relacionada-item a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .relacionada-imagem {
+            height: 150px;
+            overflow: hidden;
+        }
+
+        .relacionada-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .relacionada-conteudo {
+            padding: 15px;
+        }
+
+        .relacionada-categoria {
+            font-size: 12px;
+            color: #d32f2f;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .relacionada-titulo {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .relacionada-tempo {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* --- RESPONSIVIDADE --- */
+        @media (max-width: 992px) {
+            .noticia-titulo {
+                font-size: 28px;
+            }
+            
+            .noticia-imagem-destaque {
+                height: 350px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .noticia-titulo {
+                font-size: 24px;
+            }
+            
+            .noticia-corpo {
+                font-size: 16px;
+            }
+            
+            .interacao-botoes {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .interacao-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .relacionadas-lista {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
+
+    <div class="uol-bar">
+        <div class="container uol-container">
+             <img src="https://conteudo.imguol.com.br/c/_layout/v3/logoUOL2021/logo_completo_white.svg" alt="UOL Logo" class="logo-uol-top">
+        </div>
+    </div>
+
     <header>
-        <a href="{% url 'inicial' %}">
-            <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE" class="logo">
-        </a>
-        <h1>JCPE - Jornal do Commercio de Pernambuco</h1>
+        <div class="top-bar container">
+            <div class="menu-and-logo">
+                <div class="menu-icon" id="menuButton">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <button class="search-trigger" type="button" onclick="toggleSearchDrawer()" aria-controls="searchDrawer" aria-expanded="false" aria-label="Buscar">
+                    <i class="fas fa-search"></i>
+                </button>
+                <img src="https://jc.uol.com.br/img/logo.svg" alt="JC Logo" class="logo-jc">
+            </div>
+
+            <div class="user-area">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'conta' %}" class="btn-entrar logged-in">
+                        <i class="fas fa-user-circle"></i> Minha Conta
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-entrar">
+                        <i class="far fa-user"></i> Entrar
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <nav class="nav-scroller container">
+            <ul>
+                <li><a href="{% url 'inicial' %}" class="{% if not request.GET.tag %}active{% endif %}">AO VIVO</a></li>
+                {% for t in tags %}
+                <li>
+                    <a href="{% url 'inicial' %}?tag={{ t.id }}"
+                       class="{% if request.GET.tag == t.id|stringformat:'s' %}active{% endif %}">
+                        {{ t.tag|upper }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
     </header>
 
-    <main>
-        <h1>{{ noticia.titulo }}</h1>
-
-        {% if noticia.capa %}
-            <div style="text-align:center; margin: 20px 0;">
-                <img src="{{ noticia.capa.url }}" alt="Capa da notícia" style="max-width:80%; border-radius:10px;">
+    <!-- MENU LATERAL -->
+    <div class="side-menu" id="sideMenu">
+        <button class="menu-close-btn" id="menuCloseBtn">&times;</button>
+        
+        <div class="side-menu-content">
+            <div class="menu-buttons-group">
+                <div class="menu-btn-item" id="btnAoVivo">
+                    <h3>🔴 Ao Vivo</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnJornal">
+                    <h3>🕮 Jornal Digital</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnColunistas">
+                    <h3>߷ Colunistas</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnUltimas">
+                    <h3>♨ Últimas Notícias</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnPolitica">
+                    <h3># Política</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnMundo">
+                    <h3># Mundo</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnEducacao">
+                    <h3># Educação</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnMobilidade">
+                    <h3># Mobilidade</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnSeguranca">
+                    <h3># Segurança</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnEconomia">
+                    <h3># Economia</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnCultura">
+                    <h3># Cultura</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
+                
+                <div class="menu-btn-item" id="btnPernambuco">
+                    <h3># Pernambuco</h3>
+                    <span class="menu-btn-icon"></span>
+                </div>
             </div>
-        {% endif %}
 
-        {% if noticia.subtitulo %}
-            <h3 style="text-align:center; color:#555;">{{ noticia.subtitulo }}</h3>
-        {% endif %}
+            <div class="parceiros-title">Nossos Parceiros</div>
 
-        <p>{{ noticia.materia|linebreaks }}</p>
-
-        {% if noticia.imagem %}
-            <div style="text-align:center; margin-top:20px;">
-                <img src="{{ noticia.imagem.url }}" alt="Imagem da notícia" style="max-width:70%; border-radius:10px;">
+            <div class="circular-buttons">
+                <a href="https://jc.uol.com.br/blog-do-torcedor" class="circular-button" target="_blank" id="btnBlogTorcedor">
+                    <img src="c:\Users\magda\OneDrive\Área de Trabalho\Imagens menu\blogTorcedor.png" class="social-icon" alt="Blog do Torcedor">
+                </a>
+                <a href="https://ne10.uol.com.br/" class="circular-button" target="_blank" id="btnNe10">
+                    <img src="https://via.placeholder.com/35x35?text=NE10" class="social-icon" alt="Ne10">
+                </a>
+                <a href="https://receitadaboa.com.br/" class="circular-button" target="_blank" id="btnReceitaBoa">
+                    <img src="https://via.placeholder.com/35x35?text=RB" class="social-icon" alt="Receita da Boa">
+                </a>
+                <a href="https://jc.uol.com.br/social1" class="circular-button" target="_blank" id="btnSocial1">
+                    <img src="https://via.placeholder.com/35x35?text=S1" class="social-icon" alt="Social1">
+                </a>
             </div>
-        {% endif %}
 
-        <small>
-            <p>
-                <b>Autor:</b> {{ noticia.autor }} |
-                <b>Publicada em:</b> {{ noticia.data_criacao|date:"d/m/Y H:i" }}
-            </p>
-            {% if noticia.local %}
-                <p><strong>Local:</strong> {{ noticia.local }}</p>
+            <button class="anuncie-button" id="btnAnuncie">
+                Anuncie no JC
+            </button>
+            
+            {% if user.is_authenticated %}
+            <div class="menu-buttons-group" style="margin-top: 20px;">
+                <div class="menu-btn-item" onclick="window.location.href='{% url 'logout' %}'" style="background: #f5f5f5;">
+                    <h3 style="color: #d32f2f;">Sair</h3>
+                    <span class="menu-btn-icon"><i class="fas fa-sign-out-alt"></i></span>
+                </div>
+            </div>
             {% endif %}
-            {% if noticia.categoria %}
-                <p><strong>Categoria:</strong> {{ noticia.categoria.categoria }}</p>
-            {% endif %}
-            {% if noticia.tags.all %}
-                <p><strong>Tags:</strong>
-                    {% for tag in noticia.tags.all %}
-                        {{ tag.tag }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
-            {% endif %}
-            {% if noticia.fontes %}
-                <p><strong>Fontes:</strong> {{ noticia.fontes }}</p>
-            {% endif %}
-        </small>
+        </div>
+    </div>
 
-        <hr>
-        <h2>Respostas</h2>
+    <!-- Overlay para o menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
 
-        {% with comentarios_raiz=noticia.resposta_set.all|dictsort:"data_criacao" %}
-            {% for comentario in comentarios_raiz %}
-                {% if not comentario.pai %}
-                    <div style="margin-bottom:15px;">
-                        <p><b>{{ comentario.usuario }}</b>: {{ comentario.texto }}</p>
-                        <small>{{ comentario.data_criacao|date:"d/m/Y H:i" }}</small>
-                        <br>
-                        <a href="{% url 'inserir_resposta' noticia.id %}?pai={{ comentario.id }}">Responder</a>
+    <!-- SEARCH DRAWER (igual ao inicial.html) -->
+    <div class="search-drawer" id="searchDrawer" aria-hidden="true">
+        <div class="search-drawer-backdrop" onclick="closeSearchDrawer()"></div>
+        <div class="search-drawer-shell">
+            <div class="drawer-handle" onclick="toggleSearchDrawer()">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="search-card container">
+                <form class="search-form" action="{% url 'inicial' %}" method="get">
+                    <div class="search-bar-row">
+                        <button class="search-submit" type="submit" aria-label="Buscar">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <input type="text" id="searchInput" name="q" placeholder="O que descobrir hoje?">
+                        <button class="search-close-btn" type="button" onclick="closeSearchDrawer()" aria-label="Fechar busca">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
 
-                        {% for filho in comentario.comentarios_filho.all %}
-                            <div style="margin-left: 30px;">
-                                <p><b>{{ filho.usuario }}</b>: {{ filho.texto }}</p>
-                                <small>{{ filho.data_criacao|date:"d/m/Y H:i" }}</small>
-                            </div>
+                    <div class="search-suggestions">
+                        <div class="suggestion-title">Sugestões</div>
+                        <div class="suggestion-chips">
+                            <a href="{% url 'inicial' %}?q=gasolina" class="suggestion-chip"><i class="far fa-clock"></i> Aumento gasolina hoje</a>
+                            <a href="{% url 'inicial' %}?q=Recife%20Antigo" class="suggestion-chip"><i class="far fa-clock"></i> Apresentações no Recife Antigo</a>
+                            <a href="{% url 'inicial' %}?q=metro%20Recife" class="suggestion-chip"><i class="far fa-clock"></i> Situação metro do Recife</a>
+                            <a href="{% url 'inicial' %}?q=bolo%20de%20rolo" class="suggestion-chip"><i class="far fa-clock"></i> Receitas de bolo de rolo</a>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="search-tags">
+                    <div class="search-tags-header">
+                        <span>TAGS</span>
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="tags-list">
+                        {% for t in tags %}
+                            <a href="{% url 'inicial' %}?tag={{ t.id }}" class="tag-chip">{{ t.tag|capfirst }}</a>
                         {% endfor %}
                     </div>
+                </div>
+
+                {% if noticias_relacionadas %}
+                <div class="search-highlights">
+                    <div class="search-highlights-header">Matérias em Alta</div>
+                    <div class="search-highlight-list">
+                        {% for rel in noticias_relacionadas|slice:":3" %}
+                        <a href="{% url 'ler_noticia' rel.id %}" class="highlight-item">
+                            <div class="highlight-thumb">
+                                {% if rel.imagem %}
+                                    <img src="{{ rel.imagem.url }}" alt="{{ rel.titulo }}">
+                                {% elif rel.capa %}
+                                    <img src="{{ rel.capa.url }}" alt="{{ rel.titulo }}">
+                                {% else %}
+                                    <div class="placeholder-img-sm"></div>
+                                {% endif %}
+                            </div>
+                            <div class="highlight-meta">
+                                <span class="highlight-tag">{{ rel.categoria.categoria|default:"Noticia" }}</span>
+                                <h4>{{ rel.titulo|truncatechars:70 }}</h4>
+                                <span class="highlight-time">{{ rel.data_criacao|timesince }} atrás</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% endif %}
-            {% empty %}
-                <p>Não há respostas para esta notícia.</p>
-            {% endfor %}
-        {% endwith %}
+            </div>
+        </div>
+    </div>
 
-        <form action="{% url 'salvar_noticia' noticia.id %}" method="POST" style="text-align: center; margin-top: 20px;">
-            {% csrf_token %}
-            <button type="submit" class="button">⭐ Salvar notícia</button>
-        </form>
+    <!-- CONTEÚDO PRINCIPAL DA NOTÍCIA -->
+    <main class="container content-container" id="mainContent">
+        <div class="noticia-header">
+            <div class="container">
+                {% if noticia.categoria %}
+                <div class="noticia-categoria">{{ noticia.categoria.categoria }}</div>
+                {% endif %}
+                <h1 class="noticia-titulo">{{ noticia.titulo }}</h1>
+                
+                {% if noticia.subtitulo %}
+                <div class="noticia-subtitulo">{{ noticia.subtitulo }}</div>
+                {% endif %}
+                
+                <div class="noticia-meta">
+                    <div class="noticia-autor">
+                        <i class="fas fa-user"></i>
+                        <span>{{ noticia.autor }}</span>
+                    </div>
+                    <div class="noticia-data">
+                        <i class="far fa-clock"></i>
+                        <span>{{ noticia.data_criacao|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    {% if noticia.local %}
+                    <div class="noticia-local">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ noticia.local }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if tags_noticia %}
+                <div class="noticia-tags">
+                    {% for tag in tags_noticia %}
+                    <span class="tag-noticia">#{{ tag.tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
 
-        <div class="links-centrais">
-            <a href="{% url 'inserir_resposta' noticia.id %}" class="button">💬 Responder</a>
-            <a href="{% url 'inicial' %}" class="button">⬅ Voltar</a>
-            <a href="{% url 'apagar_noticia' noticia.id %}" class="button excluir">🗑 Apagar</a>
+        <div class="noticia-conteudo">
+            <div class="interacao-botoes">
+                <button class="interacao-btn" id="curtirBtn">
+                    <i class="far fa-thumbs-up"></i>
+                    <span>Curtir</span>
+                </button>
+                <button class="interacao-btn" id="compartilharBtn" onclick="shareNews('{{ request.build_absolute_uri }}')">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Compartilhar</span>
+                </button>
+                <form method="post" action="{% url 'salvar_noticia' noticia.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="interacao-btn {% if salva %}ativo{% endif %}" id="salvarBtn">
+                        <i class="{% if salva %}fas{% else %}far{% endif %} fa-bookmark"></i>
+                        <span>{% if salva %}Salvo{% else %}Salvar{% endif %}</span>
+                    </button>
+                </form>
+            </div>
+
+            {% if noticia.capa or noticia.imagem %}
+            <div class="noticia-imagem-destaque">
+                {% if noticia.capa %}
+                <img src="{{ noticia.capa.url }}" alt="{{ noticia.titulo }}">
+                {% elif noticia.imagem %}
+                <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="noticia-corpo">
+                {{ noticia.materia|linebreaks }}
+                
+                {% if noticia.fontes %}
+                <div class="noticia-fonte">
+                    <strong>Fontes:</strong> {{ noticia.fontes }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="comentarios-container">
+                <div class="comentarios-header">
+                    <h2>Comentários</h2>
+                    <div class="comentarios-count">{{ total_comentarios }} COMENTÁRIO{{ total_comentarios|pluralize|upper }}</div>
+                </div>
+                
+                {% if user.is_authenticated %}
+                <a href="{% url 'inserir_resposta' noticia.id %}" class="btn-comentar">
+                    <i class="fas fa-comment"></i> Escrever comentário
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn-comentar">
+                    <i class="fas fa-sign-in-alt"></i> Faça login para comentar
+                </a>
+                {% endif %}
+                
+                <div class="comentarios-lista">
+                    {% for comentario in comentarios %}
+                    <div class="comentario">
+                        <div class="comentario-cabecalho">
+                            <div class="comentario-autor">{{ comentario.usuario }}</div>
+                            <div class="comentario-tempo">{{ comentario.data_criacao|timesince }} atrás</div>
+                        </div>
+                        <div class="comentario-texto">{{ comentario.texto }}</div>
+                        <div class="comentario-acoes">
+                            <form method="post" action="{% url 'curtir_resposta' comentario.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="acao-btn">
+                                    <i class="far fa-thumbs-up"></i> {{ comentario.curtidas.count }}
+                                </button>
+                            </form>
+                            <a href="{% url 'inserir_resposta' noticia.id %}?pai={{ comentario.id }}" class="acao-btn">
+                                <i class="fas fa-reply"></i> Responder
+                            </a>
+                            {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'denunciar_comentario' comentario.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="acao-btn">
+                                    <i class="fas fa-flag"></i> Denunciar
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Respostas ao comentário -->
+                        {% for resposta in comentario.comentarios_filho.all %}
+                        <div class="comentario" style="margin-left: 30px; margin-top: 15px; border-left: 2px solid #ddd; padding-left: 15px;">
+                            <div class="comentario-cabecalho">
+                                <div class="comentario-autor">{{ resposta.usuario }}</div>
+                                <div class="comentario-tempo">{{ resposta.data_criacao|timesince }} atrás</div>
+                            </div>
+                            <div class="comentario-texto">{{ resposta.texto }}</div>
+                            <div class="comentario-acoes">
+                                <form method="post" action="{% url 'curtir_resposta' resposta.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="acao-btn">
+                                        <i class="far fa-thumbs-up"></i> {{ resposta.curtidas.count }}
+                                    </button>
+                                </form>
+                                {% if user.is_authenticated %}
+                                <form method="post" action="{% url 'denunciar_comentario' resposta.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="acao-btn">
+                                        <i class="fas fa-flag"></i> Denunciar
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% empty %}
+                    <p style="text-align: center; color: #666; padding: 30px 0;">
+                        Nenhum comentário ainda. Seja o primeiro a comentar!
+                    </p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if noticias_relacionadas %}
+            <div class="relacionadas-container">
+                <h3>Notícias relacionadas</h3>
+                <div class="relacionadas-lista">
+                    {% for rel in noticias_relacionadas %}
+                    <div class="relacionada-item">
+                        <a href="{% url 'ler_noticia' rel.id %}">
+                            {% if rel.imagem %}
+                            <div class="relacionada-imagem">
+                                <img src="{{ rel.imagem.url }}" alt="{{ rel.titulo }}">
+                            </div>
+                            {% endif %}
+                            <div class="relacionada-conteudo">
+                                {% if rel.categoria %}
+                                <div class="relacionada-categoria">{{ rel.categoria.categoria }}</div>
+                                {% endif %}
+                                <div class="relacionada-titulo">{{ rel.titulo|truncatechars:70 }}</div>
+                                <div class="relacionada-tempo">{{ rel.data_criacao|timesince }} atrás</div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </main>
 
     <footer>
-        &copy; 2025 JCPE - Todos os direitos reservados.
+        <div class="footer-container">
+            <div class="footer-products">
+                <h4>Nossos Produtos</h4>
+                
+                <ul class="nossos-produtos">
+                    <li>
+                        <a href="https://interior.ne10.uol.com.br/">
+                            <figure>
+                                <img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/ne10interior.webp" alt="NE10 Interior" width="60" height="60" />
+                                <figcaption>NE10 Interior</figcaption>
+                            </figure>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://radiojornal.com.br/">
+                            <figure>
+                                <img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/radio.webp" alt="Rádio Jornal" width="60" height="60" />
+                                <figcaption>Rádio Jornal</figcaption>
+                            </figure>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://tvjornal.com.br/">
+                            <figure>
+                                <img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/tvjornal.webp" alt="TV Jornal" width="60" height="60" />
+                                <figcaption>TV Jornal</figcaption>
+                            </figure>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://jc.uol.com.br/">
+                            <figure>
+                                <img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/jc-novo.webp" alt="Jornal do Commercio" width="60" height="60" />
+                                <figcaption>Jornal do Commercio</figcaption>
+                            </figure>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://jc.uol.com.br/blog-do-torcedor/">
+                            <figure>
+                                <img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/blog_do_torcedor.webp" alt="Blog do Torcedor" width="60" height="60" />
+                                <figcaption>Blog do Torcedor</figcaption>
+                            </figure>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://jc.uol.com.br/social1/">
+                            <figure>
+                                <img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/social.webp" alt="Social1" width="60" height="60" />
+                                <figcaption>Social1</figcaption>
+                            </figure>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://receitadaboa.com.br/">
+                            <figure>
+                                <img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/receita_da_boa.webp" alt="Receita da Boa" width="60" height="60" />
+                                <figcaption>Receita da Boa</figcaption>
+                            </figure>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <hr class="footer-divider">
+
+            <div class="footer-brand-social">
+                <img src="https://jc.uol.com.br/img/logo.svg" alt="JC Logo" class="footer-logo-img">
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-links-list">
+                <a href="#">Últimas Notícias JC+</a>
+                <a href="#">Newsletters Mobile</a>
+                <a href="#">Fale Conosco</a>
+                <a href="#">Política de Privacidade</a>
+            </div>
+
+            <div class="copyright-section">
+                <p>&copy; {% now "Y" %} Jornal do Commercio - Todos os direitos reservados.</p>
+            </div>
+
+            <div class="footer-jcpm">
+                <p>Uma empresa do grupo</p>
+                <img src="https://imagens.ne10.uol.com.br/jcpm/logo_jcpm_footer.svg" alt="Grupo JCPM">
+            </div>
+        </div>
     </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    
+    <script>
+        // Script para o menu lateral
+        const menuButton = document.getElementById('menuButton');
+        const sideMenu = document.getElementById('sideMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const menuCloseBtn = document.getElementById('menuCloseBtn');
+        const mainContent = document.getElementById('mainContent');
+        let isMenuOpen = false;
+
+        // Elementos dos botões do menu
+        const btnAoVivo = document.getElementById('btnAoVivo');
+        const btnJornal = document.getElementById('btnJornal');
+        const btnColunistas = document.getElementById('btnColunistas');
+        const btnUltimas = document.getElementById('btnUltimas');
+        const btnPolitica = document.getElementById('btnPolitica');
+        const btnMundo = document.getElementById('btnMundo');
+        const btnEducacao = document.getElementById('btnEducacao');
+        const btnMobilidade = document.getElementById('btnMobilidade');
+        const btnSeguranca = document.getElementById('btnSeguranca');
+        const btnEconomia = document.getElementById('btnEconomia');
+        const btnCultura = document.getElementById('btnCultura');
+        const btnPernambuco = document.getElementById('btnPernambuco');
+        const btnAnuncie = document.getElementById('btnAnuncie');
+
+        function toggleSideMenu() {
+            isMenuOpen = !isMenuOpen;
+            
+            if (isMenuOpen) {
+                sideMenu.classList.add('open');
+                menuOverlay.classList.add('active');
+                mainContent.classList.add('dimmed');
+                document.body.style.overflow = 'hidden';
+            } else {
+                sideMenu.classList.remove('open');
+                menuOverlay.classList.remove('active');
+                mainContent.classList.remove('dimmed');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Evento do botão principal do menu
+        if (menuButton) {
+            menuButton.addEventListener('click', toggleSideMenu);
+        }
+
+        // Fechar ao clicar no botão X
+        if (menuCloseBtn) {
+            menuCloseBtn.addEventListener('click', toggleSideMenu);
+        }
+
+        // Fechar ao clicar no overlay
+        if (menuOverlay) {
+            menuOverlay.addEventListener('click', toggleSideMenu);
+        }
+
+        // Fechar ao pressionar ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isMenuOpen) {
+                toggleSideMenu();
+            }
+        });
+
+        // Eventos para os botões do menu
+        if (btnAoVivo) btnAoVivo.addEventListener('click', () => {
+            toggleSideMenu();
+            window.open('https://dai.ly/x8tkmh4', '_blank');
+        });
+        
+        if (btnJornal) btnJornal.addEventListener('click', () => {
+            toggleSideMenu();
+            window.open('https://impresso.jc.uol.com.br/edicao.php?link=https://online.fliphtml5.com/lsait/asbh/', '_blank');
+        });
+        
+        if (btnColunistas) btnColunistas.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Colunistas');
+        });
+        
+        if (btnUltimas) btnUltimas.addEventListener('click', () => {
+            toggleSideMenu();
+            window.location.href = "{% url 'inicial' %}";
+        });
+        
+        if (btnPolitica) btnPolitica.addEventListener('click', () => {
+            toggleSideMenu();
+            // Aqui você precisa obter o ID da tag Política
+            // Exemplo: window.location.href = "{% url 'inicial' %}?tag=1";
+            alert('Política');
+        });
+        
+        if (btnMundo) btnMundo.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Mundo');
+        });
+        
+        if (btnEducacao) btnEducacao.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Educação');
+        });
+        
+        if (btnMobilidade) btnMobilidade.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Mobilidade');
+        });
+        
+        if (btnSeguranca) btnSeguranca.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Segurança');
+        });
+        
+        if (btnEconomia) btnEconomia.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Economia');
+        });
+        
+        if (btnCultura) btnCultura.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Cultura');
+        });
+        
+        if (btnPernambuco) btnPernambuco.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Pernambuco');
+        });
+        
+        // Botão "Anuncie no JC"
+        if (btnAnuncie) btnAnuncie.addEventListener('click', () => {
+            toggleSideMenu();
+            alert('Anuncie no JC - Entre em contato conosco para mais informações sobre publicidade!');
+        });
+
+        // Garantir que os botões de redes sociais sejam sempre visíveis
+        window.addEventListener('load', function() {
+            const socialButtons = document.querySelectorAll('.circular-button');
+            socialButtons.forEach(button => {
+                button.style.display = 'flex';
+                button.style.alignItems = 'center';
+                button.style.justifyContent = 'center';
+            });
+        });
+        
+        // Botão de curtir notícia
+        const curtirBtn = document.getElementById('curtirBtn');
+        if (curtirBtn) {
+            curtirBtn.addEventListener('click', function() {
+                this.classList.toggle('ativo');
+                const icon = this.querySelector('i');
+                const span = this.querySelector('span');
+                if (this.classList.contains('ativo')) {
+                    icon.className = 'fas fa-thumbs-up';
+                    span.textContent = 'Curtido';
+                } else {
+                    icon.className = 'far fa-thumbs-up';
+                    span.textContent = 'Curtir';
+                }
+            });
+        }
+        
+        // Botão de compartilhar
+        const compartilharBtn = document.getElementById('compartilharBtn');
+        if (compartilharBtn) {
+            compartilharBtn.addEventListener('click', function() {
+                this.classList.add('ativo');
+                setTimeout(() => {
+                    this.classList.remove('ativo');
+                }, 1000);
+            });
+        }
+        
+        // Inicializar drawer de busca
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchDrawer = document.getElementById('searchDrawer');
+            if (searchDrawer) {
+                searchDrawer.style.display = 'none';
+            }
+            
+            // Adicionar evento ao formulário de busca
+            const searchForm = document.querySelector(".search-form");
+            if (searchForm) {
+                searchForm.addEventListener("submit", () => {
+                    closeSearchDrawer();
+                });
+            }
+        });
+    </script>
 </body>
 </html>

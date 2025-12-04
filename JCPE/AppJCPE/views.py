@@ -195,13 +195,47 @@ def ultimas_noticias(request):
 # ---------------------------
 # LER NOTÍCIA
 # ---------------------------
+# views.py - ATUALIZAR a função ler_noticia
+
 def ler_noticia(request, id):
     noticia_individual = get_object_or_404(Noticia, id=id)
-
+    
+    # Salvar no histórico se usuário autenticado
     if request.user.is_authenticated:
         Historico.objects.create(noticia=noticia_individual, usuario=request.user)
-
-    return render(request, 'noticia.html', {'noticia': noticia_individual})
+    
+    # Buscar comentários principais (sem pai)
+    comentarios = Resposta.objects.filter(noticia=noticia_individual, pai__isnull=True).order_by('-data_criacao')
+    
+    # Contar total de comentários
+    total_comentarios = Resposta.objects.filter(noticia=noticia_individual).count()
+    
+    # Verificar se notícia está salva pelo usuário
+    salva = False
+    if request.user.is_authenticated:
+        salva = Noticias_salvas.objects.filter(noticia=noticia_individual, usuario=request.user).exists()
+    
+    # Buscar tags da notícia
+    tags_noticia = noticia_individual.tags.all()
+    
+    # Notícias relacionadas (mesma categoria ou tags)
+    noticias_relacionadas = Noticia.objects.filter(
+        Q(categoria=noticia_individual.categoria) |
+        Q(tags__in=tags_noticia)
+    ).exclude(id=noticia_individual.id).distinct()[:5]
+    
+    # Buscar tags para o menu lateral
+    todas_tags = Tag.objects.all()
+    
+    return render(request, 'noticia.html', {  # <- MUDADO para 'noticia.html'
+        'noticia': noticia_individual,
+        'comentarios': comentarios,
+        'total_comentarios': total_comentarios,
+        'salva': salva,
+        'tags_noticia': tags_noticia,
+        'noticias_relacionadas': noticias_relacionadas,
+        'tags': todas_tags  # Para o menu lateral
+    })
 
 
 # ---------------------------
