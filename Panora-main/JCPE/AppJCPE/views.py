@@ -266,10 +266,19 @@ def denunciar_comentario(request, resposta_id):
 
     return redirect(request.META.get('HTTP_REFERER', 'inicial'))
 
-
-
+@login_required
 def conta(request):
-    return render(request, 'conta.html')
+
+    usuario = request.user
+    noticias_salvas = Noticias_salvas.objects.filter(usuario=usuario)
+
+    context = {
+        'noticias_salvas': noticias_salvas,
+        'tags': Tags.objects.all(),
+        'colunistas': None   
+    }
+
+    return render(request, 'jc.html', context)
 
 @login_required
 def editar_perfil(request):
@@ -314,3 +323,5 @@ def noticias_por_categoria(request, id):
         'categoria': categoria,
         'noticias': noticias
     })
+
+
