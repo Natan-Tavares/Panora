@@ -1,0 +1,671 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Últimas Notícias - JC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style_inicial.css' %}">
+    <style>
+        /* Estilos específicos para a página de filtro */
+        .page-header {
+            text-align: center;
+            padding: 40px 0 30px;
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .page-header h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 36px;
+            font-weight: 900;
+            margin: 0 0 10px 0;
+        }
+        
+        .page-header p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        /* Botão do filtro */
+        .filtro-btn-container {
+            text-align: center;
+            margin: 30px auto;
+            max-width: 1200px;
+        }
+        
+        .toggle-filtro-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+        }
+        
+        .toggle-filtro-btn:hover {
+            background: #b71c1c;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(211, 47, 47, 0.3);
+        }
+        
+        .toggle-filtro-btn.active {
+            background: #333;
+            border-radius: 25px 25px 0 0;
+        }
+        
+        /* Container do filtro (inicialmente escondido) */
+        .filtro-container {
+            background: white;
+            padding: 0;
+            margin: 0 auto 30px;
+            max-width: 1200px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+        
+        .filtro-container.active {
+            max-height: 500px;
+            opacity: 1;
+            padding: 30px;
+        }
+        
+        .filtro-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .filtro-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: #333;
+            font-family: 'Merriweather', serif;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filtro-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .filtro-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filtro-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filtro-input {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .filtro-input:focus {
+            outline: none;
+            border-color: #d32f2f;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+        
+        .filtro-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .filtro-submit-btn {
+            padding: 12px 30px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filtro-submit-btn:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+        }
+        
+        .limpar-btn {
+            padding: 12px 30px;
+            background: #f5f5f5;
+            color: #666;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .limpar-btn:hover {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        /* Informações do filtro aplicado */
+        .filtro-info {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px auto 30px;
+            max-width: 1200px;
+            border-left: 4px solid #d32f2f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .filtro-info-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filtro-info-text {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filtro-info-text strong {
+            color: #d32f2f;
+        }
+        
+        .filtro-results {
+            background: #d32f2f;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        /* Container principal das notícias */
+        .container-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .news-grid-section {
+            margin-top: 20px;
+        }
+        
+        .voltar-container {
+            text-align: center;
+            margin: 40px auto;
+            max-width: 1200px;
+        }
+        
+        .voltar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: #f5f5f5;
+            color: #333;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .voltar-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 10px;
+            margin: 30px auto;
+            max-width: 800px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #999;
+            margin-bottom: 20px;
+        }
+        
+        /* Ajustes responsivos */
+        @media (max-width: 768px) {
+            .filtro-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .filtro-buttons {
+                flex-direction: column;
+            }
+            
+            .page-header h1 {
+                font-size: 28px;
+            }
+            
+            .toggle-filtro-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            
+            .filtro-container.active {
+                padding: 20px;
+                margin: 0 15px 20px;
+            }
+            
+            .filtro-info {
+                margin: 20px 15px 30px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        /* Indicador visual que há filtro ativo */
+        .has-filter::after {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header igual ao da página inicial -->
+    <div class="uol-bar">
+        <div class="container uol-container">
+             <img src="https://conteudo.imguol.com.br/c/_layout/v3/logoUOL2021/logo_completo_white.svg" alt="UOL Logo" class="logo-uol-top">
+        </div>
+    </div>
+
+    <header>
+        <div class="top-bar container">
+            <div class="menu-and-logo">
+                <a href="{% url 'inicial' %}" class="menu-icon">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <img src="https://jc.uol.com.br/img/logo.svg" alt="JC Logo" class="logo-jc">
+            </div>
+
+            <div class="user-area">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'conta' %}" class="btn-entrar logged-in">
+                        <i class="fas fa-user-circle"></i> Minha Conta
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-entrar">
+                        <i class="far fa-user"></i> Entrar
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Cabeçalho da página -->
+    <div class="page-header">
+        <h1>Últimas Notícias</h1>
+        <p>Filtre as notícias por data de publicação</p>
+    </div>
+
+    <!-- Botão para abrir/fechar o filtro -->
+    <div class="filtro-btn-container">
+        <button type="button" class="toggle-filtro-btn {% if data_inicio or data_fim %}has-filter{% endif %}" id="toggleFiltroBtn">
+            <i class="fas fa-filter"></i> 
+            {% if data_inicio or data_fim %}
+                Filtro Ativo - Clique para ajustar
+            {% else %}
+                Filtrar por Data
+            {% endif %}
+            <i class="fas fa-chevron-down" id="filtroChevron"></i>
+        </button>
+    </div>
+
+    <!-- Container do filtro (inicialmente escondido) -->
+    <div class="filtro-container {% if data_inicio or data_fim %}active{% endif %}" id="filtroContainer">
+        <div class="filtro-header">
+            <h2 class="filtro-title"><i class="fas fa-calendar-alt"></i> Filtro por Período</h2>
+        </div>
+        
+        <form method="GET" action="" class="filtro-form" id="filtroForm">
+            <div class="filtro-group">
+                <label for="data_inicio" class="filtro-label">
+                    <i class="far fa-calendar-plus"></i> Data Inicial
+                </label>
+                <input type="date" id="data_inicio" name="data_inicio" 
+                       value="{{ data_inicio|date:'Y-m-d' }}" class="filtro-input">
+            </div>
+            
+            <div class="filtro-group">
+                <label for="data_fim" class="filtro-label">
+                    <i class="far fa-calendar-check"></i> Data Final
+                </label>
+                <input type="date" id="data_fim" name="data_fim" 
+                       value="{{ data_fim|date:'Y-m-d' }}" class="filtro-input">
+            </div>
+            
+            <div class="filtro-buttons">
+                <button type="submit" class="filtro-submit-btn">
+                    <i class="fas fa-check"></i> Aplicar Filtro
+                </button>
+                
+                <button type="button" class="limpar-btn" id="limparFiltroBtn">
+                    <i class="fas fa-broom"></i> Limpar Campos
+                </button>
+                
+                <a href="{% url 'ultimas_noticias' %}" class="limpar-btn">
+                    <i class="fas fa-times"></i> Remover Filtro
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Informações do filtro aplicado (se houver) -->
+    {% if data_inicio or data_fim %}
+    <div class="filtro-info">
+        <div class="filtro-info-content">
+            <p class="filtro-info-text">
+                <i class="fas fa-filter"></i>
+                {% if data_inicio and data_fim %}
+                    Período: <strong>{{ data_inicio|date:"d/m/Y" }}</strong> até <strong>{{ data_fim|date:"d/m/Y" }}</strong>
+                {% elif data_inicio %}
+                    A partir de: <strong>{{ data_inicio|date:"d/m/Y" }}</strong>
+                {% elif data_fim %}
+                    Até: <strong>{{ data_fim|date:"d/m/Y" }}</strong>
+                {% endif %}
+            </p>
+        </div>
+        <div class="filtro-results">
+            {{ noticias|length }} resultado{{ noticias|length|pluralize }}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Container principal -->
+    <div class="container-main">
+        <!-- Grid de notícias -->
+        {% if noticias %}
+            <div class="news-grid-section">
+                {% for n in noticias %}
+                <div class="news-card">
+                    <a href="{% url 'ler_noticia' n.id %}">
+                        <div class="card-image">
+                            {% if n.imagem %}
+                                <img src="{{ n.imagem.url }}" alt="{{ n.titulo }}">
+                            {% elif n.capa %}
+                                <img src="{{ n.capa.url }}" alt="{{ n.titulo }}">
+                            {% else %}
+                                <div class="placeholder-img-sm"></div>
+                            {% endif %}
+                        </div>
+                        <div class="card-content">
+                            <span class="card-category">{{ n.categoria.categoria|default:"Notícia" }}</span>
+                            <h3>{{ n.titulo|truncatechars:70 }}</h3>
+                            <span class="card-time">
+                                <i class="far fa-clock"></i> {{ n.data_criacao|date:"d/m/Y H:i" }}
+                            </span>
+                        </div>
+                    </a>
+                    <div class="card-actions icon-small">
+                        <a href="{% url 'salvar_noticia' n.id %}">
+                            {% if n.id in noticias_salvas_ids %}
+                                <i class="fas fa-bookmark" style="color: var(--primary-red);"></i>
+                            {% else %}
+                                <i class="far fa-bookmark"></i>
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-newspaper"></i>
+                <h3>Nenhuma notícia encontrada</h3>
+                <p>{% if data_inicio or data_fim %}
+                    Não foram encontradas notícias no período selecionado.
+                   {% else %}
+                    Não há notícias publicadas.
+                   {% endif %}</p>
+                <a href="{% url 'ultimas_noticias' %}" class="limpar-btn" style="margin-top: 15px;">
+                    <i class="fas fa-eye"></i> Ver todas as notícias
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Botão voltar -->
+        <div class="voltar-container">
+            <a href="{% url 'inicial' %}" class="voltar-btn">
+                <i class="fas fa-arrow-left"></i> Voltar para a página inicial
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer igual ao da página inicial -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-products">
+                <h4>Nossos Produtos</h4>
+                <ul class="nossos-produtos">
+                    <li><a href="https://interior.ne10.uol.com.br/"><figure><img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/ne10interior.webp" alt="NE10 Interior"><figcaption>NE10 Interior</figcaption></figure></a></li>
+                    <li><a href="https://radiojornal.com.br/"><figure><img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/radio.webp" alt="Rádio Jornal"><figcaption>Rádio Jornal</figcaption></figure></a></li>
+                    <li><a href="https://tvjornal.com.br/"><figure><img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/tvjornal.webp" alt="TV Jornal"><figcaption>TV Jornal</figcaption></figure></a></li>
+                    <li><a href="https://jc.uol.com.br/"><figure><img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/jc-novo.webp" alt="JC"><figcaption>Jornal do Commercio</figcaption></figure></a></li>
+                    <li><a href="https://jc.uol.com.br/blog-do-torcedor/"><figure><img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/blog_do_torcedor.webp" alt="Blog do Torcedor"><figcaption>Blog do Torcedor</figcaption></figure></a></li>
+                    <li><a href="https://jc.uol.com.br/social1/"><figure><img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/social.webp" alt="Social1"><figcaption>Social1</figcaption></figure></a></li>
+                    <li><a href="https://receitadaboa.com.br/"><figure><img loading="lazy" src="https://sjcc.ne10.uol.com.br/rodape_global/img/receita_da_boa.webp" alt="Receita da Boa"><figcaption>Receita da Boa</figcaption></figure></a></li>
+                </ul>
+            </div>
+           
+            <hr class="footer-divider">
+
+            <div class="footer-brand-social">
+                <img src="https://jc.uol.com.br/img/logo.svg" alt="JC Logo" class="footer-logo-img">
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-links-list">
+                <a href="#">Últimas Notícias JC+</a>
+                <a href="#">Newsletters Mobile</a>
+                <a href="#">Fale Conosco</a>
+                <a href="#">Política de Privacidade</a>
+            </div>
+
+            <div class="copyright-section">
+                <p>&copy; {% now "Y" %} Jornal do Commercio - Todos os direitos reservados.</p>
+            </div>
+
+            <div class="footer-jcpm">
+                <p>Uma empresa do grupo</p>
+                <img src="https://imagens.ne10.uol.com.br/jcpm/logo_jcpm_footer.svg" alt="Grupo JCPM">
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Controle do filtro expansível
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleFiltroBtn = document.getElementById('toggleFiltroBtn');
+            const filtroContainer = document.getElementById('filtroContainer');
+            const filtroChevron = document.getElementById('filtroChevron');
+            const limparFiltroBtn = document.getElementById('limparFiltroBtn');
+            const dataInicioInput = document.getElementById('data_inicio');
+            const dataFimInput = document.getElementById('data_fim');
+            
+            // Se já houver filtro ativo, abrir o container
+            if (filtroContainer.classList.contains('active')) {
+                toggleFiltroBtn.classList.add('active');
+                filtroChevron.classList.remove('fa-chevron-down');
+                filtroChevron.classList.add('fa-chevron-up');
+            }
+            
+            // Alternar visibilidade do filtro
+            toggleFiltroBtn.addEventListener('click', function() {
+                filtroContainer.classList.toggle('active');
+                toggleFiltroBtn.classList.toggle('active');
+                
+                // Alternar ícone
+                if (filtroContainer.classList.contains('active')) {
+                    filtroChevron.classList.remove('fa-chevron-down');
+                    filtroChevron.classList.add('fa-chevron-up');
+                    // Focar no primeiro campo se abrindo
+                    if (dataInicioInput) dataInicioInput.focus();
+                } else {
+                    filtroChevron.classList.remove('fa-chevron-up');
+                    filtroChevron.classList.add('fa-chevron-down');
+                }
+            });
+            
+            // Limpar campos do formulário
+            if (limparFiltroBtn) {
+                limparFiltroBtn.addEventListener('click', function() {
+                    if (dataInicioInput) dataInicioInput.value = '';
+                    if (dataFimInput) dataFimInput.value = '';
+                    // Focar no primeiro campo após limpar
+                    if (dataInicioInput) dataInicioInput.focus();
+                });
+            }
+            
+            // Definir a data máxima como hoje
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (dataInicioInput) {
+                dataInicioInput.max = today;
+            }
+            
+            if (dataFimInput) {
+                dataFimInput.max = today;
+            }
+            
+            // Validação: data inicial não pode ser maior que data final
+            if (dataInicioInput && dataFimInput) {
+                dataInicioInput.addEventListener('change', function() {
+                    dataFimInput.min = this.value;
+                    // Se data final for anterior à nova data inicial, limpar
+                    if (dataFimInput.value && dataFimInput.value < this.value) {
+                        dataFimInput.value = '';
+                    }
+                });
+                
+                dataFimInput.addEventListener('change', function() {
+                    dataInicioInput.max = this.value;
+                    // Se data inicial for posterior à nova data final, limpar
+                    if (dataInicioInput.value && dataInicioInput.value > this.value) {
+                        dataInicioInput.value = '';
+                    }
+                });
+                
+                // Ajustar min/max baseado nos valores atuais
+                if (dataInicioInput.value) {
+                    dataFimInput.min = dataInicioInput.value;
+                }
+                if (dataFimInput.value) {
+                    dataInicioInput.max = dataFimInput.value;
+                }
+            }
+            
+            // Efeito de digitação no botão se não houver filtro
+            if (!dataInicioInput.value && !dataFimInput.value) {
+                const btnText = toggleFiltroBtn.querySelector('i.fa-filter').nextSibling;
+                if (btnText) {
+                    const originalText = btnText.textContent.trim();
+                    const typingText = "Filtrar por Data";
+                    let i = 0;
+                    
+                    function typeWriter() {
+                        if (i < typingText.length) {
+                            btnText.textContent = typingText.substring(0, i + 1);
+                            i++;
+                            setTimeout(typeWriter, 50);
+                        }
+                    }
+                    
+                    // Iniciar efeito após um breve delay
+                    setTimeout(typeWriter, 500);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

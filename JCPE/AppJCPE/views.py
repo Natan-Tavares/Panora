@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 import json
+from datetime import datetime, timedelta
 
 # ---------------------------
 # CRIAR NOTICIA
@@ -142,6 +143,54 @@ def inicial(request):
         }
     )
 
+# ---------------------------
+# ÚLTIMAS NOTÍCIAS COM FILTRO DE DATA
+# ---------------------------
+def ultimas_noticias(request):
+    from datetime import datetime, timedelta
+    
+    # Obter parâmetros de data da URL
+    data_inicio_str = request.GET.get('data_inicio', '')
+    data_fim_str = request.GET.get('data_fim', '')
+    
+    # Começar com todas as notícias ordenadas por data (mais recentes primeiro)
+    noticias = Noticia.objects.all().order_by('-data_criacao')
+    
+    # Converter strings de data para objetos date se existirem
+    data_inicio = None
+    data_fim = None
+    
+    if data_inicio_str:
+        try:
+            data_inicio = datetime.strptime(data_inicio_str, '%Y-%m-%d').date()
+            # Filtrar notícias a partir da data de início
+            noticias = noticias.filter(data_criacao__date__gte=data_inicio)
+        except ValueError:
+            pass
+    
+    if data_fim_str:
+        try:
+            data_fim = datetime.strptime(data_fim_str, '%Y-%m-%d').date()
+            # Adicionar 1 dia para incluir todo o dia final
+            data_fim_plus_one = data_fim + timedelta(days=1)
+            # Filtrar notícias até a data final
+            noticias = noticias.filter(data_criacao__date__lt=data_fim_plus_one)
+        except ValueError:
+            pass
+    
+    # IDs das notícias salvas (se usuário logado)
+    noticias_salvas_ids = []
+    if request.user.is_authenticated:
+        noticias_salvas_ids = Noticias_salvas.objects.filter(
+            usuario=request.user
+        ).values_list('noticia_id', flat=True)
+    
+    return render(request, 'ultimas_noticias.html', {
+        'noticias': noticias,
+        'data_inicio': data_inicio,
+        'data_fim': data_fim,
+        'noticias_salvas_ids': noticias_salvas_ids,
+    })
 
 # ---------------------------
 # LER NOTÍCIA

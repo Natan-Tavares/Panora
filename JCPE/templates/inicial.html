@@ -343,9 +343,9 @@
                     <span class="menu-btn-icon"></span>
                 </div>
                 
-                <div class="menu-btn-item" id="btnUltimas">
+                <div class="menu-btn-item" id="btnUltimas" onclick="window.location.href='{% url 'ultimas_noticias' %}'">
                     <h3>♨ Últimas Notícias</h3>
-                    <span class="menu-btn-icon"></span>
+                    <span class="menu-btn-icon"><i class="fas fa-chevron-right"></i></span>
                 </div>
                 
                 <!-- Botões de categorias DINÂMICAS - baseadas nas categorias criadas -->
@@ -850,7 +850,8 @@
         const btnUltimas = document.getElementById('btnUltimas');
         if (btnUltimas) {
             btnUltimas.addEventListener('click', () => {
-                handleStaticButtonClick('Últimas Notícias');
+                toggleSideMenu();  // Fecha o menu
+                window.location.href = '{% url "ultimas_noticias" %}';  // Redireciona
             });
         }
 
