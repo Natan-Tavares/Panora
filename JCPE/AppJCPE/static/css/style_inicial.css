@@ -362,9 +362,88 @@ body.search-open { overflow: hidden; }
     background-color: rgba(0,0,0,0.8);
 }
 
-.widget-mare { background: #eef1f5; padding: 15px; border-radius: 8px; display: flex; align-items: center; margin-bottom: 30px; width: fit-content; margin-left: auto; margin-right: auto; }
-.mare-info { display: flex; align-items: center; gap: 15px; font-size: 13px; color: #333;}
-.mare-dados { display: flex; gap: 15px; font-weight: bold; color: #0056b3; }
+.container-widgets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.widget {
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    flex: 1;
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.widget:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.widget h5 {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: var(--text-gray);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #f5f5f5;
+    padding-bottom: 8px;
+}
+
+.widget h5 i { color: var(--primary-red); font-size: 14px; }
+.loading { font-size: 12px; color: #999; font-style: italic; }
+
+/* Maré */
+.mare-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 6px;
+    padding: 4px 8px;
+    background: #f9f9f9;
+    border-radius: 6px;
+}
+.mare-up { color: #27ae60; font-weight: 700; }
+.mare-down { color: #c0392b; font-weight: 700; }
+
+/* Clima */
+#weather-dados { display: flex; align-items: center; justify-content: space-between; }
+.temp-destaque { font-size: 32px; font-weight: 800; color: var(--text-black); line-height: 1; }
+.temp-info { font-size: 12px; color: #666; text-align: right; display: flex; flex-direction: column; }
+
+/* Cotação */
+.price div {
+    display: flex; justify-content: space-between; font-size: 14px;
+    padding: 5px 0; color: var(--text-black); border-bottom: 1px dashed #eee;
+}
+.price div:last-child { border-bottom: none; }
+
+/* Mega Sena */
+.widget-megasena h5 span {
+    background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 10px; color: #555; margin-left: auto;
+}
+.mega-list {
+    list-style: none; padding: 0; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;
+}
+.mega-list li {
+    background: #209869; color: white; width: 28px; height: 28px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: bold;
+}
 
 .news-grid-section {
     display: grid;
@@ -569,6 +648,14 @@ footer { background-color: var(--bg-footer); padding-top: 50px; border-top: 5px 
     border: 0;
     border-top: 1px solid #ddd;
     margin: 10px 15px;
+}
+
+@media (max-width: 768px) {
+    .container-widgets { gap: 10px; }
+    .widget { min-width: 45%; }
+}
+@media (max-width: 480px) {
+    .widget { min-width: 100%; margin-bottom: 5px; }
 }
 
 @media (max-width: 900px) {

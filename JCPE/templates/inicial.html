@@ -609,18 +609,32 @@
                 </div>
             </div>
 
-            <div class="widget-mare">
-                <div class="mare-info">
-                    <i class="fas fa-water"></i>
-                    <div>
-                        <strong>Tábua de Marés | Recife</strong>
-                        <div class="mare-dados">
-                            <a>Colocar a API</a>
-                        </div>
-                    </div>
+        <div class="container-widgets">
+            <div class="widget widget-mare">
+                <h5><i class="fas fa-water"></i> Tábua de Marés | Recife</h5>
+                <div id="mare-dados" class="loading">Carregando marés...</div>
+            </div>
+
+            <div class="widget widget-weather">
+                <h5><i class="fas fa-cloud-sun"></i> Recife</h5>
+                <div id="weather-dados" class="loading">Carregando...</div>
+            </div>
+
+            <div class="widget widget-money">
+                <h5><i class="fas fa-dollar-sign"></i> Cotação</h5>
+                <div class="price">
+                    <div id="dolar-item">USD: ...</div>
+                    <div id="euro-item">EUR: ...</div>
                 </div>
             </div>
 
+            <div class="widget widget-megasena">
+                <h5>MEGA SENA <span id="mega-concurso" style="font-size: 0.8em;"></span></h5>
+                <ul id="mega-numeros" class="mega-list">
+                    <li>..</li><li>..</li><li>..</li><li>..</li><li>..</li><li>..</li>
+                </ul>
+            </div>
+        </div>
             <div class="news-grid-section">
                 {% for n in noticias|slice:"3:" %}
                    
