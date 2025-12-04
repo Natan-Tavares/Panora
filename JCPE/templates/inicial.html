@@ -348,46 +348,55 @@
                     <span class="menu-btn-icon"></span>
                 </div>
                 
-                <!-- Botões de categorias -->
-                <div class="menu-btn-item" id="btnPolitica">
+                <!-- Botões de categorias DINÂMICAS - baseadas nas categorias criadas -->
+                <!-- Botões de categorias DINÂMICAS - baseadas nas categorias criadas -->
+                {% for categoria in categorias %}
+                <div class="menu-btn-item categoria-item" data-categoria-id="{{ categoria.id }}">
+                    <h3># {{ categoria.categoria }}</h3>
+                    <span class="menu-btn-icon"><i class="fas fa-chevron-right"></i></span>
+                </div>
+                {% empty %}
+                <!-- Se não houver categorias, mostrar botões estáticos com IDs diferentes -->
+                <div class="menu-btn-item" id="btnPoliticaStatic">
                     <h3># Política</h3>
                     <span class="menu-btn-icon"></span>
                 </div>
-                
-                <div class="menu-btn-item" id="btnMundo">
+
+                <div class="menu-btn-item" id="btnMundoStatic">
                     <h3># Mundo</h3>
                     <span class="menu-btn-icon"></span>
                 </div>
-                
-                <div class="menu-btn-item" id="btnEducacao">
+
+                <div class="menu-btn-item" id="btnEducacaoStatic">
                     <h3># Educação</h3>
                     <span class="menu-btn-icon"></span>
                 </div>
-                
-                <div class="menu-btn-item" id="btnMobilidade">
+
+                <div class="menu-btn-item" id="btnMobilidadeStatic">
                     <h3># Mobilidade</h3>
                     <span class="menu-btn-icon"></span>
                 </div>
-                
-                <div class="menu-btn-item" id="btnSeguranca">
+
+                <div class="menu-btn-item" id="btnSegurancaStatic">
                     <h3># Segurança</h3>
                     <span class="menu-btn-icon"></span>
                 </div>
-                
-                <div class="menu-btn-item" id="btnEconomia">
+
+                <div class="menu-btn-item" id="btnEconomiaStatic">
                     <h3># Economia</h3>
                     <span class="menu-btn-icon"></span>
                 </div>
-                
-                <div class="menu-btn-item" id="btnCultura">
+
+                <div class="menu-btn-item" id="btnCulturaStatic">
                     <h3># Cultura</h3>
                     <span class="menu-btn-icon"></span>
                 </div>
-                
-                <div class="menu-btn-item" id="btnPernambuco">
+
+                <div class="menu-btn-item" id="btnPernambucoStatic">
                     <h3># Pernambuco</h3>
                     <span class="menu-btn-icon"></span>
                 </div>
+                {% endfor %}
             </div>
 
             <!-- Nossos Parceiros -->
@@ -763,28 +772,13 @@
     <script src="{% static 'js/script.js' %}"></script>
     
     <script>
-        // Script para o menu lateral - baseado no seu design
+        // Script para o menu lateral
         const menuButton = document.getElementById('menuButton');
         const sideMenu = document.getElementById('sideMenu');
         const menuOverlay = document.getElementById('menuOverlay');
         const menuCloseBtn = document.getElementById('menuCloseBtn');
         const mainContent = document.getElementById('mainContent');
         let isMenuOpen = false;
-
-        // Elementos dos botões do menu (IDs dos seus botões)
-        const btnAoVivo = document.getElementById('btnAoVivo');
-        const btnJornal = document.getElementById('btnJornal');
-        const btnColunistas = document.getElementById('btnColunistas');
-        const btnUltimas = document.getElementById('btnUltimas');
-        const btnPolitica = document.getElementById('btnPolitica');
-        const btnMundo = document.getElementById('btnMundo');
-        const btnEducacao = document.getElementById('btnEducacao');
-        const btnMobilidade = document.getElementById('btnMobilidade');
-        const btnSeguranca = document.getElementById('btnSeguranca');
-        const btnEconomia = document.getElementById('btnEconomia');
-        const btnCultura = document.getElementById('btnCultura');
-        const btnPernambuco = document.getElementById('btnPernambuco');
-        const btnAnuncie = document.getElementById('btnAnuncie');
 
         function toggleSideMenu() {
             isMenuOpen = !isMenuOpen;
@@ -802,40 +796,21 @@
             }
         }
 
-        // Função para lidar com cliques nos botões do menu
-        function handleMenuClick(buttonId, buttonText, url = null) {
-            // Fecha o menu
+        // Função para lidar com cliques nas categorias dinâmicas
+        function handleCategoriaClick(categoriaId) {
             toggleSideMenu();
-            
-            // Se houver uma URL definida, redireciona
-            if (url) {
-                window.location.href = url;
-                return;
-            }
-            
-            // Se for uma categoria, tenta encontrar a tag correspondente
-            if (buttonId.includes('Politica') || buttonId.includes('Mundo') || 
-                buttonId.includes('Educacao') || buttonId.includes('Mobilidade') ||
-                buttonId.includes('Seguranca') || buttonId.includes('Economia') ||
-                buttonId.includes('Cultura') || buttonId.includes('Pernambuco')) {
-                
-                // Aqui você pode implementar a lógica para buscar a tag correspondente
-                // e redirecionar para a página com a tag
-                console.log(`Redirecionar para notícias de: ${buttonText}`);
-                // Exemplo: window.location.href = `/noticias/?tag=${tagId}`;
-            }
-            
-            // Para outros botões, mostra alerta
+            window.location.href = `/categoria/${categoriaId}/`;
+        }
+
+        // Função para lidar com cliques nos botões estáticos do menu
+        function handleStaticButtonClick(buttonText) {
+            toggleSideMenu();
             alert(`Você clicou em: ${buttonText}`);
         }
 
         // Evento do botão principal do menu
         menuButton.addEventListener('click', toggleSideMenu);
-
-        // Fechar ao clicar no botão X
         menuCloseBtn.addEventListener('click', toggleSideMenu);
-
-        // Fechar ao clicar no overlay
         menuOverlay.addEventListener('click', toggleSideMenu);
 
         // Fechar ao pressionar ESC
@@ -845,35 +820,114 @@
             }
         });
 
-        // Eventos para os botões do menu - MODIFICAÇÃO PARA O BOTÃO AO VIVO E JORNAL DIGITAL
-        if (btnAoVivo) btnAoVivo.addEventListener('click', () => {
-            // Fecha o menu
-            toggleSideMenu();
-            // Redireciona para o link Ao Vivo
-            window.open('https://dai.ly/x8tkmh4', '_blank');
+        // Botão Ao Vivo
+        const btnAoVivo = document.getElementById('btnAoVivo');
+        if (btnAoVivo) {
+            btnAoVivo.addEventListener('click', () => {
+                toggleSideMenu();
+                window.open('https://dai.ly/x8tkmh4', '_blank');
+            });
+        }
+
+        // Botão Jornal Digital
+        const btnJornal = document.getElementById('btnJornal');
+        if (btnJornal) {
+            btnJornal.addEventListener('click', () => {
+                toggleSideMenu();
+                window.open('https://impresso.jc.uol.com.br/edicao.php?link=https://online.fliphtml5.com/lsait/asbh/', '_blank');
+            });
+        }
+
+        // Botão Colunistas
+        const btnColunistas = document.getElementById('btnColunistas');
+        if (btnColunistas) {
+            btnColunistas.addEventListener('click', () => {
+                handleStaticButtonClick('Colunistas');
+            });
+        }
+
+        // Botão Últimas Notícias
+        const btnUltimas = document.getElementById('btnUltimas');
+        if (btnUltimas) {
+            btnUltimas.addEventListener('click', () => {
+                handleStaticButtonClick('Últimas Notícias');
+            });
+        }
+
+        // Categorias dinâmicas
+        const categoriaItems = document.querySelectorAll('.categoria-item');
+        categoriaItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const categoriaId = this.getAttribute('data-categoria-id');
+                handleCategoriaClick(categoriaId);
+            });
         });
-        if (btnJornal) btnJornal.addEventListener('click', () => {
-            // Fecha o menu
-            toggleSideMenu();
-            // Redireciona para o link do Jornal Digital
-            window.open('https://impresso.jc.uol.com.br/edicao.php?link=https://online.fliphtml5.com/lsait/asbh/', '_blank');
-        });
-        if (btnColunistas) btnColunistas.addEventListener('click', () => handleMenuClick('btnColunistas', 'Colunistas'));
-        if (btnUltimas) btnUltimas.addEventListener('click', () => handleMenuClick('btnUltimas', 'Últimas Notícias'));
-        if (btnPolitica) btnPolitica.addEventListener('click', () => handleMenuClick('btnPolitica', 'Política'));
-        if (btnMundo) btnMundo.addEventListener('click', () => handleMenuClick('btnMundo', 'Mundo'));
-        if (btnEducacao) btnEducacao.addEventListener('click', () => handleMenuClick('btnEducacao', 'Educação'));
-        if (btnMobilidade) btnMobilidade.addEventListener('click', () => handleMenuClick('btnMobilidade', 'Mobilidade'));
-        if (btnSeguranca) btnSeguranca.addEventListener('click', () => handleMenuClick('btnSeguranca', 'Segurança'));
-        if (btnEconomia) btnEconomia.addEventListener('click', () => handleMenuClick('btnEconomia', 'Economia'));
-        if (btnCultura) btnCultura.addEventListener('click', () => handleMenuClick('btnCultura', 'Cultura'));
-        if (btnPernambuco) btnPernambuco.addEventListener('click', () => handleMenuClick('btnPernambuco', 'Pernambuco'));
-        
+
+        // Botões estáticos (só existem se não houver categorias dinâmicas)
+        const btnPoliticaStatic = document.getElementById('btnPoliticaStatic');
+        if (btnPoliticaStatic) {
+            btnPoliticaStatic.addEventListener('click', () => {
+                handleStaticButtonClick('Política');
+            });
+        }
+
+        const btnMundoStatic = document.getElementById('btnMundoStatic');
+        if (btnMundoStatic) {
+            btnMundoStatic.addEventListener('click', () => {
+                handleStaticButtonClick('Mundo');
+            });
+        }
+
+        const btnEducacaoStatic = document.getElementById('btnEducacaoStatic');
+        if (btnEducacaoStatic) {
+            btnEducacaoStatic.addEventListener('click', () => {
+                handleStaticButtonClick('Educação');
+            });
+        }
+
+        const btnMobilidadeStatic = document.getElementById('btnMobilidadeStatic');
+        if (btnMobilidadeStatic) {
+            btnMobilidadeStatic.addEventListener('click', () => {
+                handleStaticButtonClick('Mobilidade');
+            });
+        }
+
+        const btnSegurancaStatic = document.getElementById('btnSegurancaStatic');
+        if (btnSegurancaStatic) {
+            btnSegurancaStatic.addEventListener('click', () => {
+                handleStaticButtonClick('Segurança');
+            });
+        }
+
+        const btnEconomiaStatic = document.getElementById('btnEconomiaStatic');
+        if (btnEconomiaStatic) {
+            btnEconomiaStatic.addEventListener('click', () => {
+                handleStaticButtonClick('Economia');
+            });
+        }
+
+        const btnCulturaStatic = document.getElementById('btnCulturaStatic');
+        if (btnCulturaStatic) {
+            btnCulturaStatic.addEventListener('click', () => {
+                handleStaticButtonClick('Cultura');
+            });
+        }
+
+        const btnPernambucoStatic = document.getElementById('btnPernambucoStatic');
+        if (btnPernambucoStatic) {
+            btnPernambucoStatic.addEventListener('click', () => {
+                handleStaticButtonClick('Pernambuco');
+            });
+        }
+
         // Botão "Anuncie no JC"
-        if (btnAnuncie) btnAnuncie.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Anuncie no JC - Entre em contato conosco para mais informações sobre publicidade!');
-        });
+        const btnAnuncie = document.getElementById('btnAnuncie');
+        if (btnAnuncie) {
+            btnAnuncie.addEventListener('click', () => {
+                toggleSideMenu();
+                alert('Anuncie no JC - Entre em contato conosco para mais informações sobre publicidade!');
+            });
+        }
 
         // Garantir que os botões de redes sociais sejam sempre visíveis
         window.addEventListener('load', function() {

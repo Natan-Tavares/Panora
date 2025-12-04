@@ -92,6 +92,9 @@ def editar_noticia(request, id):
 # ---------------------------
 # INICIAL / FEED
 # ---------------------------
+# ---------------------------
+# INICIAL / FEED
+# ---------------------------
 def inicial(request):
     id_tag = request.GET.get("tag")
     q = request.GET.get("q", "").strip()
@@ -118,6 +121,7 @@ def inicial(request):
 
     recent_searches = request.session.get("recent_searches", [])
     todas_tags = Tag.objects.all()
+    categorias = Categoria.objects.all()  # NOVA LINHA ADICIONADA
 
     noticias_salvas_ids = []
     if request.user.is_authenticated:
@@ -131,6 +135,7 @@ def inicial(request):
         {
             'noticias': noticias,
             'tags': todas_tags,
+            'categorias': categorias,  # NOVA LINHA ADICIONADA
             'noticias_salvas_ids': noticias_salvas_ids,
             'recent_searches': recent_searches,
             'q': q,
