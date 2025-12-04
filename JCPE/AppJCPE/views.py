@@ -583,3 +583,193 @@ def update_user_tags(request):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+# views.py
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+
+@csrf_exempt
+@require_POST
+def api_login(request):
+    try:
+        data = json.loads(request.body)
+        identifier = data.get('identifier', '').strip()
+        password = data.get('password', '')
+        
+        # Tentar autenticar por username
+        user = authenticate(username=identifier, password=password)
+        
+        # Se não encontrar por username, tentar por email
+        if user is None:
+            try:
+                user_by_email = User.objects.get(email=identifier)
+                user = authenticate(username=user_by_email.username, password=password)
+            except User.DoesNotExist:
+                user = None
+        
+        if user is not None and user.is_active:
+            auth_login(request, user)
+            return JsonResponse({
+                'success': True,
+                'message': 'Login realizado com sucesso!',
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                }
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Credenciais inválidas.'
+            }, status=400)
+            
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro no servidor: {str(e)}'
+        }, status=500)
+
+@csrf_exempt
+@require_POST
+def api_register(request):
+    try:
+        data = json.loads(request.body)
+        username = data.get('username', '').strip()
+        email = data.get('email', '').strip()
+        password = data.get('password', '')
+        
+        # Validações
+        if not username or not email or not password:
+            return JsonResponse({
+                'success': False,
+                'message': 'Todos os campos são obrigatórios.'
+            }, status=400)
+        
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({
+                'success': False,
+                'message': 'Nome de usuário já está em uso.'
+            }, status=400)
+        
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({
+                'success': False,
+                'message': 'E-mail já está cadastrado.'
+            }, status=400)
+        
+        if len(password) < 6:
+            return JsonResponse({
+                'success': False,
+                'message': 'A senha deve ter pelo menos 6 caracteres.'
+            }, status=400)
+        
+        # Criar usuário
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+        
+        # Fazer login automaticamente após registro
+        auth_login(request, user)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Conta criada com sucesso!',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro no servidor: {str(e)}'
+        }, status=500)
+
+@csrf_exempt
+@login_required
+@require_POST
+def api_update_profile(request):
+    try:
+        data = json.loads(request.body)
+        user = request.user
+        
+        # Atualizar username
+        if 'username' in data:
+            new_username = data['username'].strip()
+            if new_username and new_username != user.username:
+                if User.objects.filter(username=new_username).exclude(id=user.id).exists():
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'Nome de usuário já está em uso.'
+                    }, status=400)
+                user.username = new_username
+        
+        # Atualizar email
+        if 'email' in data:
+            new_email = data['email'].strip()
+            if new_email and new_email != user.email:
+                if User.objects.filter(email=new_email).exclude(id=user.id).exists():
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'E-mail já está em uso.'
+                    }, status=400)
+                user.email = new_email
+        
+        # Atualizar senha
+        if 'password' in data and data['password']:
+            user.set_password(data['password'])
+        
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Perfil atualizado com sucesso!',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Erro no servidor: {str(e)}'
+        }, status=500)
+
+@csrf_exempt
+@require_POST
+def api_logout(request):
+    auth_logout(request)
+    return JsonResponse({
+        'success': True,
+        'message': 'Logout realizado com sucesso!'
+    })
+
+@csrf_exempt
+def api_check_auth(request):
+    if request.user.is_authenticated:
+        return JsonResponse({
+            'authenticated': True,
+            'user': {
+                'id': request.user.id,
+                'username': request.user.username,
+                'email': request.user.email,
+            }
+        })
+    else:
+        return JsonResponse({
+            'authenticated': False
+        })

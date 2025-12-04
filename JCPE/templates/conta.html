@@ -7,7 +7,6 @@
     <title>Meu JC</title>
 
     <style>
-        /* --- ESTILOS BASE E SIDEBAR --- */
         body {
             margin: 0;
             background: #f2f2f2;
@@ -71,8 +70,6 @@
         .sidebar.active {
             right: 0;
         }
-
-        /* --- ESTILOS DE FORMULÁRIO E COMPONENTES --- */
 
         /* Título */
         .sidebar h2 {
@@ -190,7 +187,6 @@
             margin-bottom: 15px;
         }
 
-        /* --- ESTILOS DE PERFIL (Para Usuário Logado) --- */
         .profile-container {
             padding: 10px 0;
         }
@@ -316,7 +312,6 @@
             background: #5a6268;
         }
 
-        /* --- MODAL PARA FOTO DE PERFIL --- */
         .modal {
             display: none;
             position: fixed;
@@ -375,7 +370,6 @@
             color: white;
         }
 
-        /* --- ESTILOS PARA TAGS --- */
         .tags-container {
             margin-top: 30px;
             margin-bottom: 40px;
@@ -573,7 +567,6 @@
 
     <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
 
-    <!-- Modal para foto de perfil -->
     <div id="photoModal" class="modal">
         <div class="modal-content">
             <h3>Alterar Foto de Perfil</h3>
@@ -587,7 +580,6 @@
     </div>
 
     <div id="sidebar" class="sidebar">
-        <!-- TELA DE LOGIN -->
         <div id="loginContent">
             <h2>Entrar</h2>
             
@@ -616,7 +608,6 @@
             </form>
         </div>
 
-        <!-- TELA DE ESQUECI A SENHA -->
         <div id="forgotPasswordContent" style="display: none;">
             <h2>Recuperar Senha</h2>
             
@@ -638,7 +629,6 @@
             </div>
         </div>
 
-        <!-- TELA DE REDEFINIR SENHA -->
         <div id="resetPasswordContent" style="display: none;">
             <h2>Redefinir Senha</h2>
             
@@ -664,7 +654,6 @@
             </form>
         </div>
 
-        <!-- TELA DE REGISTRO -->
         <div id="registerContent" style="display: none;">
             <h2>Criar Conta</h2>
             
@@ -691,7 +680,6 @@
             </form>
         </div>
 
-        <!-- TELA DE PERFIL (usuário logado) -->
         <div id="profileContent" style="display: none;">
             <div class="profile-container">
                 <div class="profile-header">
@@ -735,7 +723,6 @@
                 <div class="tags-container">
                     <h3>Tags de Interesse</h3>
                     <div class="tags-list" id="tagsList">
-                        <!-- Tags serão carregadas via JavaScript -->
                         <div class="loading-tags">Carregando tags...</div>
                     </div>
                     <p style="font-size: 11px; color: #666; margin-top: 10px;">
@@ -780,12 +767,10 @@
     </div>
 
     <script>
-        // Sistema de autenticação SIMULADO
         let isLoggedIn = false;
         let currentUser = null;
-        let recoveryUser = null; // Usuário que está recuperando senha
+        let recoveryUser = null;
 
-        // Sistema de tags usando apenas JavaScript e localStorage
         const TAGS_DATA = [
             {id: 'educacao', name: 'Educação'},
             {id: 'cinema', name: 'Cinema'},
@@ -799,12 +784,10 @@
             {id: 'ciencia', name: 'Ciência'}
         ];
 
-        // Funções da Sidebar
         function openSidebar() {
             document.getElementById("sidebar").classList.add("active");
             document.getElementById("overlay").classList.add("active");
             
-            // Carregar tags quando abrir a sidebar
             if (isLoggedIn) {
                 loadTags();
             }
@@ -815,7 +798,6 @@
             document.getElementById("overlay").classList.remove("active");
         }
 
-        // Alternar entre telas
         function showForgotPassword() {
             document.getElementById("loginContent").style.display = "none";
             document.getElementById("registerContent").style.display = "none";
@@ -850,14 +832,12 @@
             document.getElementById("forgotPasswordContent").style.display = "none";
             document.getElementById("resetPasswordContent").style.display = "none";
             document.getElementById("profileContent").style.display = "none";
-            // Limpar formulários
             document.getElementById("loginForm").reset();
             document.getElementById("forgotPasswordForm").reset();
             document.getElementById("resetPasswordForm").reset();
             document.getElementById("recoverySuccess").style.display = "none";
         }
 
-        // Função para mostrar/ocultar senha
         function togglePassword(inputId) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
@@ -867,9 +847,7 @@
             }
         }
 
-        // Sistema de login/logout
         function checkLoginStatus() {
-            // Verificar se há usuário salvo no localStorage
             const savedUser = localStorage.getItem('currentUser');
             if (savedUser) {
                 isLoggedIn = true;
@@ -881,7 +859,6 @@
                 document.getElementById('resetPasswordContent').style.display = 'none';
                 document.getElementById('profileContent').style.display = 'block';
                 
-                // Preencher dados do usuário
                 document.getElementById('usernameInput').value = currentUser.username;
                 document.getElementById('emailInput').value = currentUser.email;
             } else {
@@ -892,35 +869,29 @@
             }
         }
 
-        // Carregar usuários do localStorage ou criar array vazio
         function getUsers() {
             const users = localStorage.getItem('registeredUsers');
             return users ? JSON.parse(users) : [];
         }
 
-        // Salvar usuários no localStorage
         function saveUsers(users) {
             localStorage.setItem('registeredUsers', JSON.stringify(users));
         }
 
-        // Função para encontrar usuário por identificador (usuário ou email)
         function findUserByIdentifier(identifier) {
             const users = getUsers();
             
-            // Verificar se é email
             if (validateEmail(identifier)) {
                 return users.find(user => 
                     user.email.toLowerCase() === identifier.toLowerCase()
                 );
             } else {
-                // Buscar por nome de usuário
                 return users.find(user => 
                     user.username.toLowerCase() === identifier.toLowerCase()
                 );
             }
         }
 
-        // Formulário de login
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -932,7 +903,6 @@
                 return;
             }
             
-            // Encontrar usuário
             const user = findUserByIdentifier(identifier);
             
             if (!user) {
@@ -940,13 +910,11 @@
                 return;
             }
             
-            // Verificar senha
             if (user.password !== password) {
                 showMessage('Senha incorreta.', 'error');
                 return;
             }
             
-            // Login bem-sucedido
             currentUser = {
                 id: user.id,
                 username: user.username,
@@ -958,16 +926,13 @@
             showMessage(`Bem-vindo, ${user.username}!`, 'success');
             checkLoginStatus();
             
-            // Limpar formulário
             document.getElementById('loginForm').reset();
             
-            // Fechar sidebar após um pequeno delay
             setTimeout(() => {
                 closeSidebar();
             }, 1500);
         });
 
-        // Formulário de recuperação de senha
         document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -978,7 +943,6 @@
                 return;
             }
             
-            // Encontrar usuário
             const user = findUserByIdentifier(identifier);
             
             if (!user) {
@@ -986,30 +950,22 @@
                 return;
             }
             
-            // Salvar usuário para recuperação
             recoveryUser = user;
             
-            // Simular envio de e-mail (em produção, aqui enviaria um e-mail real)
-            // Gerar código de recuperação
             const recoveryCode = generateRecoveryCode();
             
-            // Salvar código no localStorage (simulação)
             localStorage.setItem('recoveryCode_' + user.id, recoveryCode);
             localStorage.setItem('recoveryUser', JSON.stringify(user));
             
-            // Mostrar sucesso
             document.getElementById('recoverySuccess').style.display = 'block';
             
-            // Mostrar o código na mensagem (APENAS PARA DEMONSTRAÇÃO)
             showMessage(`Código de recuperação: ${recoveryCode} (Simulação - em produção seria enviado por e-mail)`, 'info');
             
-            // Mudar para tela de redefinição após 3 segundos
             setTimeout(() => {
                 showResetPassword();
             }, 4000);
         });
 
-        // Formulário de redefinição de senha
         document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -1017,7 +973,6 @@
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmNewPassword').value;
             
-            // Recuperar usuário do localStorage
             const savedRecoveryUser = JSON.parse(localStorage.getItem('recoveryUser') || 'null');
             
             if (!savedRecoveryUser) {
@@ -1026,7 +981,6 @@
                 return;
             }
             
-            // Validar código
             const savedCode = localStorage.getItem('recoveryCode_' + savedRecoveryUser.id);
             
             if (!savedCode || savedCode !== code) {
@@ -1034,7 +988,6 @@
                 return;
             }
             
-            // Validar senha
             if (newPassword.length < 6) {
                 showMessage('A senha deve ter pelo menos 6 caracteres.', 'error');
                 return;
@@ -1045,7 +998,6 @@
                 return;
             }
             
-            // Atualizar senha no banco de dados (localStorage)
             const users = getUsers();
             const userIndex = users.findIndex(user => user.id === savedRecoveryUser.id);
             
@@ -1053,13 +1005,11 @@
                 users[userIndex].password = newPassword;
                 saveUsers(users);
                 
-                // Limpar dados de recuperação
                 localStorage.removeItem('recoveryCode_' + savedRecoveryUser.id);
                 localStorage.removeItem('recoveryUser');
                 
                 showMessage('Senha redefinida com sucesso! Faça login com sua nova senha.', 'success');
                 
-                // Voltar para login
                 setTimeout(() => {
                     showLoginForm();
                 }, 2000);
@@ -1068,7 +1018,6 @@
             }
         });
 
-        // Formulário de registro
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -1077,7 +1026,6 @@
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('registerConfirmPassword').value;
             
-            // Validações
             if (!username || !email || !password || !confirmPassword) {
                 showMessage('Por favor, preencha todos os campos.', 'error');
                 return;
@@ -1103,7 +1051,6 @@
                 return;
             }
             
-            // Verificar se já existe um usuário com esse username ou email
             const users = getUsers();
             const usernameExists = users.some(user => 
                 user.username.toLowerCase() === username.toLowerCase()
@@ -1123,9 +1070,8 @@
                 return;
             }
             
-            // Criar novo usuário
             const newUser = {
-                id: Date.now(), // ID único baseado no timestamp
+                id: Date.now(),
                 username: username,
                 email: email,
                 password: password,
@@ -1133,11 +1079,9 @@
                 createdAt: new Date().toISOString()
             };
             
-            // Adicionar usuário à lista
             users.push(newUser);
             saveUsers(users);
             
-            // Fazer login automaticamente
             currentUser = {
                 id: newUser.id,
                 username: newUser.username,
@@ -1149,10 +1093,8 @@
             showMessage(`Conta criada com sucesso! Bem-vindo, ${username}!`, 'success');
             checkLoginStatus();
             
-            // Limpar formulário
             document.getElementById('registerForm').reset();
             
-            // Fechar sidebar após um pequeno delay
             setTimeout(() => {
                 closeSidebar();
             }, 2000);
@@ -1168,13 +1110,10 @@
             closeSidebar();
         }
 
-        // Função para gerar código de recuperação
         function generateRecoveryCode() {
-            // Gerar código de 6 dígitos
             return Math.floor(100000 + Math.random() * 900000).toString();
         }
 
-        // Funções do Modal de Foto
         function openPhotoModal() {
             document.getElementById("photoModal").classList.add("active");
         }
@@ -1189,7 +1128,6 @@
             const file = fileInput.files[0];
             
             if (file) {
-                // Simulação para teste
                 showMessage('Foto alterada com sucesso! (Simulação)', 'success');
                 document.querySelector('.profile-avatar').innerHTML = '🖼️';
                 closeModal();
@@ -1198,7 +1136,6 @@
             }
         }
 
-        // Funções de Edição de Campos
         function enableEdit(field) {
             const input = document.getElementById(field + 'Input');
             const buttons = document.getElementById(field + 'Buttons');
@@ -1232,14 +1169,12 @@
                 return;
             }
             
-            // Validações básicas
             if (field === 'email') {
                 if (!validateEmail(newValue)) {
                     alert('Por favor, insira um e-mail válido.');
                     return;
                 }
                 
-                // Verificar se o email já está em uso por outro usuário
                 const users = getUsers();
                 const emailExists = users.some(user => 
                     user.email.toLowerCase() === newValue.toLowerCase() && 
@@ -1265,7 +1200,6 @@
                     return;
                 }
                 
-                // Verificar se o username já está em uso por outro usuário
                 const users = getUsers();
                 const usernameExists = users.some(user => 
                     user.username.toLowerCase() === newValue.toLowerCase() && 
@@ -1278,7 +1212,6 @@
                 }
             }
             
-            // Atualizar no localStorage
             const users = getUsers();
             const userIndex = users.findIndex(user => user.id === currentUser.id);
             
@@ -1321,24 +1254,19 @@
             changeLink.style.display = 'inline-block';
         }
 
-        // Validação de e-mail
         function validateEmail(email) {
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(email);
         }
 
-        // Sistema de tags
         function loadTags() {
             const tagsList = document.getElementById('tagsList');
             if (!tagsList) return;
             
-            // Carregar tags selecionadas do localStorage
             const savedTags = JSON.parse(localStorage.getItem('selectedTags') || '[]');
             
-            // Limpar conteúdo de loading
             tagsList.innerHTML = '';
             
-            // Adicionar tags
             TAGS_DATA.forEach(tag => {
                 const isSelected = savedTags.includes(tag.id);
                 const tagElement = document.createElement('button');
@@ -1352,7 +1280,6 @@
                 tagsList.appendChild(tagElement);
             });
             
-            // Adicionar eventos às tags
             setupTagEvents();
         }
 
@@ -1365,13 +1292,10 @@
                     const tagName = this.getAttribute('data-name');
                     const isSelected = this.classList.contains('selected');
                     
-                    // Alternar visualmente
                     this.classList.toggle('selected');
                     
-                    // Atualizar localStorage
                     updateLocalStorageTags();
                     
-                    // Mostrar mensagem
                     showMessage(
                         `Tag "${tagName}" ${isSelected ? 'removida' : 'adicionada'}!`, 
                         'success'
@@ -1391,13 +1315,10 @@
             localStorage.setItem('selectedTags', JSON.stringify(selectedTags));
         }
 
-        // Função para mostrar mensagens
         function showMessage(text, type) {
-            // Remover mensagens anteriores
             const existingMessages = document.querySelectorAll('.temp-message');
             existingMessages.forEach(msg => msg.remove());
             
-            // Cores para diferentes tipos
             const colors = {
                 'success': '#28a745',
                 'error': '#dc3545',
@@ -1405,7 +1326,6 @@
                 'warning': '#ffc107'
             };
             
-            // Criar nova mensagem
             const messageDiv = document.createElement('div');
             messageDiv.className = `temp-message ${type}`;
             messageDiv.textContent = text;
@@ -1413,7 +1333,6 @@
             
             document.body.appendChild(messageDiv);
             
-            // Remover após 3 segundos
             setTimeout(() => {
                 if (messageDiv.parentNode) {
                     messageDiv.style.animation = 'fadeOut 0.3s ease';
@@ -1426,7 +1345,6 @@
             }, 3000);
         }
 
-        // Fechar sidebar e modal com ESC
         document.addEventListener('keydown', function(event) {
             if (event.target.tagName !== 'INPUT' && event.key === 'Escape') {
                 closeSidebar();
@@ -1434,18 +1352,15 @@
             }
         });
 
-        // Fechar modal ao clicar fora
         document.getElementById('photoModal').addEventListener('click', function(event) {
             if (event.target === this) {
                 closeModal();
             }
         });
 
-        // Inicializar quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
             checkLoginStatus();
             
-            // Adicionar funcionalidade de mostrar/ocultar senha em todos os campos
             document.querySelectorAll('.toggle-password').forEach(button => {
                 button.addEventListener('click', function() {
                     const inputId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
@@ -1454,7 +1369,6 @@
             });
         });
 
-        // Função para abrir links sociais
     function openSocialLink(button) {
         const link = button.getAttribute('data-link');
         if (link) {
