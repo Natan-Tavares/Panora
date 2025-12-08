@@ -53,6 +53,8 @@ urlpatterns = [
     path('api/register/', views.api_register, name='api_register'),
     path('api/logout/', views.api_logout, name='api_logout'),
     path('api/check-auth/', views.api_check_auth, name='api_check_auth'),
+    path('colunistas/', views.colunistas, name='colunistas'),
+    path('colunista/<str:autor_id>/', views.noticias_por_colunista, name='noticias_por_colunista'),
 
 ]
 

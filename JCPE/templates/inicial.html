@@ -856,7 +856,8 @@
         const btnColunistas = document.getElementById('btnColunistas');
         if (btnColunistas) {
             btnColunistas.addEventListener('click', () => {
-                handleStaticButtonClick('Colunistas');
+                toggleSideMenu();  // Fecha o menu lateral
+                window.location.href = '/colunistas/';  // Redireciona para a página de colunistas
             });
         }
 

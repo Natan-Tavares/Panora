@@ -118,11 +118,73 @@
     }
     
     .tags span {
-        background: #f2f2f2;
-        padding: 6px 10px;
-        border-radius: 12px;
-        font-size: 12px;
+        background: #f0f0f0;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 13px;
+        color: #555;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 3px;
+        transition: all 0.2s ease;
+        border: 1px solid #ddd;
     }
+
+    .tags span:hover {
+        background: #e0e0e0;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .tags .tag-selectable {
+        background: #e9e9e9;
+        padding: 8px 15px 8px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        color: #333;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: 4px;
+        cursor: pointer;
+        user-select: none;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+    .tags .tag-selectable:hover {
+        background: #d9d9d9;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .tags .tag-selectable.selected {
+        background: #b30000;
+        color: white;
+        padding-right: 12px;
+    }
+
+    .tags .tag-selectable.selected::after {
+        content: '×';
+        font-size: 16px;
+        font-weight: bold;
+        margin-left: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
+
+    .tags .tag-selectable.selected:hover::after {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.1);
+    }
+
     
     .colunistas {
         display: flex;
@@ -496,29 +558,60 @@
     
     .sidebar-tag-item {
         background: #e9e9e9;
-        padding: 8px 12px;
-        border-radius: 5px;
+        padding: 8px 15px 8px 12px;
+        border-radius: 20px;
         color: #333;
         font-size: 13px;
         cursor: pointer;
         transition: all 0.3s ease;
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 5px;
+        gap: 6px;
         user-select: none;
-        border: none;
+        border: 1px solid transparent;
+        margin: 3px;
     }
     
     .sidebar-tag-item:hover {
         transform: translateY(-2px);
         box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        background: #d9d9d9;
     }
     
     .sidebar-tag-item.selected {
         background: #b30000;
         color: white;
+        padding-right: 12px;
+    }
+
+    .sidebar-tag-item.selected::after {
+        content: '×';
+        font-size: 16px;
+        font-weight: bold;
+        margin-left: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        transition: all 0.2s ease;
     }
     
+    .sidebar-tag-item.selected:hover::after {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.1);
+    }
+
+    .tags, .sidebar-tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        margin-top: 10px;
+    }
+
     /* Footer da sidebar */
     .sidebar-footer-buttons {
         margin-top: 40px;
@@ -671,6 +764,68 @@
         width: 30px;
         height: 30px;
     }
+    
+    /* Redefinição de senha */
+    .recovery-steps {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+    
+    .recovery-step {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 5px;
+        background: white;
+    }
+    
+    .step-number {
+        background: #b30000;
+        color: white;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+        /* Redefinição de senha */
+    .recovery-steps {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+    
+    .recovery-step {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 5px;
+        background: white;
+    }
+    
+    .step-number {
+        background: #b30000;
+        color: white;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        font-weight: bold;
+    }
 </style>
 
 <!-- Botão para abrir sidebar (sobreposto) -->
@@ -808,16 +963,16 @@
         <form id="loginForm" method="POST">
             {% csrf_token %}
             {% if erro %}
-        <p style="color: red; font-size: 14px; margin-bottom: 10px;">
-            {{ erro }}
-        </p>
-    {% endif %}
+                <div style="color: #dc3545; font-size: 14px; margin-bottom: 10px; padding: 10px; background: #f8d7da; border-radius: 5px;">
+                    {{ erro }}
+                </div>
+            {% endif %}
 
             <input type="text" id="loginIdentifier" placeholder="Nome de usuário ou E-mail" class="sidebar-input" required>
             
             <div style="position: relative;">
                 <input type="password" id="loginPassword" placeholder="Senha" class="sidebar-input" required>
-                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('loginPassword')">👁️</button>
+                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('loginPassword')">👁</button>
             </div>
             
             <button type="submit" class="sidebar-btn-action">Entrar</button>
@@ -837,9 +992,19 @@
     <div id="forgotPasswordContent" style="display: none;">
         <h2>Recuperar Senha</h2>
         
-        <div class="sidebar-recovery-instructions">
-            Digite seu nome de usuário ou e-mail cadastrado.<br>
-            Enviaremos instruções para redefinir sua senha.
+        <div class="recovery-steps">
+            <div class="recovery-step">
+                <div class="step-number">1</div>
+                <span>Digite seu nome de usuário ou e-mail</span>
+            </div>
+            <div class="recovery-step">
+                <div class="step-number">2</div>
+                <span>Clique em "Enviar instruções"</span>
+            </div>
+            <div class="recovery-step">
+                <div class="step-number">3</div>
+                <span>Use o código abaixo para redefinir</span>
+            </div>
         </div>
         
         <form id="forgotPasswordForm">
@@ -850,9 +1015,71 @@
         </form>
         
         <div id="recoverySuccess" class="sidebar-recovery-success" style="display: none;">
-            <h3>✅ Instruções Enviadas!</h3>
-            <p>Enviamos um e-mail com as instruções para redefinir sua senha.</p>
-            <p><small>Verifique sua caixa de entrada e também a pasta de spam.</small></p>
+            <h3>✅ Código Gerado!</h3>
+            <p>Enviamos um e-mail para <strong id="recoveryEmail"></strong> com as instruções.</p>
+            
+            <!-- CÓDIGO QUE APARECE NA TELA -->
+            <div style="background: #fff; border: 2px dashed #155724; padding: 15px; margin: 15px 0; border-radius: 8px; text-align: center;">
+                <p style="margin: 0 0 10px; font-size: 12px; color: #666;">SEU CÓDIGO DE RECUPERAÇÃO:</p>
+                <div id="recoveryCode" style="font-size: 24px; font-weight: bold; letter-spacing: 3px; color: #155724; padding: 10px; background: #f8f9fa; border-radius: 5px; font-family: monospace;">
+                    <!-- O código será gerado aqui -->
+                </div>
+                <p style="font-size: 11px; color: #666; margin-top: 10px;">Use este código para redefinir sua senha</p>
+            </div>
+            
+            <p><strong>Como usar:</strong></p>
+            <ol style="text-align: left; font-size: 13px; margin: 10px 0; padding-left: 20px;">
+                <li>Copie o código acima</li>
+                <li>Clique em "Redefinir com Código"</li>
+                <li>Cole o código e crie sua nova senha</li>
+            </ol>
+            
+            <button type="button" class="sidebar-btn-action" style="background: #28a745; margin-top: 10px;" onclick="useRecoveryCode()">Redefinir com Código</button>
+            <p style="font-size: 11px; color: #666; margin-top: 10px;">* Este código expira em 10 minutos</p>
+        </div>
+        
+        <div id="recoveryError" style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center; border: 1px solid #f5c6cb; display: none;">
+            <h3>⚠ Não encontramos esse usuário</h3>
+            <p>Verifique se digitou corretamente seu nome de usuário ou e-mail.</p>
+            <button type="button" class="sidebar-login-link" onclick="showRegisterForm()" style="margin-top: 10px;">Criar uma nova conta?</button>
+        </div>
+    </div>
+
+    <!-- TELA DE REDEFINIR SENHA COM CÓDIGO -->
+    <div id="resetPasswordContent" style="display: none;">
+        <h2>Redefinir Senha</h2>
+        
+        <div class="sidebar-login-info">
+            Digite o código recebido e sua nova senha
+        </div>
+        
+        <form id="resetPasswordForm">
+            {% csrf_token %}
+            
+            <div style="position: relative;">
+                <input type="text" id="resetCode" placeholder="Código de recuperação (6 dígitos)" class="sidebar-input" required maxlength="6" style="letter-spacing: 2px; font-size: 18px; text-align: center;">
+                <button type="button" class="sidebar-toggle-password" onclick="copyRecoveryCode()" style="right: 10px; top: 12px;">📋</button>
+            </div>
+            
+            <div style="position: relative;">
+                <input type="password" id="newPassword" placeholder="Nova senha (mínimo 6 caracteres)" class="sidebar-input" required>
+                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('newPassword')">👁</button>
+            </div>
+            
+            <div style="position: relative;">
+                <input type="password" id="confirmNewPassword" placeholder="Confirmar nova senha" class="sidebar-input" required>
+                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('confirmNewPassword')">👁</button>
+            </div>
+            
+            <button type="submit" class="sidebar-btn-action">Redefinir Senha</button>
+            <button type="button" class="sidebar-btn-secondary" onclick="showForgotPassword()">Voltar</button>
+        </form>
+        
+        <div id="resetSuccess" class="sidebar-recovery-success" style="display: none;">
+            <h3>✅ Senha Redefinida!</h3>
+            <p>Sua senha foi alterada com sucesso.</p>
+            <p>Você já pode fazer login com sua nova senha.</p>
+            <button type="button" class="sidebar-btn-action" style="margin-top: 15px;" onclick="showLoginForm()">Fazer Login</button>
         </div>
     </div>
 
@@ -871,12 +1098,12 @@
             
             <div style="position: relative;">
                 <input type="password" id="registerPassword" placeholder="Senha (mínimo 6 caracteres)" class="sidebar-input" required>
-                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('registerPassword')">👁️</button>
+                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('registerPassword')">👁</button>
             </div>
             
             <div style="position: relative;">
                 <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" class="sidebar-input" required>
-                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('registerConfirmPassword')">👁️</button>
+                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('registerConfirmPassword')">👁</button>
             </div>
             
             <button type="submit" class="sidebar-btn-action">Criar Conta</button>
@@ -915,8 +1142,8 @@
             <div class="sidebar-form-group" id="passwordGroup">
                 <label>Senha</label>
                 <div style="position: relative;">
-                    <input type="password" id="passwordInput" value="********" class="sidebar-display-field" readonly>
-                    <button type="button" class="sidebar-toggle-password" onclick="togglePassword('passwordInput')" style="top: 12px;">👁️</button>
+                    <input type="password" id="passwordInput" value="" class="sidebar-display-field" readonly>
+                    <button type="button" class="sidebar-toggle-password" onclick="togglePassword('passwordInput')" style="top: 12px;">👁</button>
                 </div>
                 <a href="#" class="sidebar-change-link" onclick="enableEdit('password'); return false;">Alterar senha</a>
                 <div class="sidebar-edit-buttons" id="passwordButtons">
@@ -966,19 +1193,21 @@
     // Sistema de autenticação
     let isLoggedIn = false;
     let currentUser = null;
+    let currentRecoveryCode = null;
+    let recoveryCodeTimer = null;
     
     // Sistema de tags
     const TAGS_DATA = [
-        {id: 'educacao', name: 'Educação'},
+        {id: 'politica_nacional', name: 'Política Nacional'},
+        {id: 'mercado_financeiro', name: 'Mercado Financeiro'},
+        {id: 'relacoes_internacionais', name: 'Relações Internacionais'},
+        {id: 'inteligencia_artificial', name: 'Inteligência Artificial'},
+        {id: 'pesquisa_cientifica', name: 'Pesquisa Científica'},
+        {id: 'futebol', name: 'Futebol'},
         {id: 'cinema', name: 'Cinema'},
-        {id: 'esportes', name: 'Esportes'},
-        {id: 'mundo', name: 'Mundo'},
-        {id: 'tech', name: 'Tech'},
-        {id: 'politica', name: 'Política'},
-        {id: 'musica', name: 'Música'},
-        {id: 'games', name: 'Games'},
-        {id: 'arte', name: 'Arte'},
-        {id: 'ciencia', name: 'Ciência'}
+        {id: 'mudancas_climaticas', name: 'Mudanças Climáticas'},
+        {id: 'seguranca_publica', name: 'Segurança Pública'},
+        {id: 'ensino_superior', name: 'Ensino Superior'}
     ];
     
     // Função para obter o token CSRF
@@ -1053,15 +1282,36 @@
         document.getElementById("loginContent").style.display = "none";
         document.getElementById("registerContent").style.display = "none";
         document.getElementById("forgotPasswordContent").style.display = "block";
+        document.getElementById("resetPasswordContent").style.display = "none";
         document.getElementById("profileContent").style.display = "none";
         document.getElementById("recoverySuccess").style.display = "none";
+        document.getElementById("recoveryError").style.display = "none";
         document.getElementById("forgotPasswordForm").reset();
+        currentRecoveryCode = null;
+        if (recoveryCodeTimer) {
+            clearInterval(recoveryCodeTimer);
+            recoveryCodeTimer = null;
+        }
+    
+        const timerDisplay = document.getElementById('codeTimer');
+        if (timerDisplay) timerDisplay.remove();
+    }
+    
+    
+    function showResetPassword() {
+        document.getElementById("loginContent").style.display = "none";
+        document.getElementById("registerContent").style.display = "none";
+        document.getElementById("forgotPasswordContent").style.display = "none";
+        document.getElementById("resetPasswordContent").style.display = "block";
+        document.getElementById("profileContent").style.display = "none";
+        document.getElementById("resetSuccess").style.display = "none";
     }
     
     function showRegisterForm() {
         document.getElementById("loginContent").style.display = "none";
         document.getElementById("registerContent").style.display = "block";
         document.getElementById("forgotPasswordContent").style.display = "none";
+        document.getElementById("resetPasswordContent").style.display = "none";
         document.getElementById("profileContent").style.display = "none";
         document.getElementById("registerForm").reset();
     }
@@ -1070,16 +1320,22 @@
         document.getElementById("loginContent").style.display = "block";
         document.getElementById("registerContent").style.display = "none";
         document.getElementById("forgotPasswordContent").style.display = "none";
+        document.getElementById("resetPasswordContent").style.display = "none";
         document.getElementById("profileContent").style.display = "none";
         document.getElementById("loginForm").reset();
         document.getElementById("forgotPasswordForm").reset();
         document.getElementById("recoverySuccess").style.display = "none";
+        document.getElementById("recoveryError").style.display = "none";
+        currentRecoveryCode = null;
+        if (recoveryCodeTimer) clearInterval(recoveryCodeTimer);
+
     }
     
     function showProfileContent() {
         document.getElementById("loginContent").style.display = "none";
         document.getElementById("registerContent").style.display = "none";
         document.getElementById("forgotPasswordContent").style.display = "none";
+        document.getElementById("resetPasswordContent").style.display = "none";
         document.getElementById("profileContent").style.display = "block";
     }
     
@@ -1167,8 +1423,147 @@
             return;
         }
         
-        showMessage('Funcionalidade de recuperação de senha em desenvolvimento.', 'info');
+        // Gerar código de 6 dígitos
+        currentRecoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // Mostrar código na tela
+        document.getElementById('recoveryEmail').textContent = identifier.includes('@') ? identifier : ${identifier}@exemplo.com;
+        document.getElementById('recoveryCode').textContent = currentRecoveryCode;
         document.getElementById('recoverySuccess').style.display = 'block';
+        document.getElementById('recoveryError').style.display = 'none';
+        
+        // Limpar formulário
+        this.reset();
+        
+        showMessage(Código gerado: ${currentRecoveryCode}, 'success');
+
+        startCodeTimer();
+    });
+
+    // Função para usar o código
+    function useRecoveryCode() {
+        if (!currentRecoveryCode) {
+            showMessage('Nenhum código disponível.', 'error');
+            return;
+        }
+        document.getElementById('resetCode').value = currentRecoveryCode;
+        showResetPassword();
+    }
+
+    // Função para copiar código
+    function copyRecoveryCode() {
+        const code = document.getElementById('resetCode').value || currentRecoveryCode;
+        if (code) {
+            try {
+                navigator.clipboard.writeText(code);
+                showMessage('Código copiado!', 'success');
+            } catch (e) {
+                // Fallback simples
+                const tempInput = document.createElement('input');
+                tempInput.value = code;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                showMessage('Código copiado!', 'success');
+            }
+        }
+    }
+
+    // Temporizador do código
+    function startCodeTimer() {
+        let timeLeft = 600; // 10 minutos
+        
+        // Limpar timer anterior
+        if (recoveryCodeTimer) clearInterval(recoveryCodeTimer);
+        
+        // Remover display anterior
+        const oldTimer = document.getElementById('codeTimer');
+        if (oldTimer) oldTimer.remove();
+        
+        // Criar novo display
+        const timerDisplay = document.createElement('div');
+        timerDisplay.id = 'codeTimer';
+        timerDisplay.style.cssText = `
+            background: #ffc107;
+            color: #856404;
+            padding: 8px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        `;
+
+        document.getElementById('recoverySuccess').appendChild(timerDisplay);
+        
+        recoveryCodeTimer = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            
+            timerDisplay.textContent = ⏰ Expira em: ${minutes}:${seconds.toString().padStart(2, '0')};
+            
+            if (timeLeft <= 60) {
+                timerDisplay.style.background = '#dc3545';
+                timerDisplay.style.color = '#fff';
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(recoveryCodeTimer);
+                timerDisplay.textContent = '⏰ Código expirado!';
+                timerDisplay.style.background = '#6c757d';
+                currentRecoveryCode = null;
+            }
+            
+            timeLeft--;
+        }, 1000);
+    }
+    
+    // Formulário de redefinição de senha
+    document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const code = document.getElementById('resetCode').value.trim();
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmNewPassword').value;
+        
+        // Validações básicas
+        if (!code || !newPassword || !confirmPassword) {
+            showMessage('Preencha todos os campos.', 'error');
+            return;
+        }
+        
+        if (code.length !== 6) {
+            showMessage('Código deve ter 6 dígitos.', 'error');
+            return;
+        }
+        
+        if (currentRecoveryCode && code !== currentRecoveryCode) {
+            showMessage('Código inválido.', 'error');
+            return;
+        }
+        
+        if (newPassword.length < 6) {
+            showMessage('Senha mínima: 6 caracteres.', 'error');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            showMessage('Senhas não coincidem.', 'error');
+            return;
+        }
+
+        // Simular sucesso
+        document.getElementById('resetSuccess').style.display = 'block';
+        showMessage('Senha redefinida!', 'success');
+        
+        // Limpar
+        currentRecoveryCode = null;
+        if (recoveryCodeTimer) clearInterval(recoveryCodeTimer);
+        
+        setTimeout(() => {
+            showLoginForm();
+        }, 2000);
     });
     
     // Formulário de registro
@@ -1263,7 +1658,7 @@
         
         if (file) {
             showMessage('Foto alterada com sucesso! (Simulação)', 'success');
-            document.querySelector('.sidebar-profile-avatar').innerHTML = '🖼️';
+            document.querySelector('.sidebar-profile-avatar').innerHTML = '🖼';
             closeModal();
         } else {
             alert('Por favor, selecione uma imagem.');
@@ -1339,7 +1734,7 @@
             
             if (field === 'password') {
                 input.type = 'password';
-                input.value = '********';
+                input.value = '';
             }
             
             input.classList.remove('editable');
@@ -1357,7 +1752,7 @@
         const changeLink = buttons.previousElementSibling;
         
         if (field === 'password') {
-            input.value = '********';
+            input.value = '';
             input.type = 'password';
         } else if (window.originalValues && window.originalValues[field]) {
             input.value = window.originalValues[field];
@@ -1393,7 +1788,7 @@
             tagElement.setAttribute('data-tag', tag.id);
             tagElement.setAttribute('data-name', tag.name);
             tagElement.textContent = tag.name;
-            tagElement.title = `Clique para ${isSelected ? 'remover' : 'adicionar'} esta tag`;
+            tagElement.title = Clique para ${isSelected ? 'remover' : 'adicionar'} esta tag;
             tagsList.appendChild(tagElement);
         });
         
@@ -1413,7 +1808,7 @@
                 updateLocalStorageTags();
                 
                 showMessage(
-                    `Tag "${tagName}" ${isSelected ? 'removida' : 'adicionada'}!`, 
+                    Tag "${tagName}" ${isSelected ? 'removida' : 'adicionada'}!, 
                     'success'
                 );
             });
@@ -1444,7 +1839,7 @@
         };
         
         const messageDiv = document.createElement('div');
-        messageDiv.className = `temp-message ${type}`;
+        messageDiv.className = temp-message ${type};
         messageDiv.textContent = text;
         messageDiv.style.background = colors[type] || colors.info;
         
@@ -1480,10 +1875,19 @@
     // Inicializar quando a página carregar
     document.addEventListener('DOMContentLoaded', function() {
         checkLoginStatus();
+        
+        // Verificar se há um token de redefinição de senha na URL (para demonstração)
+        const urlParams = new URLSearchParams(window.location.search);
+        const resetToken = urlParams.get('reset_token');
+        if (resetToken) {
+            document.getElementById('resetToken').value = resetToken;
+            openSidebar();
+            showResetPassword();
+        }
     });
 </script>
 
 <!-- Adicionar Font Awesome para ícones -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-{% endblock %}
+{% endblock %}
