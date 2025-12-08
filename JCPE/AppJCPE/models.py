@@ -22,7 +22,7 @@ class Noticia(models.Model):
     local = models.CharField(max_length=200, null=True)
     materia = models.TextField(null=False)
     data_criacao = models.DateTimeField("Criado em ", auto_now_add=True)
-    autor = models.CharField(max_length=200, null=False)
+    autor_user = models.CharField(max_length=200, null=True, blank=True)
     tags = models.ManyToManyField(Tags)
     fontes = models.CharField(max_length=200, null=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE,null=True)
