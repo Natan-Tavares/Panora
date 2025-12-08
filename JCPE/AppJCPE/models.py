@@ -25,7 +25,6 @@ class Noticia(models.Model):
     autor = models.CharField(max_length=200, null=False)
     tags = models.ManyToManyField(Tags)
     fontes = models.CharField(max_length=200, null=True)
-    subtitulo = models.CharField(max_length=200, null=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE,null=True)
     imagem=models.ImageField(upload_to='noticias/imagens/', height_field=None, width_field=None, max_length=None,null=True)
     capa=models.ImageField(upload_to='noticias/imagens/', height_field=None, width_field=None, max_length=None,null=True)
@@ -84,16 +83,10 @@ def criar_ou_atualizar_perfil(sender, instance, created, **kwargs):
         instance.perfil.save()
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    
-    def __str__(self):
-        return self.name
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    tags = models.ManyToManyField(Tag, blank=True)
+    tags = models.ManyToManyField(Tags, blank=True)
     
     def __str__(self):
         return f"Perfil de {self.user.username}"

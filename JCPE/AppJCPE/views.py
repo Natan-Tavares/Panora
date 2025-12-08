@@ -12,7 +12,8 @@ from .serializers import RespostaSerializer
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_POST
-import json
+import json,os
+from django.conf import settings
 from datetime import datetime, timedelta
 
 categorias_noticias = [
@@ -44,17 +45,7 @@ tags_noticias = [
 # CRIAR NOTICIA
 # ---------------------------
 def criar_noticia(request):
-    if not Tags.objects.exists():
-        Criar_tag = [
-            Tags(tag=nome) for nome in tags_noticias 
-        ]
-        Tags.objects.bulk_create(Criar_tag)
-    if not Categoria.objects.exists():
-        Criar_categoria = [
-            Categoria(categoria=nome) for nome in categorias_noticias
-        ]
-        Categoria.objects.bulk_create(Criar_categoria)
-
+    
     todas_tags = Tags.objects.all()
     categoria = Categoria.objects.all()
 
@@ -133,6 +124,47 @@ def editar_noticia(request, id):
 # INICIAL / FEED
 # ---------------------------
 def inicial(request):
+    if not Noticia.objects.exists():
+        if not Tags.objects.exists():
+            Criar_tag = [
+                Tags(tag=nome) for nome in tags_noticias 
+            ]
+            Tags.objects.bulk_create(Criar_tag)
+        if not Categoria.objects.exists():
+            Criar_categoria = [
+                Categoria(categoria=nome) for nome in categorias_noticias
+            ]
+            Categoria.objects.bulk_create(Criar_categoria)
+
+            caminho_arquivo = os.path.join(settings.BASE_DIR, 'AppJCPE','noticias.json')
+            dados_noticias = []
+
+        if os.path.exists(caminho_arquivo):
+            with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
+                dados_noticias = json.load(arquivo)
+            
+        for item in dados_noticias:
+            try:
+                cat_obj = Categoria.objects.get(categoria=item["categoria_nome"])
+            except Categoria.DoesNotExist:
+                cat_obj = None 
+                
+            nova_noticia = Noticia(
+                titulo=item["titulo"],
+                subtitulo=item["subtitulo"],
+                local=item["local"],
+                materia=item["materia"],
+                autor=item["autor"],
+                fontes=item["fontes"],
+                categoria=cat_obj,
+                imagem=f"noticias/imagens/{item['img_nome']}",
+                capa=f"noticias/imagens/{item['img_nome']}" 
+            )
+            
+            nova_noticia.save()
+
+            tag_obj = Tags.objects.get(tag=item["tag_nome"])
+            nova_noticia.tags.add(tag_obj)
     id_tag = request.GET.get("tag")
     q = request.GET.get("q", "").strip()
 
