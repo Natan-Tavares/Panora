@@ -398,9 +398,11 @@ def login_view(request):
             login(request, user)
             return redirect("inicial")
 
-        messages.error(request, "Usuário ou senha incorretos.")
+        return render(request, "login.html", {
+    "erro": "Usuário ou senha incorretos"
+})
 
-    return render(request, "login.html")
+    return render(request, "conta.html")
 
 
 def deslogar(request):
