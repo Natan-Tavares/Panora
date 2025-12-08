@@ -94,11 +94,10 @@ def criar_noticia(request):
 def migrar_autores(request):
     """Migra autores de string para User objects"""
     noticias = Noticia.objects.filter(autor__isnull=True)  # Para o novo campo
-    # OU se você mantiver o campo antigo:
     # noticias = Noticia.objects.all()
     
     for noticia in noticias:
-        if hasattr(noticia, 'autor_nome'):  # Se você mantiver o campo antigo
+        if hasattr(noticia, 'autor_nome'):
             username = noticia.autor_nome.lower().replace(' ', '_')
             try:
                 user = User.objects.get(username=username)
@@ -164,7 +163,6 @@ def inicial(request):
             ]
             Categoria.objects.bulk_create(Criar_categoria)
 
-        # Mova estas linhas PARA FORA do bloco if not Categoria.objects.exists():
         caminho_arquivo = os.path.join(settings.BASE_DIR, 'AppJCPE', 'noticias.json')
         dados_noticias = []
 
@@ -172,21 +170,18 @@ def inicial(request):
             with open(caminho_arquivo, 'r', encoding='utf-8') as arquivo:
                 dados_noticias = json.load(arquivo)
         
-        # IMPORTANTE: Você está usando autor_user, mas o modelo tem campo 'autor'
-        # Vamos usar 'autor' em vez de criar User objects
         for item in dados_noticias:
             try:
                 cat_obj = Categoria.objects.get(categoria=item["categoria_nome"])
             except Categoria.DoesNotExist:
                 cat_obj = None 
             
-            # CORREÇÃO: Use o campo 'autor' do modelo (CharField), não autor_user
             nova_noticia = Noticia(
                 titulo=item["titulo"],
                 subtitulo=item["subtitulo"],
                 local=item["local"],
                 materia=item["materia"],
-                autor_user=item["autor"],  # ALTERADO: autor_user para autor (string)
+                autor_user=item["autor"],
                 fontes=item["fontes"],
                 categoria=cat_obj,
                 imagem=f"noticias/imagens/{item['img_nome']}",
@@ -198,7 +193,6 @@ def inicial(request):
             tag_obj = Tags.objects.get(tag=item["tag_nome"])
             nova_noticia.tags.add(tag_obj)
     
-    # Resto do código...
     id_tag = request.GET.get("tag")
     q = request.GET.get("q", "").strip()
 
@@ -245,12 +239,9 @@ def inicial(request):
         }
     )
 
-# views.py - ATUALIZE colunistas (versão corrigida)
 def colunistas(request):
     busca = request.GET.get('busca', '').strip()
     
-    # CORREÇÃO: Como autor_user é CharField, não podemos fazer join com User
-    # Em vez disso, vamos buscar autores DISTINTOS diretamente do campo autor_user
     autores_distintos = Noticia.objects.exclude(autor_user__isnull=True).values_list('autor_user', flat=True).distinct()
     
     # Filtar por busca se houver
@@ -265,7 +256,7 @@ def colunistas(request):
         ultimas_noticias = noticias_autor.order_by('-data_criacao')[:3]
         
         autores_filtrados.append({
-            'id': nome_autor,  # Usar o nome como "ID" temporariamente
+            'id': nome_autor,
             'nome': nome_autor,
             'total_noticias': total_noticias,
             'ultimas_noticias': ultimas_noticias,

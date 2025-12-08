@@ -933,7 +933,7 @@
 </nav>
 
 <!-- ============================ -->
-<!-- SIDEBAR COMPLETA - AGORA FUNCIONAL -->
+<!-- SIDEBAR COMPLETA -->
 <!-- ============================ -->
 
 <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
@@ -943,11 +943,22 @@
     <div class="sidebar-modal-content">
         <h3>Alterar Foto de Perfil</h3>
         <p>Selecione uma nova imagem para seu perfil:</p>
-        <input type="file" id="photoInput" accept="image/*" style="margin: 15px 0; width: 100%;">
-        <div class="sidebar-modal-buttons">
-            <button class="sidebar-modal-btn sidebar-btn-primary" onclick="savePhoto()">Salvar</button>
-            <button class="sidebar-modal-btn sidebar-btn-secondary-modal" onclick="closeModal()">Cancelar</button>
-        </div>
+        
+        <form id="photoForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="photoInput" name="photo" accept="image/*" style="margin: 15px 0; width: 100%; padding: 10px; border: 2px dashed #ccc; border-radius: 8px;">
+            
+            <!-- Pré-visualização da imagem -->
+            <div id="imagePreview" style="text-align: center; margin: 15px 0; display: none;">
+                <img id="previewImage" src="" alt="Pré-visualização" style="max-width: 200px; max-height: 200px; border-radius: 50%; border: 3px solid #c30000;">
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">Pré-visualização</p>
+            </div>
+            
+            <div class="sidebar-modal-buttons">
+                <button type="button" class="sidebar-modal-btn sidebar-btn-primary" onclick="savePhoto()">Salvar Foto</button>
+                <button type="button" class="sidebar-modal-btn sidebar-btn-secondary-modal" onclick="closeModal()">Cancelar</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -1022,7 +1033,6 @@
             <div style="background: #fff; border: 2px dashed #155724; padding: 15px; margin: 15px 0; border-radius: 8px; text-align: center;">
                 <p style="margin: 0 0 10px; font-size: 12px; color: #666;">SEU CÓDIGO DE RECUPERAÇÃO:</p>
                 <div id="recoveryCode" style="font-size: 24px; font-weight: bold; letter-spacing: 3px; color: #155724; padding: 10px; background: #f8f9fa; border-radius: 5px; font-family: monospace;">
-                    <!-- O código será gerado aqui -->
                 </div>
                 <p style="font-size: 11px; color: #666; margin-top: 10px;">Use este código para redefinir sua senha</p>
             </div>
@@ -1155,7 +1165,6 @@
             <div class="sidebar-tags-container">
                 <h3>Tags de Interesse</h3>
                 <div class="sidebar-tags-list" id="tagsList">
-                    <!-- Tags serão carregadas via JavaScript -->
                     <div class="loading-tags">Carregando tags...</div>
                 </div>
                 <p style="font-size: 11px; color: #666; margin-top: 10px;">
@@ -1193,8 +1202,6 @@
     // Sistema de autenticação
     let isLoggedIn = false;
     let currentUser = null;
-    let currentRecoveryCode = null;
-    let recoveryCodeTimer = null;
     
     // Sistema de tags
     const TAGS_DATA = [
@@ -1210,7 +1217,6 @@
         {id: 'ensino_superior', name: 'Ensino Superior'}
     ];
     
-    // Função para obter o token CSRF
     function getCSRFToken() {
         const name = 'csrftoken';
         let cookieValue = null;
@@ -1227,7 +1233,6 @@
         return cookieValue;
     }
     
-    // Função para fazer requisições AJAX
     async function makeRequest(url, method, data = null) {
         const csrfToken = getCSRFToken();
         const options = {
@@ -1262,11 +1267,6 @@
         
         // Verificar status de login
         checkLoginStatus();
-        
-        // Carregar tags quando abrir a sidebar
-        if (isLoggedIn) {
-            loadTags();
-        }
     }
     
     function closeSidebar() {
@@ -1287,16 +1287,7 @@
         document.getElementById("recoverySuccess").style.display = "none";
         document.getElementById("recoveryError").style.display = "none";
         document.getElementById("forgotPasswordForm").reset();
-        currentRecoveryCode = null;
-        if (recoveryCodeTimer) {
-            clearInterval(recoveryCodeTimer);
-            recoveryCodeTimer = null;
-        }
-    
-        const timerDisplay = document.getElementById('codeTimer');
-        if (timerDisplay) timerDisplay.remove();
     }
-    
     
     function showResetPassword() {
         document.getElementById("loginContent").style.display = "none";
@@ -1326,9 +1317,6 @@
         document.getElementById("forgotPasswordForm").reset();
         document.getElementById("recoverySuccess").style.display = "none";
         document.getElementById("recoveryError").style.display = "none";
-        currentRecoveryCode = null;
-        if (recoveryCodeTimer) clearInterval(recoveryCodeTimer);
-
     }
     
     function showProfileContent() {
@@ -1337,6 +1325,15 @@
         document.getElementById("forgotPasswordContent").style.display = "none";
         document.getElementById("resetPasswordContent").style.display = "none";
         document.getElementById("profileContent").style.display = "block";
+        
+        // Preencher dados do usuário
+        if (currentUser) {
+            document.getElementById('usernameInput').value = currentUser.username;
+            document.getElementById('emailInput').value = currentUser.email || '';
+        }
+        
+        // Carregar tags
+        loadTags();
     }
     
     // Função para mostrar/ocultar senha
@@ -1349,18 +1346,45 @@
         }
     }
     
-    // Sistema de login/logout
+    // ====================
+    // SISTEMA DE AUTENTICAÇÃO
+    // ====================
+    
+    // Função principal para verificar status de login
     async function checkLoginStatus() {
+        console.log('Verificando status de login...');
+        
+        // O Django injeta uma variável global quando o usuário está logado
+        {% if user.is_authenticated %}
+            console.log('Usuário autenticado pelo Django');
+            isLoggedIn = true;
+            currentUser = {
+                username: '{{ user.username }}',
+                email: '{{ user.email }}',
+                id: {{ user.id }}
+            };
+            
+            // Atualizar botão e mostrar perfil
+            document.getElementById('sidebarToggle').textContent = 'Minha Conta';
+            showProfileContent();
+            
+            // Atualizar perfil da página principal
+            if (document.querySelector('.username')) {
+                document.querySelector('.username').textContent = '@{{ user.username }}';
+            }
+            
+            return;
+        {% endif %}
+        
         try {
-            const response = await makeRequest('/api/check-auth/', 'GET');
+            const response = await makeRequest('/api/check_auth/', 'GET');
+            console.log('Resposta da API check_auth:', response);
             
             if (response.authenticated) {
                 isLoggedIn = true;
                 currentUser = response.user;
                 document.getElementById('sidebarToggle').textContent = 'Minha Conta';
                 showProfileContent();
-                document.getElementById('usernameInput').value = currentUser.username;
-                document.getElementById('emailInput').value = currentUser.email;
                 
                 // Atualizar perfil da página principal
                 if (document.querySelector('.username')) {
@@ -1374,6 +1398,10 @@
             }
         } catch (error) {
             console.error('Erro ao verificar autenticação:', error);
+            // Em caso de erro, mostrar tela de login
+            isLoggedIn = false;
+            currentUser = null;
+            document.getElementById('sidebarToggle').textContent = 'Login';
             showLoginForm();
         }
     }
@@ -1381,6 +1409,7 @@
     // Formulário de login
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
+        console.log('Tentando login...');
         
         const identifier = document.getElementById('loginIdentifier').value.trim();
         const password = document.getElementById('loginPassword').value;
@@ -1395,175 +1424,26 @@
             password: password
         });
         
+        console.log('Resposta do login:', response);
+        
         if (response.success) {
             showMessage(response.message, 'success');
             currentUser = response.user;
-            checkLoginStatus();
             
+            // Atualizar status
+            await checkLoginStatus();
+            
+            // Limpar formulário
             document.getElementById('loginForm').reset();
             
+            // Fechar sidebar e recarregar
             setTimeout(() => {
                 closeSidebar();
-                // Recarregar a página para atualizar o estado
                 window.location.reload();
             }, 1500);
         } else {
-            showMessage(response.message, 'error');
+            showMessage(response.message || 'Erro ao fazer login', 'error');
         }
-    });
-    
-    // Formulário de recuperação de senha
-    document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const identifier = document.getElementById('recoveryIdentifier').value.trim();
-        
-        if (!identifier) {
-            showMessage('Por favor, digite seu nome de usuário ou e-mail.', 'error');
-            return;
-        }
-        
-        // Gerar código de 6 dígitos
-        currentRecoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
-        
-        // Mostrar código na tela
-        document.getElementById('recoveryEmail').textContent = identifier.includes('@') ? identifier : ${identifier}@exemplo.com;
-        document.getElementById('recoveryCode').textContent = currentRecoveryCode;
-        document.getElementById('recoverySuccess').style.display = 'block';
-        document.getElementById('recoveryError').style.display = 'none';
-        
-        // Limpar formulário
-        this.reset();
-        
-        showMessage(Código gerado: ${currentRecoveryCode}, 'success');
-
-        startCodeTimer();
-    });
-
-    // Função para usar o código
-    function useRecoveryCode() {
-        if (!currentRecoveryCode) {
-            showMessage('Nenhum código disponível.', 'error');
-            return;
-        }
-        document.getElementById('resetCode').value = currentRecoveryCode;
-        showResetPassword();
-    }
-
-    // Função para copiar código
-    function copyRecoveryCode() {
-        const code = document.getElementById('resetCode').value || currentRecoveryCode;
-        if (code) {
-            try {
-                navigator.clipboard.writeText(code);
-                showMessage('Código copiado!', 'success');
-            } catch (e) {
-                // Fallback simples
-                const tempInput = document.createElement('input');
-                tempInput.value = code;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-                showMessage('Código copiado!', 'success');
-            }
-        }
-    }
-
-    // Temporizador do código
-    function startCodeTimer() {
-        let timeLeft = 600; // 10 minutos
-        
-        // Limpar timer anterior
-        if (recoveryCodeTimer) clearInterval(recoveryCodeTimer);
-        
-        // Remover display anterior
-        const oldTimer = document.getElementById('codeTimer');
-        if (oldTimer) oldTimer.remove();
-        
-        // Criar novo display
-        const timerDisplay = document.createElement('div');
-        timerDisplay.id = 'codeTimer';
-        timerDisplay.style.cssText = `
-            background: #ffc107;
-            color: #856404;
-            padding: 8px;
-            border-radius: 5px;
-            margin: 10px 0;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-        `;
-
-        document.getElementById('recoverySuccess').appendChild(timerDisplay);
-        
-        recoveryCodeTimer = setInterval(() => {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            
-            timerDisplay.textContent = ⏰ Expira em: ${minutes}:${seconds.toString().padStart(2, '0')};
-            
-            if (timeLeft <= 60) {
-                timerDisplay.style.background = '#dc3545';
-                timerDisplay.style.color = '#fff';
-            }
-            
-            if (timeLeft <= 0) {
-                clearInterval(recoveryCodeTimer);
-                timerDisplay.textContent = '⏰ Código expirado!';
-                timerDisplay.style.background = '#6c757d';
-                currentRecoveryCode = null;
-            }
-            
-            timeLeft--;
-        }, 1000);
-    }
-    
-    // Formulário de redefinição de senha
-    document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const code = document.getElementById('resetCode').value.trim();
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmNewPassword').value;
-        
-        // Validações básicas
-        if (!code || !newPassword || !confirmPassword) {
-            showMessage('Preencha todos os campos.', 'error');
-            return;
-        }
-        
-        if (code.length !== 6) {
-            showMessage('Código deve ter 6 dígitos.', 'error');
-            return;
-        }
-        
-        if (currentRecoveryCode && code !== currentRecoveryCode) {
-            showMessage('Código inválido.', 'error');
-            return;
-        }
-        
-        if (newPassword.length < 6) {
-            showMessage('Senha mínima: 6 caracteres.', 'error');
-            return;
-        }
-        
-        if (newPassword !== confirmPassword) {
-            showMessage('Senhas não coincidem.', 'error');
-            return;
-        }
-
-        // Simular sucesso
-        document.getElementById('resetSuccess').style.display = 'block';
-        showMessage('Senha redefinida!', 'success');
-        
-        // Limpar
-        currentRecoveryCode = null;
-        if (recoveryCodeTimer) clearInterval(recoveryCodeTimer);
-        
-        setTimeout(() => {
-            showLoginForm();
-        }, 2000);
     });
     
     // Formulário de registro
@@ -1609,13 +1489,14 @@
         if (response.success) {
             showMessage(response.message, 'success');
             currentUser = response.user;
-            checkLoginStatus();
+            
+            // Atualizar status
+            await checkLoginStatus();
             
             document.getElementById('registerForm').reset();
             
             setTimeout(() => {
                 closeSidebar();
-                // Recarregar a página para atualizar o estado
                 window.location.reload();
             }, 2000);
         } else {
@@ -1631,37 +1512,16 @@
             isLoggedIn = false;
             currentUser = null;
             showMessage(response.message, 'success');
+            
+            // Atualizar interface
             checkLoginStatus();
             showLoginForm();
             closeSidebar();
             
-            // Recarregar a página para atualizar o estado do Django
+            // Recarregar página
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
-        }
-    }
-    
-    // Funções do Modal de Foto
-    function openPhotoModal() {
-        document.getElementById("photoModal").style.display = "flex";
-    }
-    
-    function closeModal() {
-        document.getElementById("photoModal").style.display = "none";
-        document.getElementById("photoInput").value = '';
-    }
-    
-    function savePhoto() {
-        const fileInput = document.getElementById("photoInput");
-        const file = fileInput.files[0];
-        
-        if (file) {
-            showMessage('Foto alterada com sucesso! (Simulação)', 'success');
-            document.querySelector('.sidebar-profile-avatar').innerHTML = '🖼';
-            closeModal();
-        } else {
-            alert('Por favor, selecione uma imagem.');
         }
     }
     
@@ -1723,7 +1583,7 @@
         const data = {};
         data[field] = newValue;
         
-        const response = await makeRequest('/api/update-profile/', 'POST', data);
+        const response = await makeRequest('/api/update_profile/', 'POST', data);
         
         if (response.success) {
             showMessage(response.message, 'success');
@@ -1734,15 +1594,20 @@
             
             if (field === 'password') {
                 input.type = 'password';
-                input.value = '';
+                input.value = '********';
             }
             
             input.classList.remove('editable');
             input.readOnly = true;
             buttons.classList.remove('active');
             changeLink.style.display = 'inline-block';
+            
+            // Atualizar nome na página principal se mudou username
+            if (field === 'username' && document.querySelector('.username')) {
+                document.querySelector('.username').textContent = '@' + newValue;
+            }
         } else {
-            alert(response.message);
+            alert(response.message || 'Erro ao atualizar perfil');
         }
     }
     
@@ -1752,7 +1617,7 @@
         const changeLink = buttons.previousElementSibling;
         
         if (field === 'password') {
-            input.value = '';
+            input.value = '********';
             input.type = 'password';
         } else if (window.originalValues && window.originalValues[field]) {
             input.value = window.originalValues[field];
@@ -1788,7 +1653,7 @@
             tagElement.setAttribute('data-tag', tag.id);
             tagElement.setAttribute('data-name', tag.name);
             tagElement.textContent = tag.name;
-            tagElement.title = Clique para ${isSelected ? 'remover' : 'adicionar'} esta tag;
+            tagElement.title = `Clique para ${isSelected ? 'remover' : 'adicionar'} esta tag`;
             tagsList.appendChild(tagElement);
         });
         
@@ -1808,7 +1673,7 @@
                 updateLocalStorageTags();
                 
                 showMessage(
-                    Tag "${tagName}" ${isSelected ? 'removida' : 'adicionada'}!, 
+                    `Tag "${tagName}" ${isSelected ? 'removida' : 'adicionada'}!`, 
                     'success'
                 );
             });
@@ -1839,7 +1704,7 @@
         };
         
         const messageDiv = document.createElement('div');
-        messageDiv.className = temp-message ${type};
+        messageDiv.className = `temp-message ${type}`;
         messageDiv.textContent = text;
         messageDiv.style.background = colors[type] || colors.info;
         
@@ -1874,17 +1739,158 @@
     
     // Inicializar quando a página carregar
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Página carregada - inicializando sistema de login');
+        
+        // Verificar status inicial
         checkLoginStatus();
         
-        // Verificar se há um token de redefinição de senha na URL (para demonstração)
-        const urlParams = new URLSearchParams(window.location.search);
-        const resetToken = urlParams.get('reset_token');
-        if (resetToken) {
-            document.getElementById('resetToken').value = resetToken;
-            openSidebar();
-            showResetPassword();
-        }
+        // Adicionar eventos aos botões de alterar
+        document.querySelectorAll('.sidebar-change-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const onclickAttr = this.getAttribute('onclick');
+                if (onclickAttr) {
+                    const match = onclickAttr.match(/'(\w+)'/);
+                    if (match) {
+                        enableEdit(match[1]);
+                    }
+                }
+            });
+        });
+        
+        // Adicionar eventos aos botões de salvar
+        document.querySelectorAll('.sidebar-btn-save').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const onclickAttr = this.getAttribute('onclick');
+                if (onclickAttr) {
+                    const match = onclickAttr.match(/'(\w+)'/);
+                    if (match) {
+                        saveEdit(match[1]);
+                    }
+                }
+            });
+        });
+        
+        // Adicionar eventos aos botões de cancelar
+        document.querySelectorAll('.sidebar-btn-cancel').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const onclickAttr = this.getAttribute('onclick');
+                if (onclickAttr) {
+                    const match = onclickAttr.match(/'(\w+)'/);
+                    if (match) {
+                        cancelEdit(match[1]);
+                    }
+                }
+            });
+        });
     });
+    // ====================
+// FUNÇÕES PARA FOTO DE PERFIL
+// ====================
+
+// Função para abrir modal de foto
+function openPhotoModal() {
+    document.getElementById("photoModal").style.display = "flex";
+    
+    // Resetar pré-visualização
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('photoInput').value = '';
+}
+
+// Função para fechar modal
+function closeModal() {
+    document.getElementById("photoModal").style.display = "none";
+    document.getElementById("photoInput").value = '';
+    document.getElementById('imagePreview').style.display = 'none';
+}
+
+// Pré-visualização da imagem
+document.getElementById('photoInput')?.addEventListener('change', function(e) {
+    const preview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+    const file = e.target.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        
+        reader.readAsDataURL(file);
+    } else {
+        preview.style.display = 'none';
+    }
+});
+
+// Função para salvar foto
+async function savePhoto() {
+    const fileInput = document.getElementById('photoInput');
+    const file = fileInput?.files[0];
+    
+    if (!file) {
+        alert('Por favor, selecione uma imagem.');
+        return;
+    }
+    
+    // Validar tamanho
+    if (file.size > 5 * 1024 * 1024) {
+        alert('A imagem deve ter no máximo 5MB.');
+        return;
+    }
+    
+    // Validar tipo
+    if (!file.type.match('image.*')) {
+        alert('Por favor, selecione apenas arquivos de imagem.');
+        return;
+    }
+    
+    // Criar FormData
+    const formData = new FormData();
+    formData.append('photo', file);
+    formData.append('csrfmiddlewaretoken', getCSRFToken());
+    
+    showMessage('Enviando foto...', 'info');
+    
+    try {
+        const response = await fetch('/api/update_profile_photo/', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showMessage(data.message, 'success');
+            
+            // Atualizar avatar na sidebar
+            const avatar = document.querySelector('.sidebar-profile-avatar');
+            if (avatar && data.foto_url) {
+                avatar.innerHTML = `<img src="${data.foto_url}" alt="Foto" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">`;
+            }
+            
+            // Atualizar foto na página principal
+            const fotoPrincipal = document.querySelector('.foto');
+            if (fotoPrincipal && data.foto_url) {
+                fotoPrincipal.src = data.foto_url;
+            }
+            
+            closeModal();
+            
+            // Recarregar para atualizar
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } else {
+            alert(data.message || 'Erro ao salvar foto.');
+        }
+    } catch (error) {
+        console.error('Erro ao enviar foto:', error);
+        alert('Erro de conexão. Tente novamente.');
+    }
+}
+
 </script>
 
 <!-- Adicionar Font Awesome para ícones -->
