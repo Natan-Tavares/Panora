@@ -1,38 +1,139 @@
-name: CI/CD Pipeline
+name: Django Docker CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
   pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
+  lint-test:
     runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt || pip install -r requirements.txt
+        pip install pytest pytest-django coverage
+    
+    - name: Lint with flake8
+      run: |
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Check formatting with black
+      run: |
+        black --check .
+    
+    - name: Run migrations
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        SECRET_KEY: test-secret-key-ci
+        DEBUG: 'True'
+      run: |
+        python manage.py migrate
+    
+    - name: Run tests with coverage
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        SECRET_KEY: test-secret-key-ci
+        DEBUG: 'True'
+      run: |
+        coverage run --source='.' manage.py test
+        coverage xml
+        coverage report -m
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          test-reports/
+        retention-days: 30
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Instalar dependências
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Rodar testes
-        run: |
-          python manage.py test
+  build-and-push:
+    needs: lint-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=tag
+          type=sha,prefix=commit-
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
   deploy:
-    needs: build
+    needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
     steps:
-      - name: Deploy automático no Render
-        run: |
-          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+    - name: Deploy to Render
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          DEPLOY_HOOK="${{ secrets.RENDER_DEPLOY_HOOK }}"
+          ENV="Production"
+        else
+          DEPLOY_HOOK="${{ secrets.RENDER_STAGING_DEPLOY_HOOK }}"
+          ENV="Staging"
+        fi
+        
+        echo "Deploying to $ENV environment..."
+        curl -X POST "$DEPLOY_HOOK"
+        
+        # Aguardar um pouco e verificar status
+        sleep 10
