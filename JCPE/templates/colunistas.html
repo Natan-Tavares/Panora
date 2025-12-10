@@ -1,0 +1,666 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colunistas - JC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style_inicial.css' %}">
+    <style>
+        /* --- ESTILOS ESPECÍFICOS DA PÁGINA DE COLUNISTAS --- */
+        
+        /* Header com fundo vermelho igual ao site */
+        .colunistas-header-bar {
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            color: white;
+            padding: 40px 0 30px;
+            text-align: center;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .colunistas-header-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .colunistas-header-bar h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .colunistas-header-bar p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Filtro estilo card moderno */
+        .filtro-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 25px;
+            margin: -20px auto 40px;
+            max-width: 800px;
+            position: relative;
+            z-index: 10;
+            border: 1px solid #eee;
+        }
+
+        .filtro-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .filtro-header i {
+            color: #d32f2f;
+            font-size: 1.5rem;
+            margin-right: 12px;
+        }
+
+        .filtro-header h2 {
+            font-size: 1.3rem;
+            color: #333;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .filtro-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filtro-input-group {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .filtro-input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .filtro-input:focus {
+            outline: none;
+            border-color: #d32f2f;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+
+        .filtro-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .filtro-btn:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+        }
+
+        .limpar-btn {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 14px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .limpar-btn:hover {
+            background: #e9ecef;
+            color: #333;
+            border-color: #ccc;
+        }
+
+        /* Resultado da busca */
+        .resultado-info {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(to right, #f8f9fa, #fff);
+            border-radius: 10px;
+            border-left: 4px solid #d32f2f;
+        }
+
+        .resultado-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .resultado-info .badge {
+            background: #d32f2f;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* Grid de colunistas */
+        .colunistas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto 50px;
+            padding: 0 20px;
+        }
+
+        /* Card de colunista */
+        .colunista-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .colunista-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+
+        .colunista-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6572 100%);
+            color: white;
+            padding: 25px 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .colunista-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #d32f2f;
+            border: 4px solid rgba(255,255,255,0.3);
+            flex-shrink: 0;
+        }
+
+        .colunista-info h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .colunista-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .colunista-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .colunista-stat i {
+            color: #ffc107;
+        }
+
+        /* Corpo do card */
+        .colunista-body {
+            padding: 20px;
+        }
+
+        .colunista-noticias-title {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .colunista-noticias-title i {
+            color: #d32f2f;
+        }
+
+        .noticia-lista {
+            margin-bottom: 20px;
+        }
+
+        .noticia-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .noticia-item:last-child {
+            border-bottom: none;
+        }
+
+        .noticia-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.2s ease;
+        }
+
+        .noticia-link:hover {
+            transform: translateX(5px);
+        }
+
+        .noticia-titulo {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .noticia-data {
+            font-size: 0.8rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .noticia-data i {
+            color: #d32f2f;
+            font-size: 0.7rem;
+        }
+
+        /* Botão ver mais */
+        .ver-mais-btn {
+            display: block;
+            background: #f8f9fa;
+            color: #d32f2f;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .ver-mais-btn:hover {
+            background: #d32f2f;
+            color: white;
+            border-color: #d32f2f;
+        }
+
+        .ver-mais-btn i {
+            margin-right: 8px;
+        }
+
+        /* Estado vazio */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px dashed #e0e0e0;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #d32f2f;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .empty-state p {
+            color: #666;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+        }
+
+        /* Botão voltar */
+        .voltar-container {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+
+        .voltar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fa;
+            color: #333;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+        }
+
+        .voltar-btn:hover {
+            background: #d32f2f;
+            color: white;
+            border-color: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .voltar-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .voltar-btn:hover i {
+            transform: translateX(-3px);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .colunistas-grid {
+                grid-template-columns: 1fr;
+                padding: 0 15px;
+            }
+            
+            .filtro-form {
+                flex-direction: column;
+            }
+            
+            .filtro-input-group {
+                min-width: 100%;
+            }
+            
+            .colunistas-header-bar h1 {
+                font-size: 2rem;
+            }
+            
+            .colunista-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+        }
+
+        /* Badge para colunista em destaque */
+        .colunista-destaque {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ffc107;
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header simplificado -->
+    <div class="uol-bar">
+        <div class="container uol-container">
+            <img src="https://conteudo.imguol.com.br/c/_layout/v3/logoUOL2021/logo_completo_white.svg" alt="UOL Logo" class="logo-uol-top">
+        </div>
+    </div>
+
+    <header>
+        <div class="top-bar container">
+            <div class="menu-and-logo">
+                <!-- Botão voltar para home -->
+                <a href="{% url 'inicial' %}" class="menu-icon" style="color: white; text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <img src="https://jc.uol.com.br/img/logo.svg" alt="JC Logo" class="logo-jc">
+            </div>
+
+            <div class="user-area">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'conta' %}" class="btn-entrar logged-in">
+                        <i class="fas fa-user-circle"></i> Minha Conta
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-entrar">
+                        <i class="far fa-user"></i> Entrar
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Cabeçalho da página -->
+    <div class="colunistas-header-bar">
+        <div class="container">
+            <h1><i class="fas fa-user-edit"></i> Colunistas</h1>
+            <p>Encontre os colunistas e suas publicações</p>
+        </div>
+    </div>
+
+    <!-- Filtro de busca -->
+    <div class="container">
+        <div class="filtro-card">
+            <div class="filtro-header">
+                <i class="fas fa-search"></i>
+                <h2>Buscar Colunista</h2>
+            </div>
+            
+            <form method="GET" action="{% url 'colunistas' %}" class="filtro-form">
+                <div class="filtro-input-group">
+                    <input type="text" name="busca" value="{{ busca }}" 
+                           class="filtro-input" 
+                           placeholder="Digite o nome do colunista...">
+                </div>
+                
+                <div class="filtro-buttons">
+                    <button type="submit" class="filtro-btn">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                    
+                    {% if busca %}
+                    <a href="{% url 'colunistas' %}" class="limpar-btn">
+                        <i class="fas fa-times"></i> Limpar
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados da busca -->
+    {% if busca and autores %}
+    <div class="container">
+        <div class="resultado-info">
+            <h3>
+                <i class="fas fa-search"></i> Resultados para: 
+                <span style="color: #d32f2f;">"{{ busca }}"</span>
+                <span class="badge">{{ autores|length }} colunista{{ autores|length|pluralize }}</span>
+            </h3>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Grid de colunistas -->
+    <div class="colunistas-grid">
+        {% if autores %}
+            {% for autor in autores %}
+            <div class="colunista-card">
+                {% if forloop.first and not busca %}
+                <div class="colunista-destaque">
+                    <i class="fas fa-star"></i> EM DESTAQUE
+                </div>
+                {% endif %}
+                
+                <div class="colunista-header">
+                    <div class="colunista-avatar">
+                        {{ autor.nome|slice:":1"|upper }}
+                    </div>
+                    <div class="colunista-info">
+                        <h3>{{ autor.nome }}</h3>
+                        <div class="colunista-stats">
+                            <span class="colunista-stat">
+                                <i class="fas fa-newspaper"></i>
+                                {{ autor.total_noticias }} publicação{{ autor.total_noticias|pluralize }}
+                            </span>
+                            {% if autor.primeira_noticia %}
+                            <span class="colunista-stat">
+                                <i class="far fa-calendar-alt"></i>
+                                Desde {{ autor.primeira_noticia.data_criacao|date:"m/Y" }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="colunista-body">
+                    <h4 class="colunista-noticias-title">
+                        <i class="fas fa-history"></i> Últimas Publicações
+                    </h4>
+                    
+                    {% if autor.ultimas_noticias %}
+                    <div class="noticia-lista">
+                        {% for noticia in autor.ultimas_noticias|slice:":3" %}
+                        <div class="noticia-item">
+                            <a href="{% url 'ler_noticia' noticia.id %}" class="noticia-link">
+                                <h5 class="noticia-titulo">{{ noticia.titulo|truncatechars:70 }}</h5>
+                                <div class="noticia-data">
+                                    <i class="far fa-clock"></i>
+                                    {{ noticia.data_criacao|date:"d/m/Y" }}
+                                    {% if noticia.categoria %}
+                                    <span style="margin-left: 10px; color: #d32f2f;">
+                                        <i class="fas fa-tag"></i> {{ noticia.categoria.categoria }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="ver-mais">
+                        <a href="{% url 'noticias_por_colunista' autor.nome %}" class="ver-mais-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            Ver todas as publicações
+                        </a>
+                    </div>
+                    {% else %}
+                    <p style="color: #999; font-style: italic; text-align: center; padding: 15px;">
+                        <i class="far fa-newspaper"></i> Nenhuma publicação recente
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-user-edit"></i>
+                <h3>{% if busca %}Nenhum colunista encontrado{% else %}Nenhum colunista cadastrado{% endif %}</h3>
+                <p>
+                    {% if busca %}
+                        Não foram encontrados colunistas para "{{ busca }}".
+                    {% else %}
+                        Não há colunistas cadastrados no momento.
+                    {% endif %}
+                </p>
+                {% if busca %}
+                <a href="{% url 'colunistas' %}" class="limpar-btn" style="margin-top: 15px; display: inline-flex;">
+                    <i class="fas fa-eye"></i> Ver todos os colunistas
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Botão voltar -->
+    <div class="voltar-container">
+        <a href="{% url 'inicial' %}" class="voltar-btn">
+            <i class="fas fa-arrow-left"></i> Voltar para a página inicial
+        </a>
+    </div>
+
+    <!-- Footer (igual ao da página inicial) -->
+    <footer>
+        <div class="footer-container">
+            <!-- ... SEU FOOTER EXISTENTE ... -->
+        </div>
+    </footer>
+
+    <script>
+        // Efeito de hover suave nos cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.colunista-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Foco automático no campo de busca se houver busca
+            const searchInput = document.querySelector('.filtro-input');
+            if (searchInput && "{{ busca }}") {
+                searchInput.focus();
+                searchInput.select();
+            }
+        });
+    </script>
+</body>
+</html>

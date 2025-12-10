@@ -404,16 +404,16 @@
 
             <div class="circular-buttons">
                 <a href="https://jc.uol.com.br/blog-do-torcedor" class="circular-button" target="_blank" id="btnBlogTorcedor">
-                    <img src="c:\Users\magda\OneDrive\Área de Trabalho\Imagens menu\blogTorcedor.png" class="social-icon" alt="Blog do Torcedor">
+                    <img src="https://sjcc.ne10.uol.com.br/rodape_global/img/blog_do_torcedor.webp" class="social-icon" alt="Blog do Torcedor">
                 </a>
                 <a href="https://ne10.uol.com.br/" class="circular-button" target="_blank" id="btnNe10">
-                    <img src="https://via.placeholder.com/35x35?text=NE10" class="social-icon" alt="Ne10">
+                    <img src="https://sjcc.ne10.uol.com.br/rodape_global/img/ne10interior.webp"  class="social-icon" alt="Ne10">
                 </a>
                 <a href="https://receitadaboa.com.br/" class="circular-button" target="_blank" id="btnReceitaBoa">
-                    <img src="https://via.placeholder.com/35x35?text=RB" class="social-icon" alt="Receita da Boa">
+                    <img src="https://sjcc.ne10.uol.com.br/rodape_global/img/receita_da_boa.webp" class="social-icon" alt="Receita da Boa">
                 </a>
                 <a href="https://jc.uol.com.br/social1" class="circular-button" target="_blank" id="btnSocial1">
-                    <img src="https://via.placeholder.com/35x35?text=S1" class="social-icon" alt="Social1">
+                    <img src="https://sjcc.ne10.uol.com.br/rodape_global/img/social.webp" class="social-icon" alt="Social1">
                 </a>
             </div>
 
@@ -583,6 +583,7 @@
                             </a>
                             <div class="hero-actions">
                                 <span><i class="far fa-clock"></i> {{ n.data_criacao|date:"H:i" }}</span>
+                                <h2><i class=""></i> {{ n.titulo }}</h2>
                                 <div class="actions-icons">
                                     <a href="{% url 'salvar_noticia' n.id %}" title="Salvar">
                                         {% if n.id in noticias_salvas_ids %}
@@ -609,22 +610,36 @@
                 </div>
             </div>
 
-            <div class="widget-mare">
-                <div class="mare-info">
-                    <i class="fas fa-water"></i>
-                    <div>
-                        <strong>Tábua de Marés | Recife</strong>
-                        <div class="mare-dados">
-                            <a>Colocar a API</a>
-                        </div>
-                    </div>
+        <div class="container-widgets">
+            <div class="widget widget-mare">
+                <h5><i class="fas fa-water"></i> Tábua de Marés | Recife</h5>
+                <div id="mare-dados" class="loading">Carregando marés...</div>
+            </div>
+
+            <div class="widget widget-weather">
+                <h5><i class="fas fa-cloud-sun"></i> Recife</h5>
+                <div id="weather-dados" class="loading">Carregando...</div>
+            </div>
+
+            <div class="widget widget-money">
+                <h5><i class="fas fa-dollar-sign"></i> Cotação</h5>
+                <div class="price">
+                    <div id="dolar-item">USD: ...</div>
+                    <div id="euro-item">EUR: ...</div>
                 </div>
             </div>
 
+            <div class="widget widget-megasena">
+                <h5>MEGA SENA <span id="mega-concurso" style="font-size: 0.8em;"></span></h5>
+                <ul id="mega-numeros" class="mega-list">
+                    <li>..</li><li>..</li><li>..</li><li>..</li><li>..</li><li>..</li>
+                </ul>
+            </div>
+        </div>
             <div class="news-grid-section">
-                {% for n in noticias|slice:"3:" %}
+                {% for n in noticias|slice:"0:" %}
                    
-                    {% if forloop.counter0 == 2 %}
+                    {% if forloop.counter0 == 6 %}
                         </div> <div class="ad-container-full">
                             <div class="ad-box">
                                 <p>PUBLICIDADE</p>
@@ -842,7 +857,8 @@
         const btnColunistas = document.getElementById('btnColunistas');
         if (btnColunistas) {
             btnColunistas.addEventListener('click', () => {
-                handleStaticButtonClick('Colunistas');
+                toggleSideMenu();  // Fecha o menu lateral
+                window.location.href = '/colunistas/';  // Redireciona para a página de colunistas
             });
         }
 
