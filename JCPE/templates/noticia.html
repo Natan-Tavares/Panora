@@ -615,6 +615,108 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* --- FORMULÁRIO DE COMENTÁRIO --- */
+        .form-comentario {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .comentario-form .form-group {
+            margin-bottom: 15px;
+        }
+        
+        #textoComentario {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        #textoComentario:focus {
+            outline: none;
+            border-color: #d32f2f;
+            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2);
+        }
+        
+        #textoComentario::placeholder {
+            color: #999;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn-enviar, .btn-cancelar {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-enviar {
+            background: #d32f2f;
+            color: white;
+        }
+        
+        .btn-enviar:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+        }
+        
+        .btn-cancelar {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-cancelar:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        /* Indicação de resposta */
+        .resposta-indicacao {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 5px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .resposta-indicacao p {
+            margin: 0;
+            font-size: 14px;
+            color: #2e7d32;
+        }
+        
+        .btn-remover-resposta {
+            background: none;
+            border: none;
+            color: #d32f2f;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* Estilo para comentário sendo respondido */
+        .comentario-sendo-respondido {
+            background: #fff3e0;
+            border-left: 3px solid #ff9800;
+        }
     </style>
 </head>
 <body>
@@ -917,6 +1019,7 @@
                 {% endif %}
             </div>
 
+            <!-- SEÇÃO DE COMENTÁRIOS CORRIGIDA (SEM DUPLICAÇÃO) -->
             <div class="comentarios-container">
                 <div class="comentarios-header">
                     <h2>Comentários</h2>
@@ -924,9 +1027,20 @@
                 </div>
                 
                 {% if user.is_authenticated %}
-                <a href="{% url 'inserir_resposta' noticia.id %}" class="btn-comentar">
-                    <i class="fas fa-comment"></i> Escrever comentário
-                </a>
+                <!-- FORMULÁRIO DE COMENTÁRIO DIRETO NA PÁGINA -->
+                <div class="form-comentario" id="formComentario">
+                    <form method="post" action="{% url 'ler_noticia' noticia.id %}" class="comentario-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="pai_id" id="paiId" value="">
+                        <div class="form-group">
+                            <textarea name="texto" id="textoComentario" placeholder="Escreva seu comentário..." rows="4" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancelar" id="btnCancelar" style="display: none;">Cancelar</button>
+                            <button type="submit" class="btn-enviar">Enviar Comentário</button>
+                        </div>
+                    </form>
+                </div>
                 {% else %}
                 <a href="{% url 'login' %}" class="btn-comentar">
                     <i class="fas fa-sign-in-alt"></i> Faça login para comentar
@@ -935,7 +1049,7 @@
                 
                 <div class="comentarios-lista">
                     {% for comentario in comentarios %}
-                    <div class="comentario">
+                    <div class="comentario" id="comentario-{{ comentario.id }}">
                         <div class="comentario-cabecalho">
                             <div class="comentario-autor">{{ comentario.usuario }}</div>
                             <div class="comentario-tempo">{{ comentario.data_criacao|timesince }} atrás</div>
@@ -948,9 +1062,9 @@
                                     <i class="far fa-thumbs-up"></i> {{ comentario.curtidas.count }}
                                 </button>
                             </form>
-                            <a href="{% url 'inserir_resposta' noticia.id %}?pai={{ comentario.id }}" class="acao-btn">
+                            <button class="acao-btn btn-responder" data-comentario-id="{{ comentario.id }}">
                                 <i class="fas fa-reply"></i> Responder
-                            </a>
+                            </button>
                             {% if user.is_authenticated %}
                             <form method="post" action="{% url 'denunciar_comentario' comentario.id %}" style="display: inline;">
                                 {% csrf_token %}
@@ -963,7 +1077,7 @@
                         
                         <!-- Respostas ao comentário -->
                         {% for resposta in comentario.comentarios_filho.all %}
-                        <div class="comentario" style="margin-left: 30px; margin-top: 15px; border-left: 2px solid #ddd; padding-left: 15px;">
+                        <div class="comentario resposta" id="comentario-{{ resposta.id }}" style="margin-left: 30px; margin-top: 15px; border-left: 2px solid #ddd; padding-left: 15px;">
                             <div class="comentario-cabecalho">
                                 <div class="comentario-autor">{{ resposta.usuario }}</div>
                                 <div class="comentario-tempo">{{ resposta.data_criacao|timesince }} atrás</div>
@@ -1130,21 +1244,6 @@
         const mainContent = document.getElementById('mainContent');
         let isMenuOpen = false;
 
-        // Elementos dos botões do menu
-        const btnAoVivo = document.getElementById('btnAoVivo');
-        const btnJornal = document.getElementById('btnJornal');
-        const btnColunistas = document.getElementById('btnColunistas');
-        const btnUltimas = document.getElementById('btnUltimas');
-        const btnPolitica = document.getElementById('btnPolitica');
-        const btnMundo = document.getElementById('btnMundo');
-        const btnEducacao = document.getElementById('btnEducacao');
-        const btnMobilidade = document.getElementById('btnMobilidade');
-        const btnSeguranca = document.getElementById('btnSeguranca');
-        const btnEconomia = document.getElementById('btnEconomia');
-        const btnCultura = document.getElementById('btnCultura');
-        const btnPernambuco = document.getElementById('btnPernambuco');
-        const btnAnuncie = document.getElementById('btnAnuncie');
-
         function toggleSideMenu() {
             isMenuOpen = !isMenuOpen;
             
@@ -1161,22 +1260,11 @@
             }
         }
 
-        // Evento do botão principal do menu
-        if (menuButton) {
-            menuButton.addEventListener('click', toggleSideMenu);
-        }
+        if (menuButton) menuButton.addEventListener('click', toggleSideMenu);
+        if (menuCloseBtn) menuCloseBtn.addEventListener('click', toggleSideMenu);
+        if (menuOverlay) menuOverlay.addEventListener('click', toggleSideMenu);
 
-        // Fechar ao clicar no botão X
-        if (menuCloseBtn) {
-            menuCloseBtn.addEventListener('click', toggleSideMenu);
-        }
-
-        // Fechar ao clicar no overlay
-        if (menuOverlay) {
-            menuOverlay.addEventListener('click', toggleSideMenu);
-        }
-
-        // Fechar ao pressionar ESC
+        // Fechar menu com ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && isMenuOpen) {
                 toggleSideMenu();
@@ -1184,73 +1272,35 @@
         });
 
         // Eventos para os botões do menu
-        if (btnAoVivo) btnAoVivo.addEventListener('click', () => {
-            toggleSideMenu();
-            window.open('https://dai.ly/x8tkmh4', '_blank');
+        document.querySelectorAll('.menu-btn-item').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const h3 = this.querySelector('h3');
+                if (h3) {
+                    const texto = h3.textContent;
+                    toggleSideMenu();
+                    
+                    // Redirecionamentos específicos
+                    if (texto.includes('Ao Vivo')) {
+                        window.open('https://dai.ly/x8tkmh4', '_blank');
+                    } else if (texto.includes('Jornal Digital')) {
+                        window.open('https://impresso.jc.uol.com.br/edicao.php?link=https://online.fliphtml5.com/lsait/asbh/', '_blank');
+                    } else if (texto.includes('Últimas Notícias')) {
+                        window.location.href = "{% url 'inicial' %}";
+                    } else {
+                        alert(`Você clicou em: ${texto}`);
+                    }
+                }
+            });
         });
-        
-        if (btnJornal) btnJornal.addEventListener('click', () => {
-            toggleSideMenu();
-            window.open('https://impresso.jc.uol.com.br/edicao.php?link=https://online.fliphtml5.com/lsait/asbh/', '_blank');
-        });
-        
-        if (btnColunistas) btnColunistas.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Colunistas');
-        });
-        
-        if (btnUltimas) btnUltimas.addEventListener('click', () => {
-            toggleSideMenu();
-            window.location.href = "{% url 'inicial' %}";
-        });
-        
-        if (btnPolitica) btnPolitica.addEventListener('click', () => {
-            toggleSideMenu();
-            // Aqui você precisa obter o ID da tag Política
-            // Exemplo: window.location.href = "{% url 'inicial' %}?tag=1";
-            alert('Política');
-        });
-        
-        if (btnMundo) btnMundo.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Mundo');
-        });
-        
-        if (btnEducacao) btnEducacao.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Educação');
-        });
-        
-        if (btnMobilidade) btnMobilidade.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Mobilidade');
-        });
-        
-        if (btnSeguranca) btnSeguranca.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Segurança');
-        });
-        
-        if (btnEconomia) btnEconomia.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Economia');
-        });
-        
-        if (btnCultura) btnCultura.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Cultura');
-        });
-        
-        if (btnPernambuco) btnPernambuco.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Pernambuco');
-        });
-        
+
         // Botão "Anuncie no JC"
-        if (btnAnuncie) btnAnuncie.addEventListener('click', () => {
-            toggleSideMenu();
-            alert('Anuncie no JC - Entre em contato conosco para mais informações sobre publicidade!');
-        });
+        const btnAnuncie = document.getElementById('btnAnuncie');
+        if (btnAnuncie) {
+            btnAnuncie.addEventListener('click', () => {
+                toggleSideMenu();
+                alert('Anuncie no JC - Entre em contato conosco para mais informações sobre publicidade!');
+            });
+        }
 
         // Garantir que os botões de redes sociais sejam sempre visíveis
         window.addEventListener('load', function() {
@@ -1290,8 +1340,95 @@
             });
         }
         
-        // Inicializar drawer de busca
+        // Sistema de comentários
         document.addEventListener('DOMContentLoaded', function() {
+            const textoComentario = document.getElementById('textoComentario');
+            const paiIdInput = document.getElementById('paiId');
+            const btnCancelar = document.getElementById('btnCancelar');
+            const formComentario = document.getElementById('formComentario');
+            
+            // Botões de responder
+            document.querySelectorAll('.btn-responder').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const comentarioId = this.getAttribute('data-comentario-id');
+                    const comentario = document.getElementById(`comentario-${comentarioId}`);
+                    
+                    // Definir como resposta
+                    paiIdInput.value = comentarioId;
+                    
+                    // Adicionar indicação visual
+                    if (comentario) {
+                        comentario.classList.add('comentario-sendo-respondido');
+                    }
+                    
+                    // Mostrar indicação no formulário
+                    const indicacao = document.createElement('div');
+                    indicacao.className = 'resposta-indicacao';
+                    indicacao.innerHTML = `
+                        <p>Respondendo ao comentário de ${comentario ? comentario.querySelector('.comentario-autor').textContent : 'usuário'}</p>
+                        <button type="button" class="btn-remover-resposta">Cancelar resposta</button>
+                    `;
+                    
+                    // Remover indicação anterior se existir
+                    const indicacaoAnterior = formComentario.querySelector('.resposta-indicacao');
+                    if (indicacaoAnterior) {
+                        indicacaoAnterior.remove();
+                    }
+                    
+                    // Remover classe de resposta de outros comentários
+                    document.querySelectorAll('.comentario-sendo-respondido').forEach(c => {
+                        c.classList.remove('comentario-sendo-respondido');
+                    });
+                    
+                    formComentario.insertBefore(indicacao, formComentario.firstChild);
+                    if (textoComentario) textoComentario.focus();
+                    
+                    // Botão para cancelar resposta
+                    indicacao.querySelector('.btn-remover-resposta').addEventListener('click', function() {
+                        paiIdInput.value = '';
+                        indicacao.remove();
+                        if (comentario) {
+                            comentario.classList.remove('comentario-sendo-respondido');
+                        }
+                    });
+                    
+                    // Rolar até o formulário
+                    formComentario.scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+            
+            // Botão cancelar do formulário
+            if (btnCancelar) {
+                btnCancelar.addEventListener('click', function() {
+                    paiIdInput.value = '';
+                    if (textoComentario) textoComentario.value = '';
+                    this.style.display = 'none';
+                    
+                    // Remover indicação de resposta
+                    const indicacao = formComentario.querySelector('.resposta-indicacao');
+                    if (indicacao) {
+                        indicacao.remove();
+                    }
+                    
+                    // Remover classe de resposta
+                    document.querySelectorAll('.comentario-sendo-respondido').forEach(c => {
+                        c.classList.remove('comentario-sendo-respondido');
+                    });
+                });
+            }
+            
+            // Mostrar botão cancelar quando houver texto
+            if (textoComentario) {
+                textoComentario.addEventListener('input', function() {
+                    if (this.value.trim() !== '') {
+                        if (btnCancelar) btnCancelar.style.display = 'block';
+                    } else if (paiIdInput.value === '') {
+                        if (btnCancelar) btnCancelar.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Inicializar drawer de busca
             const searchDrawer = document.getElementById('searchDrawer');
             if (searchDrawer) {
                 searchDrawer.style.display = 'none';
@@ -1305,6 +1442,18 @@
                 });
             }
         });
+        
+        // Função para rolar até um comentário específico
+        function scrollToComentario(comentarioId) {
+            const elemento = document.getElementById(`comentario-${comentarioId}`);
+            if (elemento) {
+                elemento.scrollIntoView({ behavior: 'smooth' });
+                elemento.style.backgroundColor = '#fff3e0';
+                setTimeout(() => {
+                    elemento.style.backgroundColor = '';
+                }, 2000);
+            }
+        }
     </script>
 </body>
 </html>

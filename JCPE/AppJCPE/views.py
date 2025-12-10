@@ -197,12 +197,34 @@ def ultimas_noticias(request):
 # ---------------------------
 # views.py - ATUALIZAR a função ler_noticia
 
+# views.py - ATUALIZAR função ler_noticia
+
 def ler_noticia(request, id):
     noticia_individual = get_object_or_404(Noticia, id=id)
     
     # Salvar no histórico se usuário autenticado
     if request.user.is_authenticated:
         Historico.objects.create(noticia=noticia_individual, usuario=request.user)
+    
+    # Processar novo comentário se for POST
+    if request.method == 'POST' and request.user.is_authenticated:
+        texto = request.POST.get('texto')
+        pai_id = request.POST.get('pai_id')
+        
+        if texto and texto.strip():
+            pai = None
+            if pai_id:
+                try:
+                    pai = Resposta.objects.get(id=pai_id, noticia=noticia_individual)
+                except Resposta.DoesNotExist:
+                    pass
+            
+            Resposta.objects.create(
+                noticia=noticia_individual,
+                texto=texto.strip(),
+                pai=pai,
+                usuario=request.user.username
+            )
     
     # Buscar comentários principais (sem pai)
     comentarios = Resposta.objects.filter(noticia=noticia_individual, pai__isnull=True).order_by('-data_criacao')
@@ -227,14 +249,14 @@ def ler_noticia(request, id):
     # Buscar tags para o menu lateral
     todas_tags = Tag.objects.all()
     
-    return render(request, 'noticia.html', {  # <- MUDADO para 'noticia.html'
+    return render(request, 'noticia.html', {
         'noticia': noticia_individual,
         'comentarios': comentarios,
         'total_comentarios': total_comentarios,
         'salva': salva,
         'tags_noticia': tags_noticia,
         'noticias_relacionadas': noticias_relacionadas,
-        'tags': todas_tags  # Para o menu lateral
+        'tags': todas_tags
     })
 
 
