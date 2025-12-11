@@ -5,139 +5,6 @@
 
 {% block content %}
 
-<!-- =============================== -->
-<!-- SIDEBAR - DEVE ESTAR AQUI SEMPRE -->
-<!-- =============================== -->
-
-<!-- Botão que abre a sidebar -->
-<button id="sidebarToggle" class="sidebar-toggle-btn">
-    {% if user.is_authenticated %}Minha Conta{% else %}Login{% endif %}
-</button>
-
-<!-- Fundo escuro -->
-<div id="sidebarOverlay" class="sidebar-overlay"></div>
-
-<!-- SIDEBAR -->
-<div id="sidebar" class="sidebar">
-
-    <!-- TÍTULO DA SIDEBAR -->
-    <h2 class="sidebar-title">Minha Conta</h2>
-
-    {% if user.is_authenticated %}
-    <!-- ============================ -->
-    <!-- PERFIL DO USUÁRIO LOGADO -->
-    <!-- ============================ -->
-    <div id="profileContent">
-        <div class="sidebar-profile-container">
-
-            <div class="sidebar-profile-header">
-                <div class="sidebar-profile-avatar" onclick="openPhotoModal()">👤</div>
-                <a href="#" class="sidebar-change-photo-link" onclick="openPhotoModal(); return false;">Alterar foto</a>
-            </div>
-
-            <!-- USERNAME -->
-            <div class="sidebar-form-group" id="usernameGroup">
-                <label>Nome de Usuário</label>
-                <input type="text" id="usernameInput" class="sidebar-display-field" value="{{ user.username }}" readonly>
-                <a href="#" class="sidebar-change-link" onclick="enableEdit('username'); return false;">Alterar</a>
-                <div class="sidebar-edit-buttons" id="usernameButtons">
-                    <button class="sidebar-btn-save" onclick="saveEdit('username')">Salvar</button>
-                    <button class="sidebar-btn-cancel" onclick="cancelEdit('username')">Cancelar</button>
-                </div>
-            </div>
-
-            <!-- EMAIL -->
-            <div class="sidebar-form-group" id="emailGroup">
-                <label>E-mail</label>
-                <input type="email" id="emailInput" class="sidebar-display-field" value="{{ user.email }}" readonly>
-                <a href="#" class="sidebar-change-link" onclick="enableEdit('email'); return false;">Alterar</a>
-                <div class="sidebar-edit-buttons" id="emailButtons">
-                    <button class="sidebar-btn-save" onclick="saveEdit('email')">Salvar</button>
-                    <button class="sidebar-btn-cancel" onclick="cancelEdit('email')">Cancelar</button>
-                </div>
-            </div>
-
-            <!-- TAGS -->
-            <div class="sidebar-tags-container">
-                <h3>Tags de Interesse</h3>
-                <div class="sidebar-tags-list" id="tagsList">
-                    <div class="loading-tags">Carregando tags...</div>
-                </div>
-            </div>
-
-            <!-- RODAPÉ -->
-            <div class="sidebar-footer-buttons">
-                <a href="{% url 'logout' %}" class="sidebar-btn-action" style="background:#b30000; text-decoration: none; display: block; text-align: center;">Sair da Conta</a>
-            </div>
-        </div>
-    </div>
-    
-    {% else %}
-    <!-- ============================ -->
-    <!-- TELA DE LOGIN -->
-    <!-- ============================ -->
-    <div id="loginContent">
-        <div class="sidebar-login-info">
-            Use seu nome de usuário <strong>ou</strong> e-mail para fazer login
-        </div>
-
-        <form id="loginForm" method="POST" action="{% url 'login' %}">
-            {% csrf_token %}
-            <input type="text" name="username" placeholder="Nome de usuário" class="sidebar-input" required>
-            <input type="password" name="password" placeholder="Senha" class="sidebar-input" required>
-            
-            {% if form.errors %}
-            <div style="color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
-                Usuário ou senha incorretos.
-            </div>
-            {% endif %}
-            
-            <input type="hidden" name="next" value="{{ request.path }}">
-            
-            <button type="submit" class="sidebar-btn-action">Entrar</button>
-
-            <div class="sidebar-forgot-password-link" style="text-align: center; margin-top: 10px;">
-                <a href="#" class="sidebar-login-link" onclick="showForgotPassword(); return false;">Esqueci minha senha</a>
-            </div>
-
-            <div class="sidebar-login-hint" style="text-align: center; margin-top: 15px;">
-                Não tem uma conta?
-                <a href="#" class="sidebar-login-link" onclick="showRegisterForm(); return false;">Criar conta</a>
-            </div>
-        </form>
-    </div>
-
-    <!-- ============================ -->
-    <!-- TELA DE REGISTRO (SIMULAÇÃO PARA AJAX) -->
-    <!-- ============================ -->
-    <div id="registerContent" style="display: none;">
-        <h3>Criar Conta</h3>
-
-        <div class="sidebar-login-info">
-            Você poderá fazer login usando seu nome de usuário <strong>ou</strong> e-mail
-        </div>
-
-        <form id="registerForm">
-            {% csrf_token %}
-            <input type="text" id="registerUsername" placeholder="Nome de usuário (mínimo 3 caracteres)" class="sidebar-input" required>
-            <input type="email" id="registerEmail" placeholder="E-mail" class="sidebar-input" required>
-            <input type="password" id="registerPassword" placeholder="Senha (mínimo 6 caracteres)" class="sidebar-input" required>
-            <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" class="sidebar-input" required>
-            
-            <div id="registerErrors" style="color: #dc3545; display: none; margin-bottom: 15px;"></div>
-            
-            <button type="submit" class="sidebar-btn-action">Criar Conta</button>
-            <button type="button" class="sidebar-btn-secondary" onclick="showLoginForm()">Voltar</button>
-        </form>
-    </div>
-    {% endif %}
-
-</div>
-
-<!-- =============================== -->
-<!-- CSS DA SIDEBAR E BLOQUEIO       -->
-<!-- =============================== -->
-
 <style>
 /* =============================================================== */
 /* TELA DE BLOQUEIO (PARA USUÁRIOS NÃO LOGADOS)                    */
@@ -195,270 +62,6 @@
     background: #a70000;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(195, 0, 0, 0.2);
-}
-
-.login-btn:active {
-    transform: translateY(0);
-}
-
-/* =============================================================== */
-/* CSS ORIGINAL DA PÁGINA (PARA USUÁRIOS LOGADOS)                  */
-/* =============================================================== */
-
-/* Container principal */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* Header */
-.profile-header {
-    background: #c30000;
-    padding: 10px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.profile-header img { 
-    height: 45px;
-    max-width: 100%;
-}
-
-/* Seção de perfil */
-.perfil-section {
-    text-align: center;
-    padding: 20px 0 10px;
-    position: relative;
-    z-index: 1;
-}
-
-.foto-container { 
-    display: flex; 
-    justify-content: center; 
-    margin-bottom: 15px;
-}
-
-.foto {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #c30000;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-.username { 
-    margin-top: 10px; 
-    font-size: 14px; 
-    color: #555;
-    font-weight: 500;
-}
-
-/* Menu lateral */
-.menu-lista {
-    width: 90%;
-    margin: 10px auto 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.menu-lista a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 20px;
-    border-bottom: 1px solid #eee;
-    color: #222;
-    text-decoration: none;
-    font-size: 15px;
-    transition: all 0.2s ease;
-}
-
-.menu-lista a:hover {
-    background: #f9f9f9;
-    color: #c30000;
-}
-
-.menu-lista i {
-    margin-right: 10px;
-    color: #c30000;
-    width: 20px;
-    text-align: center;
-}
-
-.menu-lista .arrow {
-    color: #888;
-    font-size: 12px;
-}
-
-/* Blocos de conteúdo */
-.bloco {
-    padding: 12px 15px;
-    border-bottom: 6px solid #f6f6f6;
-    position: relative;
-    z-index: 1;
-}
-
-.bloco h3 {
-    margin: 5px 0 12px;
-    font-size: 16px;
-    color: #444;
-    font-weight: 600;
-}
-
-/* Conteúdo salvo */
-.salvos {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    scrollbar-width: thin;
-    scrollbar-color: #c30000 #f0f0f0;
-}
-
-.salvos::-webkit-scrollbar {
-    height: 6px;
-}
-
-.salvos::-webkit-scrollbar-track {
-    background: #f0f0f0;
-    border-radius: 3px;
-}
-
-.salvos::-webkit-scrollbar-thumb {
-    background: #c30000;
-    border-radius: 3px;
-}
-
-.salvo-card {
-    min-width: 180px;
-    flex-shrink: 0;
-}
-
-.salvo-card img {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 6px;
-    transition: transform 0.3s ease;
-}
-
-.salvo-card img:hover {
-    transform: scale(1.03);
-}
-
-.salvo-card p {
-    font-size: 13px;
-    color: #333;
-    margin-top: 6px;
-    line-height: 1.4;
-}
-
-/* Tags */
-.tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.tags span {
-    background: #f2f2f2;
-    padding: 6px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    color: #555;
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.tags span:hover {
-    background: #e0e0e0;
-    color: #c30000;
-}
-
-/* Colunistas */
-.colunistas {
-    display: flex;
-    gap: 14px;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    scrollbar-width: thin;
-}
-
-.colunista {
-    text-align: center;
-    min-width: 90px;
-    flex-shrink: 0;
-}
-
-.colunista img {
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #c30000;
-}
-
-.colunista p {
-    font-size: 12px;
-    color: #333;
-    margin-top: 5px;
-}
-
-/* Footer da página */
-.page-footer {
-    background: #e6e6e6;
-    text-align: center;
-    padding: 15px 5px;
-    font-size: 12px;
-    color: #444;
-    position: relative;
-    z-index: 1;
-    margin-top: 20px;
-}
-
-.page-footer img {
-    width: 160px;
-    margin: 10px 0;
-    max-width: 100%;
-}
-
-.page-footer .copy {
-    margin-top: 10px;
-    font-size: 11px;
-    color: #666;
-}
-
-/* Menu inferior fixo */
-.menu-bottom {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: #fff;
-    border-top: 1px solid #ccc;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 12px 0;
-    font-size: 20px;
-    z-index: 100;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-}
-
-.menu-bottom a {
-    color: #c30000;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    padding: 5px;
-    border-radius: 5px;
-}
-
-.menu-bottom a:hover {
-    color: #a70000;
-    background: #f9f9f9;
 }
 
 /* =============================================================== */
@@ -693,6 +296,18 @@
     transform: scale(1.05);
 }
 
+.sidebar-change-photo-link {
+    color: #b30000;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.sidebar-change-photo-link:hover {
+    text-decoration: underline;
+}
+
 /* Form groups */
 .sidebar-form-group {
     margin-bottom: 25px;
@@ -802,18 +417,20 @@
 
 .sidebar-tag-item {
     background: #e9e9e9;
-    padding: 8px 12px;
-    border-radius: 5px;
+    padding: 8px 12px 8px 15px;
+    border-radius: 20px;
     color: #333;
     font-size: 13px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     user-select: none;
     border: none;
+    position: relative;
 }
+
 
 .sidebar-tag-item:hover {
     transform: translateY(-2px);
@@ -825,6 +442,19 @@
     color: white;
 }
 
+.sidebar-tag-item.selected::after {
+    content: "×";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
 /* Footer da sidebar */
 .sidebar-footer-buttons {
     margin-top: 40px;
@@ -833,10 +463,44 @@
     border-top: 1px solid #eee;
 }
 
-/* =============================================================== */
-/* RESPONSIVIDADE                                                  */
-/* =============================================================== */
+/* MODAL */
+.sidebar-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
 
+.sidebar-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.sidebar-modal-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.sidebar-modal-close {
+    background: #6c757d;
+    color: white;
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
@@ -856,42 +520,6 @@
     .login-btn {
         max-width: 100%;
     }
-    
-    .menu-lista {
-        width: 95%;
-    }
-    
-    .salvo-card {
-        min-width: 150px;
-    }
-    
-    .menu-bottom {
-        padding: 10px 0;
-        font-size: 18px;
-    }
-}
-
-@media (max-width: 480px) {
-    .sidebar {
-        padding: 15px;
-    }
-    
-    .sidebar-title {
-        font-size: 22px;
-    }
-    
-    .login-box h2 {
-        font-size: 22px;
-    }
-    
-    .foto {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .salvo-card {
-        min-width: 130px;
-    }
 }
 
 /* Animações */
@@ -903,30 +531,11 @@
 .login-box {
     animation: fadeIn 0.5s ease-out;
 }
-
-/* Mensagens de erro/sucesso */
-.error-message {
-    background: #fee;
-    color: #c00;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border-left: 4px solid #c00;
-}
-
-.success-message {
-    background: #efe;
-    color: #0a0;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border-left: 4px solid #0a0;
-}
 </style>
 
-<!-- =============================== -->
-<!-- BLOQUEIO DE ACESSO              -->
-<!-- =============================== -->
+{# =============================================================== #}
+{# BLOQUEIO DE ACESSO — quando o usuário NÃO está logado           #}
+{# =============================================================== #}
 
 {% if not user.is_authenticated %}
 
@@ -938,28 +547,235 @@
     </div>
 </div>
 
+{# =============================================================== #}
+{# CONTEÚDO NORMAL — quando o usuário ESTÁ logado                  #}
+{# =============================================================== #}
+
 {% else %}
 
-<!-- =============================== -->
-<!-- CONTEÚDO PARA USUÁRIOS LOGADOS  -->
-<!-- =============================== -->
-
+<!-- TODO: SEU CONTEÚDO NORMAL PARA USUÁRIOS LOGADOS AQUI -->
 
 <div style="padding: 20px;">
     <h1>Bem-vindo, {{ user.username }}!</h1>
     <p>Você está logado e pode ver todo o conteúdo.</p>
+    
+    <!-- Aqui você coloca o conteúdo da sua página normal -->
+    <!-- Por exemplo: menu, notícias, etc. -->
 </div>
 
 {% endif %}
 
 <!-- =============================== -->
-<!-- JAVASSCRIPT ATUALIZADO          -->
+<!-- SIDEBAR (SEMPRE NO FINAL)       -->
 <!-- =============================== -->
+
+<!-- Botão que abre a sidebar -->
+<button id="sidebarToggle" class="sidebar-toggle-btn">
+    {% if user.is_authenticated %}Minha Conta{% else %}Login{% endif %}
+</button>
+
+<!-- Fundo escuro -->
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+
+    <!-- TÍTULO DA SIDEBAR -->
+    <h2 class="sidebar-title">Minha Conta</h2>
+
+    {% if user.is_authenticated %}
+    <!-- ============================ -->
+    <!-- PERFIL DO USUÁRIO LOGADO -->
+    <!-- ============================ -->
+    <div id="profileContent">
+        <div class="sidebar-profile-container">
+
+            <div class="sidebar-profile-header">
+                <div class="sidebar-profile-avatar" onclick="openPhotoModal()">👤</div>
+                <a href="#" class="sidebar-change-photo-link" onclick="openPhotoModal(); return false;">Alterar foto</a>
+            </div>
+
+            <!-- USERNAME -->
+            <div class="sidebar-form-group" id="usernameGroup">
+                <label>Nome de Usuário</label>
+                <input type="text" id="usernameInput" class="sidebar-display-field" value="{{ user.username }}" readonly>
+                <a href="#" class="sidebar-change-link" onclick="enableEdit('username'); return false;">Alterar</a>
+                <div class="sidebar-edit-buttons" id="usernameButtons">
+                    <button class="sidebar-btn-save" onclick="saveEdit('username')">Salvar</button>
+                    <button class="sidebar-btn-cancel" onclick="cancelEdit('username')">Cancelar</button>
+                </div>
+            </div>
+
+            <!-- EMAIL -->
+            <div class="sidebar-form-group" id="emailGroup">
+                <label>E-mail</label>
+                <input type="email" id="emailInput" class="sidebar-display-field" value="{{ user.email }}" readonly>
+                <a href="#" class="sidebar-change-link" onclick="enableEdit('email'); return false;">Alterar</a>
+                <div class="sidebar-edit-buttons" id="emailButtons">
+                    <button class="sidebar-btn-save" onclick="saveEdit('email')">Salvar</button>
+                    <button class="sidebar-btn-cancel" onclick="cancelEdit('email')">Cancelar</button>
+                </div>
+            </div>
+
+            <!-- SENHA -->
+            <div class="sidebar-form-group" id="passwordGroup">
+                <label>Senha</label>
+                <div style="position: relative;">
+                    <input type="password" id="passwordInput" class="sidebar-display-field" value="********" readonly>
+                    <button type="button" class="sidebar-toggle-password" onclick="togglePassword('passwordInput')" style="top:12px;">👁</button>
+                </div>
+                <a href="#" class="sidebar-change-link" onclick="enableEdit('password'); return false;">Alterar</a>
+                <div class="sidebar-edit-buttons" id="passwordButtons">
+                    <button class="sidebar-btn-save" onclick="saveEdit('password')">Salvar</button>
+                    <button class="sidebar-btn-cancel" onclick="cancelEdit('password')">Cancelar</button>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="sidebar-tags-container">
+                <h3>Tags de Interesse</h3>
+                <div class="sidebar-tags-list" id="tagsList">
+                    <div class="loading-tags">Carregando tags...</div>
+                </div>
+                <p style="font-size: 11px; color: #666; margin-top: 10px;">
+                    As tags são salvas automaticamente no seu navegador.
+                </p>
+            </div>
+
+            <!-- RODAPÉ -->
+            <!-- RODAPÉ DA SIDEBAR -->
+<div class="sidebar-footer-buttons">
+    <button class="sidebar-btn-action" style="background:#b30000;" onclick="logout()">Sair da Conta</button>
+    
+    <!-- REDES SOCIAIS -->
+    <div class="sidebar-social-media" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+        <table style="margin: 0 auto; border-collapse: collapse; border-spacing: 0;">
+            <tr>
+                <td style="padding: 4px 8px;">
+                    <a href="https://www.instagram.com/jc_pe/?hl=en" target="_blank" rel="noopener noreferrer" 
+                       style="display: inline-block; text-decoration: none;">
+                        <img src="{% static 'img/instagram.png' %}" alt="Instagram" 
+                             style="width: 30px; height: 30px; display: block;">
+                    </a>
+                </td>
+                <td style="padding: 4px 8px;">
+                    <a href="https://x.com/jc_pe?lang=en" target="_blank" rel="noopener noreferrer" 
+                       style="display: inline-block; text-decoration: none;">
+                        <img src="{% static 'img/x.png' %}" alt="X" 
+                             style="width: 30px; height: 30px; display: block;">
+                    </a>
+                </td>
+                <td style="padding: 4px 8px;">
+                    <a href="https://www.tiktok.com/@jc_pe" target="_blank" rel="noopener noreferrer" 
+                       style="display: inline-block; text-decoration: none;">
+                        <img src="{% static 'img/tiktok.png' %}" alt="TikTok" 
+                             style="width: 30px; height: 30px; display: block;">
+                    </a>
+                </td>
+            </tr>
+        </table>
+        <p style="font-size: 11px; color: #666; text-align: center; margin-top: 10px;">
+            Siga-nos nas redes sociais
+        </p>
+    </div>
+</div>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- ============================ -->
+    <!-- TELA DE LOGIN -->
+    <!-- ============================ -->
+    <div id="loginContent">
+        <div class="sidebar-login-info">
+            Use seu nome de usuário <strong>ou</strong> e-mail para fazer login
+        </div>
+
+        <form id="loginForm">
+            {% csrf_token %}
+            <input type="text" id="loginIdentifier" placeholder="Nome de usuário ou E-mail" class="sidebar-input" required>
+
+            <div style="position: relative;">
+                <input type="password" id="loginPassword" placeholder="Senha" class="sidebar-input" required>
+                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('loginPassword')">👁</button>
+            </div>
+
+            <button type="submit" class="sidebar-btn-action">Entrar</button>
+
+            <div class="sidebar-forgot-password-link" style="text-align: center; margin-top: 10px;">
+                <a href="#" class="sidebar-login-link" onclick="showForgotPassword(); return false;">Esqueci minha senha</a>
+            </div>
+
+            <div class="sidebar-login-hint" style="text-align: center; margin-top: 15px;">
+                Não tem uma conta?
+                <a href="#" class="sidebar-login-link" onclick="showRegisterForm(); return false;">Criar conta</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ============================ -->
+    <!-- TELA DE REGISTRO -->
+    <!-- ============================ -->
+    <div id="registerContent" style="display: none;">
+        <h3>Criar Conta</h3>
+
+        <div class="sidebar-login-info">
+            Você poderá fazer login usando seu nome de usuário <strong>ou</strong> e-mail
+        </div>
+
+        <form id="registerForm">
+            {% csrf_token %}
+            <input type="text" id="registerUsername" placeholder="Nome de usuário (mínimo 3 caracteres)" class="sidebar-input" required>
+
+            <input type="email" id="registerEmail" placeholder="E-mail" class="sidebar-input" required>
+
+            <div style="position: relative;">
+                <input type="password" id="registerPassword" placeholder="Senha (mínimo 6 caracteres)" class="sidebar-input" required>
+                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('registerPassword')">👁</button>
+            </div>
+
+            <div style="position: relative;">
+                <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" class="sidebar-input" required>
+                <button type="button" class="sidebar-toggle-password" onclick="togglePassword('registerConfirmPassword')">👁</button>
+            </div>
+
+            <div id="registerErrors" style="color: #dc3545; display: none; margin-bottom: 15px; font-size: 14px; background: #f8d7da; padding: 10px; border-radius: 5px;"></div>
+            
+            <button type="submit" class="sidebar-btn-action">Criar Conta</button>
+            <button type="button" class="sidebar-btn-secondary" onclick="showLoginForm()">Voltar</button>
+        </form>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- =============================== -->
+<!--    MODAL PARA FOTO DE PERFIL    -->
+<!-- =============================== -->
+<div id="photoModal" class="sidebar-modal">
+    <div class="sidebar-modal-content">
+        <h3>Alterar Foto</h3>
+        <input type="file" id="photoInput" accept="image/*" style="margin-bottom:15px;">
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="sidebar-modal-btn" onclick="savePhoto()" style="flex: 1; padding: 10px; background: #b30000; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Salvar</button>
+            <button class="sidebar-modal-btn" onclick="closeModal()" style="flex: 1; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 
 <script>
 // ==============================
-//  SISTEMA DA SIDEBAR
+//  SISTEMA DA SIDEBAR COM API REAL
 // ==============================
+
+// Controle de autenticação
+let isLoggedIn = {% if user.is_authenticated %}true{% else %}false{% endif %};
+let currentUser = {% if user.is_authenticated %}{
+    id: {{ user.id }},
+    username: "{{ user.username }}",
+    email: "{{ user.email }}"
+}{% else %}null{% endif %};
 
 // Base de TAGS
 const TAGS_DATA = [
@@ -976,29 +792,80 @@ const TAGS_DATA = [
 ];
 
 // --------------------------------------------
+// FUNÇÃO PARA PEGAR CSRF TOKEN
+// --------------------------------------------
+function getCSRFToken() {
+    const name = 'csrftoken';
+    let cookieValue = null;
+
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+
+    return cookieValue;
+}
+
+// --------------------------------------------
+// FUNÇÃO PADRÃO DE REQUISIÇÃO AJAX
+// --------------------------------------------
+async function makeRequest(url, method, data = null) {
+    const csrfToken = getCSRFToken();
+
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        credentials: 'same-origin'
+    };
+
+    if (data) {
+        options.body = JSON.stringify(data);
+    }
+
+    try {
+        const response = await fetch(url, options);
+        return await response.json();
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+        return { success: false, message: "Erro ao conectar ao servidor." };
+    }
+}
+
+// --------------------------------------------
 // ABRIR E FECHAR SIDEBAR
 // --------------------------------------------
 function openSidebar() {
-    console.log("Abrindo sidebar...");
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("sidebarOverlay");
     
     if (sidebar && overlay) {
         sidebar.classList.add("active");
         overlay.classList.add("active");
-        console.log("Sidebar aberta!");
         
-        // Mostrar tela correta baseada no login
-        const isLoggedIn = {% if user.is_authenticated %}true{% else %}false{% endif %};
+        // Atualizar estado do botão
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        if (sidebarToggle) {
+            sidebarToggle.textContent = isLoggedIn ? "Minha Conta" : "Login";
+        }
         
+        // Mostrar conteúdo correto
         if (isLoggedIn) {
             showProfileContent();
             loadTags();
         } else {
             showLoginForm();
         }
-    } else {
-        console.error("Elementos da sidebar não encontrados!");
     }
 }
 
@@ -1048,138 +915,181 @@ function showScreen(screenId) {
 }
 
 // --------------------------------------------
-// SISTEMA DE REGISTRO COM AJAX
+// MOSTRAR/OCULTAR SENHA
 // --------------------------------------------
-document.addEventListener('DOMContentLoaded', function() {
-    // Formulário de registro com AJAX
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-        registerForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+function togglePassword(id) {
+    const input = document.getElementById(id);
+    if (input) {
+        input.type = (input.type === "password" ? "text" : "password");
+    }
+}
+
+// --------------------------------------------
+// VERIFICAR STATUS DE LOGIN
+// --------------------------------------------
+async function checkLoginStatus() {
+    try {
+        const response = await makeRequest('/api/check-auth/', 'GET');
+
+        if (response.authenticated) {
+            isLoggedIn = true;
+            currentUser = response.user;
             
-            const username = document.getElementById('registerUsername').value.trim();
-            const email = document.getElementById('registerEmail').value.trim();
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-            const errorDiv = document.getElementById('registerErrors');
-            
-            // Reset errors
-            errorDiv.style.display = 'none';
-            errorDiv.innerHTML = '';
-            
-            // Validação básica
-            if (!username || !email || !password || !confirmPassword) {
-                showError('Preencha todos os campos!');
-                return;
+            // Atualizar botão
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            if (sidebarToggle) {
+                sidebarToggle.textContent = "Minha Conta";
             }
             
-            if (username.length < 3) {
-                showError('Nome de usuário deve ter no mínimo 3 caracteres!');
-                return;
+            // Preencher dados do perfil
+            const usernameInput = document.getElementById("usernameInput");
+            const emailInput = document.getElementById("emailInput");
+            
+            if (usernameInput && currentUser.username) {
+                usernameInput.value = currentUser.username;
+            }
+            if (emailInput && currentUser.email) {
+                emailInput.value = currentUser.email;
             }
             
-            if (password.length < 6) {
-                showError('A senha deve ter no mínimo 6 caracteres!');
-                return;
+            showProfileContent();
+            loadTags();
+        } else {
+            isLoggedIn = false;
+            currentUser = null;
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            if (sidebarToggle) {
+                sidebarToggle.textContent = "Login";
             }
-            
-            if (password !== confirmPassword) {
-                showError('As senhas não coincidem!');
-                return;
-            }
-            
-            if (!validateEmail(email)) {
-                showError('Digite um e-mail válido!');
-                return;
-            }
-            
-            try {
-                // Enviar dados para o Django
-                const response = await fetch('{% url "login" %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        email: email,
-                        password: password,
-                        password2: confirmPassword
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert('Conta criada com sucesso! Faça login.');
-                    showLoginForm();
-                    // Limpar formulário
-                    registerForm.reset();
-                } else {
-                    showError(data.message || 'Erro ao criar conta.');
-                }
-                
-            } catch (error) {
-                console.error('Erro:', error);
-                showError('Erro ao conectar com o servidor.');
-            }
-            
-            function showError(message) {
-                errorDiv.innerHTML = message;
-                errorDiv.style.display = 'block';
-            }
-        });
+            showLoginForm();
+        }
+    } catch (error) {
+        console.error("Erro ao checar login:", error);
+        showLoginForm();
+    }
+}
+
+// --------------------------------------------
+// FORMULÁRIO DE LOGIN REAL
+// --------------------------------------------
+document.getElementById("loginForm")?.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const identifier = document.getElementById("loginIdentifier").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    if (!identifier || !password) {
+        showMessage("Preencha todos os campos.", "error");
+        return;
+    }
+
+    const response = await makeRequest('/api/login/', 'POST', {
+        identifier,
+        password
+    });
+
+    if (response.success) {
+        showMessage("Login realizado com sucesso!", "success");
+        isLoggedIn = true;
+        currentUser = response.user;
+        
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    } else {
+        showMessage(response.message || "Credenciais inválidas.", "error");
     }
 });
 
 // --------------------------------------------
-// FUNÇÃO PARA PEGAR CSRF TOKEN
+// FORMULÁRIO DE REGISTRO REAL
 // --------------------------------------------
-function getCSRFToken() {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, 10) === 'csrftoken=') {
-                cookieValue = decodeURIComponent(cookie.substring(10));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+document.getElementById("registerForm")?.addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-// --------------------------------------------
-// MODAL DE FOTO
-// --------------------------------------------
-function openPhotoModal() {
-    const modal = document.getElementById("photoModal");
-    if (modal) {
-        modal.style.display = "flex";
-    }
-}
+    const username = document.getElementById("registerUsername").value.trim();
+    const email = document.getElementById("registerEmail").value.trim();
+    const password = document.getElementById("registerPassword").value;
+    const confirmPassword = document.getElementById("registerConfirmPassword").value;
+    const errorDiv = document.getElementById("registerErrors");
 
-function closeModal() {
-    const modal = document.getElementById("photoModal");
-    if (modal) {
-        modal.style.display = "none";
-    }
-}
+    // Reset errors
+    errorDiv.style.display = 'none';
+    errorDiv.innerHTML = '';
 
-function savePhoto() {
-    const file = document.getElementById("photoInput")?.files[0];
-    if (!file) {
-        alert("Selecione uma foto.");
+    // Validação básica
+    if (!username || !email || !password || !confirmPassword) {
+        showError('Preencha todos os campos!');
         return;
     }
-    alert("Foto alterada com sucesso! (Simulação)");
-    closeModal();
+
+    if (username.length < 3) {
+        showError('Nome de usuário deve ter no mínimo 3 caracteres!');
+        return;
+    }
+
+    if (password.length < 6) {
+        showError('A senha deve ter no mínimo 6 caracteres!');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showError('As senhas não coincidem!');
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        showError('Digite um e-mail válido!');
+        return;
+    }
+
+    const response = await makeRequest('/api/register/', 'POST', {
+        username,
+        email,
+        password
+    });
+
+    if (response.success) {
+        showMessage("Conta criada com sucesso!", "success");
+        isLoggedIn = true;
+        currentUser = response.user;
+        
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    } else {
+        showError(response.message || 'Erro ao criar conta.');
+    }
+
+    function showError(message) {
+        errorDiv.innerHTML = message;
+        errorDiv.style.display = 'block';
+    }
+});
+
+// --------------------------------------------
+// LOGOUT REAL
+// --------------------------------------------
+async function logout() {
+    if (confirm("Deseja realmente sair da conta?")) {
+        const response = await makeRequest('/api/logout/', 'POST');
+
+        if (response.success) {
+            showMessage("Você saiu da conta.", "success");
+            isLoggedIn = false;
+            currentUser = null;
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showMessage("Erro ao sair.", "error");
+        }
+    }
 }
 
 // --------------------------------------------
-// EDIÇÃO DE PERFIL COM AJAX
+// EDIÇÃO DE PERFIL REAL (INCLUINDO SENHA)
 // --------------------------------------------
 function enableEdit(field) {
     const input = document.getElementById(field + "Input");
@@ -1193,6 +1103,11 @@ function enableEdit(field) {
 
     input.readOnly = false;
     input.classList.add("editable");
+
+    if (field === 'password') {
+        input.value = ''; // Limpar campo de senha ao editar
+        input.placeholder = 'Digite a nova senha';
+    }
 
     if (changeLink) {
         changeLink.style.display = "none";
@@ -1218,33 +1133,35 @@ async function saveEdit(field) {
         return;
     }
 
-    try {
-        const response = await fetch('{% url "update_profile" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
-            },
-            body: JSON.stringify({
-                field: field,
-                value: newValue
-            })
-        });
+    if (field === "password" && newValue.length < 6) {
+        alert("A senha deve ter no mínimo 6 caracteres.");
+        return;
+    }
 
-        const data = await response.json();
+    const data = {};
+    data[field] = newValue;
 
-        if (data.success) {
-            alert(data.message || "Alterado com sucesso!");
-            input.readOnly = true;
-            input.classList.remove("editable");
-            buttons.classList.remove("active");
-            if (changeLink) changeLink.style.display = "inline-block";
-        } else {
-            alert(data.message || "Erro ao salvar.");
+    const response = await makeRequest('/api/update-profile/', 'POST', data);
+
+    if (response.success) {
+        showMessage(response.message || "Alterado com sucesso!", "success");
+
+        if (field === 'password') {
+            input.value = '********'; // Mascarar senha novamente
+            input.placeholder = '';
         }
-    } catch (error) {
-        console.error('Erro:', error);
-        alert("Erro ao conectar com o servidor.");
+        
+        input.readOnly = true;
+        input.classList.remove("editable");
+        buttons.classList.remove("active");
+        if (changeLink) changeLink.style.display = "inline-block";
+        
+        // Atualizar dados locais
+        if (currentUser) {
+            currentUser[field] = newValue;
+        }
+    } else {
+        alert(response.message || "Erro ao salvar.");
     }
 }
 
@@ -1255,7 +1172,13 @@ function cancelEdit(field) {
 
     if (!input || !buttons) return;
 
-    input.value = window.originalValues[field] || "";
+    if (field === 'password') {
+        input.value = '********'; // Restaurar valor mascarado
+        input.placeholder = '';
+    } else {
+        input.value = window.originalValues[field] || "";
+    }
+    
     input.readOnly = true;
     input.classList.remove("editable");
 
@@ -1308,6 +1231,60 @@ function validateEmail(email) {
 }
 
 // --------------------------------------------
+// SISTEMA DE MENSAGENS
+// --------------------------------------------
+function showMessage(text, type) {
+    const msg = document.createElement("div");
+    msg.className = "temp-message " + type;
+    msg.textContent = text;
+    msg.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        z-index: 10000;
+        transition: opacity 0.3s;
+    `;
+    
+    if (type === 'success') {
+        msg.style.background = '#28a745';
+    } else {
+        msg.style.background = '#dc3545';
+    }
+
+    document.body.appendChild(msg);
+
+    setTimeout(() => {
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 300);
+    }, 3000);
+}
+
+// --------------------------------------------
+// MODAL DE FOTO
+// --------------------------------------------
+function openPhotoModal() {
+    document.getElementById("photoModal").style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById("photoModal").style.display = "none";
+}
+
+function savePhoto() {
+    const file = document.getElementById("photoInput")?.files[0];
+    if (!file) {
+        alert("Selecione uma foto.");
+        return;
+    }
+    alert("Foto alterada com sucesso! (Simulação)");
+    closeModal();
+}
+
+// --------------------------------------------
 // INICIALIZAÇÃO
 // --------------------------------------------
 document.addEventListener("DOMContentLoaded", function() {
@@ -1317,6 +1294,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const sidebarToggle = document.getElementById("sidebarToggle");
     if (sidebarToggle) {
         sidebarToggle.addEventListener("click", openSidebar);
+        sidebarToggle.textContent = isLoggedIn ? "Minha Conta" : "Login";
     }
     
     // Configurar overlay
@@ -1324,6 +1302,17 @@ document.addEventListener("DOMContentLoaded", function() {
     if (sidebarOverlay) {
         sidebarOverlay.addEventListener("click", closeSidebar);
     }
+    
+    // Botão de login na tela de bloqueio
+    const loginButtons = document.querySelectorAll('.login-btn');
+    loginButtons.forEach(btn => {
+        if (btn.getAttribute('onclick') === 'openSidebar()') {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openSidebar();
+            });
+        }
+    });
     
     // ESC fecha sidebar
     document.addEventListener("keydown", function(event) {
