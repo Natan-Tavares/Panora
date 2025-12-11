@@ -5,9 +5,9 @@
 
 {% block content %}
 
-<!-- ESTILO DA PÁGINA DE PERFIL -->
+
 <style>
-    /* === ESTILOS DA PÁGINA PRINCIPAL === */
+   
     body {
         margin: 0;
         font-family: Arial, sans-serif;
@@ -15,7 +15,7 @@
         overflow-x: hidden;
     }
     
-    /* Header da página de perfil */
+
     .profile-header {
         background: #c30000;
         padding: 10px 0;
@@ -26,8 +26,7 @@
     .profile-header img {
         height: 45px;
     }
-    
-    /* Seção do perfil */
+   
     .perfil-section {
         text-align: center;
         padding: 20px 0 10px;
@@ -185,7 +184,7 @@
         text-decoration: none;
     }
     
-    /* Botão para abrir sidebar (sobreposto) */
+
     .sidebar-toggle-btn {
         position: fixed;
         top: 20px;
@@ -206,9 +205,7 @@
         background: #a00000;
     }
     
-    /* === ESTILOS COMPLETOS DA SIDEBAR === */
-    
-    /* Overlay escuro */
+
     .sidebar-overlay {
         position: fixed;
         top: 0;
@@ -227,7 +224,6 @@
         visibility: visible;
     }
     
-    /* Container da Sidebar */
     .sidebar-container {
         position: fixed;
         top: 0;
@@ -247,7 +243,6 @@
         right: 0;
     }
     
-    /* Estilos gerais da sidebar */
     .sidebar-container h2 {
         text-align: center;
         color: #a40000;
@@ -264,7 +259,6 @@
         font-size: 20px;
     }
     
-    /* Inputs */
     .sidebar-input {
         width: 100%;
         padding: 14px;
@@ -276,7 +270,6 @@
         box-sizing: border-box;
     }
     
-    /* Botões */
     .sidebar-btn-action {
         width: 100%;
         padding: 14px;
@@ -318,7 +311,6 @@
         background: #ffeaea;
     }
     
-    /* Informações de login */
     .sidebar-login-info {
         font-size: 13px;
         color: #666;
@@ -340,7 +332,6 @@
         font-size: 14px;
     }
     
-    /* Botão mostrar/ocultar senha */
     .sidebar-toggle-password {
         position: absolute;
         right: 10px;
@@ -356,7 +347,6 @@
         color: #b30000;
     }
     
-    /* Estilos de perfil na sidebar */
     .sidebar-profile-container {
         padding: 10px 0;
     }
@@ -394,7 +384,6 @@
         text-decoration: underline;
     }
     
-    /* Grupos de formulário */
     .sidebar-form-group {
         margin-bottom: 25px;
         position: relative;
@@ -441,7 +430,6 @@
         text-decoration: underline;
     }
     
-    /* Botões de edição */
     .sidebar-edit-buttons {
         display: none;
         gap: 10px;
@@ -482,7 +470,6 @@
         background: #5a6268;
     }
     
-    /* Tags */
     .sidebar-tags-container {
         margin-top: 30px;
         margin-bottom: 40px;
@@ -519,7 +506,7 @@
         color: white;
     }
     
-    /* Footer da sidebar */
+
     .sidebar-footer-buttons {
         margin-top: 40px;
         padding-top: 20px;
@@ -544,7 +531,6 @@
         opacity: 0.8;
     }
     
-    /* Modal */
     .sidebar-modal {
         display: none;
         position: fixed;
@@ -596,7 +582,7 @@
         color: white;
     }
     
-    /* Mensagens temporárias */
+
     .temp-message {
         position: fixed;
         top: 20px;
@@ -626,7 +612,6 @@
         }
     }
     
-    /* Outros estilos da sidebar */
     .sidebar-recovery-instructions {
         font-size: 14px;
         color: #666;
@@ -659,7 +644,7 @@
         margin-bottom: 15px;
     }
     
-    /* Links de redes sociais */
+
     .social-icons {
         display: flex;
         justify-content: center;
@@ -673,10 +658,10 @@
     }
 </style>
 
-<!-- Botão para abrir sidebar (sobreposto) -->
+
 <button class="sidebar-toggle-btn" onclick="openSidebar()" id="sidebarToggle">Login</button>
 
-<!-- CONTEÚDO DA PÁGINA DE PERFIL -->
+
 <header class="profile-header">
     <img src="{% static 'img/logo_jcpe.png' %}" alt="Logo JCPE">
 </header>
@@ -777,13 +762,11 @@
     </a>
 </nav>
 
-<!-- ============================ -->
-<!-- SIDEBAR COMPLETA - AGORA FUNCIONAL -->
-<!-- ============================ -->
+
 
 <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
 
-<!-- Modal para foto de perfil -->
+
 <div id="photoModal" class="sidebar-modal">
     <div class="sidebar-modal-content">
         <h3>Alterar Foto de Perfil</h3>
@@ -797,7 +780,7 @@
 </div>
 
 <div id="sidebar" class="sidebar-container">
-    <!-- TELA DE LOGIN -->
+
     <div id="loginContent">
         <h2>Entrar</h2>
         
@@ -827,7 +810,6 @@
         </form>
     </div>
 
-    <!-- TELA DE ESQUECI A SENHA -->
     <div id="forgotPasswordContent" style="display: none;">
         <h2>Recuperar Senha</h2>
         
@@ -850,7 +832,6 @@
         </div>
     </div>
 
-    <!-- TELA DE REGISTRO -->
     <div id="registerContent" style="display: none;">
         <h2>Criar Conta</h2>
         
@@ -878,7 +859,6 @@
         </form>
     </div>
 
-    <!-- TELA DE PERFIL (usuário logado) -->
     <div id="profileContent" style="display: none;">
         <div class="sidebar-profile-container">
             <div class="sidebar-profile-header">
@@ -953,15 +933,11 @@
 </div>
 
 <script>
-    // ====================
-    // SISTEMA COMPLETO DA SIDEBAR
-    // ====================
+  
     
-    // Sistema de autenticação
     let isLoggedIn = false;
     let currentUser = null;
     
-    // Sistema de tags
     const TAGS_DATA = [
         {id: 'educacao', name: 'Educação'},
         {id: 'cinema', name: 'Cinema'},
@@ -975,7 +951,7 @@
         {id: 'ciencia', name: 'Ciência'}
     ];
     
-    // Função para obter o token CSRF
+ 
     function getCSRFToken() {
         const name = 'csrftoken';
         let cookieValue = null;
@@ -991,8 +967,7 @@
         }
         return cookieValue;
     }
-    
-    // Função para fazer requisições AJAX
+ 
     async function makeRequest(url, method, data = null) {
         const csrfToken = getCSRFToken();
         const options = {
@@ -1017,7 +992,7 @@
         }
     }
     
-    // Funções da Sidebar
+  
     function openSidebar() {
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
@@ -1025,10 +1000,10 @@
         sidebar.classList.add('active');
         overlay.classList.add('active');
         
-        // Verificar status de login
+      
         checkLoginStatus();
         
-        // Carregar tags quando abrir a sidebar
+    
         if (isLoggedIn) {
             loadTags();
         }
@@ -1042,7 +1017,7 @@
         overlay.classList.remove('active');
     }
     
-    // Alternar entre telas da sidebar
+ 
     function showForgotPassword() {
         document.getElementById("loginContent").style.display = "none";
         document.getElementById("registerContent").style.display = "none";
@@ -1077,7 +1052,7 @@
         document.getElementById("profileContent").style.display = "block";
     }
     
-    // Função para mostrar/ocultar senha
+  
     function togglePassword(inputId) {
         const input = document.getElementById(inputId);
         if (input.type === "password") {
@@ -1086,8 +1061,7 @@
             input.type = "password";
         }
     }
-    
-    // Sistema de login/logout
+  
     async function checkLoginStatus() {
         try {
             const response = await makeRequest('/api/check-auth/', 'GET');
@@ -1116,7 +1090,7 @@
         }
     }
     
-    // Formulário de login
+   
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -1142,7 +1116,7 @@
             
             setTimeout(() => {
                 closeSidebar();
-                // Recarregar a página para atualizar o estado
+               
                 window.location.reload();
             }, 1500);
         } else {
@@ -1150,7 +1124,7 @@
         }
     });
     
-    // Formulário de recuperação de senha (versão simplificada)
+   
     document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -1161,12 +1135,11 @@
             return;
         }
         
-        // Simulação - em produção, você precisaria implementar a API para recuperação
         showMessage('Funcionalidade de recuperação de senha em desenvolvimento.', 'info');
         document.getElementById('recoverySuccess').style.display = 'block';
     });
     
-    // Formulário de registro
+ 
     document.getElementById('registerForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -1215,7 +1188,7 @@
             
             setTimeout(() => {
                 closeSidebar();
-                // Recarregar a página para atualizar o estado
+               
                 window.location.reload();
             }, 2000);
         } else {
@@ -1223,7 +1196,7 @@
         }
     });
     
-    // Função de logout
+
     async function logout() {
         const response = await makeRequest('/api/logout/', 'POST');
         
@@ -1235,14 +1208,14 @@
             showLoginForm();
             closeSidebar();
             
-            // Recarregar a página para atualizar o estado do Django
+            
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
         }
     }
     
-    // Funções do Modal de Foto
+   
     function openPhotoModal() {
         document.getElementById("photoModal").style.display = "flex";
     }
@@ -1265,7 +1238,7 @@
         }
     }
     
-    // Funções de Edição de Campos
+ 
     function enableEdit(field) {
         const input = document.getElementById(field + 'Input');
         const buttons = document.getElementById(field + 'Buttons');
@@ -1364,13 +1337,13 @@
         changeLink.style.display = 'inline-block';
     }
     
-    // Validação de e-mail
+
     function validateEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
     }
     
-    // Sistema de tags
+ 
     function loadTags() {
         const tagsList = document.getElementById('tagsList');
         if (!tagsList) return;
@@ -1457,7 +1430,7 @@
         }, 3000);
     }
     
-    // Fechar sidebar e modal com ESC
+
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeSidebar();
@@ -1465,20 +1438,19 @@
         }
     });
     
-    // Fechar modal ao clicar fora
+
     document.getElementById('photoModal').addEventListener('click', function(event) {
         if (event.target === this) {
             closeModal();
         }
     });
     
-    // Inicializar quando a página carregar
+
     document.addEventListener('DOMContentLoaded', function() {
         checkLoginStatus();
     });
 </script>
 
-<!-- Adicionar Font Awesome para ícones -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 {% endblock %}
