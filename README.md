@@ -72,13 +72,16 @@ O projeto está em desenvolvimento contínuo, com entregas feitas em ciclos áge
 - Implementação e deployment de uma nova história de usuário, com uso de Testes Automatizados;
 - Implementação de CI/CD com build e deployment automatizado (pipeline criada no Github);
 
-- Link do Deploy atualizado: https://panora-xj0t.onrender.com/
-
-
 ### 📅 13/11
 
-- Relatório de programação em par : https://drive.google.com/file/d/1iGKrQkKYgBWV0NOh8qslKnSssHqqrX9l/view?usp=sharing
+- Relatório de programação em par #1 : https://drive.google.com/file/d/1iGKrQkKYgBWV0NOh8qslKnSssHqqrX9l/view?usp=sharing
 ---
+
+### 📅 04/12
+
+- Relatório de programação em par final: https://drive.google.com/file/d/1AJlrq8mc8xXopGpRPia_kkeJbldvc2vY/view?usp=sharing
+
+
 ## 🤝 Equipe
 
 **👨‍💻 Ciência da Computação:**
