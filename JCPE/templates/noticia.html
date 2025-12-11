@@ -453,6 +453,7 @@
             margin-bottom: 20px;
             padding-bottom: 20px;
             border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
         }
 
         .comentario:last-child {
@@ -507,6 +508,27 @@
         .acao-btn:hover {
             background: #f5f5f5;
             color: #d32f2f;
+        }
+
+        /* BOTÃO EXCLUIR ESPECÍFICO */
+        .btn-excluir {
+            color: #dc3545 !important;
+            background: none !important;
+            border: none !important;
+            padding: 5px 10px !important;
+            border-radius: 4px !important;
+            cursor: pointer !important;
+            font-size: 13px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .btn-excluir:hover {
+            background: #f8d7da !important;
+            color: #721c24 !important;
+            transform: scale(1.05);
         }
 
         /* --- NOTÍCIAS RELACIONADAS --- */
@@ -614,6 +636,10 @@
             .relacionadas-lista {
                 grid-template-columns: 1fr;
             }
+            
+            .comentario-acoes {
+                flex-wrap: wrap;
+            }
         }
 
         /* --- FORMULÁRIO DE COMENTÁRIO --- */
@@ -716,6 +742,231 @@
         .comentario-sendo-respondido {
             background: #fff3e0;
             border-left: 3px solid #ff9800;
+        }
+
+        /* --- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO --- */
+        .modal-exclusao-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-exclusao-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 450px;
+            overflow: hidden;
+            animation: slideUp 0.4s ease;
+            transform-origin: center;
+        }
+
+        .modal-exclusao-header {
+            background: #d32f2f;
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .modal-exclusao-header i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .modal-exclusao-header h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            font-family: 'Merriweather', serif;
+        }
+
+        .modal-exclusao-body {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .modal-exclusao-body p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .modal-exclusao-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .btn-modal-confirmar {
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+        }
+
+        .btn-modal-confirmar:hover {
+            background: linear-gradient(135deg, #b71c1c, #9a0007);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
+        }
+
+        .btn-modal-confirmar:active {
+            transform: translateY(0);
+        }
+
+        .btn-modal-cancelar {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-modal-cancelar:hover {
+            background: linear-gradient(135deg, #5a6268, #484e53);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-modal-cancelar:active {
+            transform: translateY(0);
+        }
+
+        .modal-exclusao-footer {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Efeito de shake para o modal quando confirmado */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .modal-confirmando {
+            animation: shake 0.5s ease;
+        }
+
+        /* Loading indicator */
+        .loading-indicator {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 5px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading .loading-indicator {
+            display: inline-block;
+        }
+
+        /* Toast notification */
+        .toast-notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 100000;
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .toast-notification.error {
+            background: #dc3545;
+        }
+
+        .toast-notification.info {
+            background: #17a2b8;
+        }
+
+        .toast-notification i {
+            font-size: 20px;
+        }
+
+        .toast-notification span {
+            font-weight: 500;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 15px;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
         }
     </style>
 </head>
@@ -869,7 +1120,7 @@
     <!-- Overlay para o menu -->
     <div class="menu-overlay" id="menuOverlay"></div>
 
-    <!-- SEARCH DRAWER (igual ao inicial.html) -->
+    <!-- SEARCH DRAWER -->
     <div class="search-drawer" id="searchDrawer" aria-hidden="true">
         <div class="search-drawer-backdrop" onclick="closeSearchDrawer()"></div>
         <div class="search-drawer-shell">
@@ -940,6 +1191,42 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO -->
+    <div class="modal-exclusao-overlay" id="modalExclusao">
+        <div class="modal-exclusao-container">
+            <div class="modal-exclusao-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Confirmar Exclusão</h3>
+            </div>
+            
+            <div class="modal-exclusao-body">
+                <p id="modalMensagem">Tem certeza que deseja excluir este comentário? Esta ação não pode ser desfeita.</p>
+                
+                <div class="modal-exclusao-actions">
+                    <button type="button" class="btn-modal-confirmar" id="btnModalConfirmar">
+                        <span class="loading-indicator"></span>
+                        <span class="btn-text">Sim, excluir</span>
+                    </button>
+                    <button type="button" class="btn-modal-cancelar" id="btnModalCancelar">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="modal-exclusao-footer">
+                <i class="fas fa-info-circle"></i> A exclusão removerá permanentemente o comentário e todas as suas respostas.
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICAÇÃO TOAST -->
+    <div class="toast-notification" id="toastNotification">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Comentário excluído com sucesso!</span>
+        <button class="toast-close" onclick="hideToast()">&times;</button>
+    </div>
+
     <!-- CONTEÚDO PRINCIPAL DA NOTÍCIA -->
     <main class="container content-container" id="mainContent">
         <div class="noticia-header">
@@ -956,7 +1243,7 @@
                 <div class="noticia-meta">
                     <div class="noticia-autor">
                         <i class="fas fa-user"></i>
-                        <span>{{ noticia.autor }}</span>
+                        <span>{{ noticia.autor_user }}</span>
                     </div>
                     <div class="noticia-data">
                         <i class="far fa-clock"></i>
@@ -1019,7 +1306,7 @@
                 {% endif %}
             </div>
 
-            <!-- SEÇÃO DE COMENTÁRIOS CORRIGIDA (SEM DUPLICAÇÃO) -->
+            <!-- SEÇÃO DE COMENTÁRIOS -->
             <div class="comentarios-container">
                 <div class="comentarios-header">
                     <h2>Comentários</h2>
@@ -1065,6 +1352,17 @@
                             <button class="acao-btn btn-responder" data-comentario-id="{{ comentario.id }}">
                                 <i class="fas fa-reply"></i> Responder
                             </button>
+                            
+                            <!-- BOTÃO EXCLUIR - VISÍVEL APENAS PARA O AUTOR OU ADMIN -->
+                            {% if user.is_authenticated and user.username == comentario.usuario or user.is_superuser %}
+                            <form method="post" action="{% url 'excluir_comentario' comentario.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="button" class="acao-btn btn-excluir" data-comentario-id="{{ comentario.id }}">
+                                    <i class="fas fa-trash-alt"></i> Excluir
+                                </button>
+                            </form>
+                            {% endif %}
+                            
                             {% if user.is_authenticated %}
                             <form method="post" action="{% url 'denunciar_comentario' comentario.id %}" style="display: inline;">
                                 {% csrf_token %}
@@ -1090,6 +1388,17 @@
                                         <i class="far fa-thumbs-up"></i> {{ resposta.curtidas.count }}
                                     </button>
                                 </form>
+                                
+                                <!-- BOTÃO EXCLUIR PARA RESPOSTAS - VISÍVEL APENAS PARA O AUTOR OU ADMIN -->
+                                {% if user.is_authenticated and user.username == resposta.usuario or user.is_superuser %}
+                                <form method="post" action="{% url 'excluir_comentario' resposta.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="button" class="acao-btn btn-excluir" data-comentario-id="{{ resposta.id }}">
+                                        <i class="fas fa-trash-alt"></i> Excluir
+                                    </button>
+                                </form>
+                                {% endif %}
+                                
                                 {% if user.is_authenticated %}
                                 <form method="post" action="{% url 'denunciar_comentario' resposta.id %}" style="display: inline;">
                                     {% csrf_token %}
@@ -1236,7 +1545,12 @@
     <script src="{% static 'js/script.js' %}"></script>
     
     <script>
-        // Script para o menu lateral
+        // ========== VARIÁVEIS GLOBAIS ==========
+        let formParaExcluir = null;
+        let comentarioParaExcluir = null;
+        let exclusaoEmAndamento = false;
+
+        // ========== SISTEMA DO MENU LATERAL ==========
         const menuButton = document.getElementById('menuButton');
         const sideMenu = document.getElementById('sideMenu');
         const menuOverlay = document.getElementById('menuOverlay');
@@ -1284,8 +1598,22 @@
                         window.open('https://dai.ly/x8tkmh4', '_blank');
                     } else if (texto.includes('Jornal Digital')) {
                         window.open('https://impresso.jc.uol.com.br/edicao.php?link=https://online.fliphtml5.com/lsait/asbh/', '_blank');
+                    } else if (texto.includes('Colunistas')) {
+                        window.location.href = "{% url 'colunistas' %}";
                     } else if (texto.includes('Últimas Notícias')) {
-                        window.location.href = "{% url 'inicial' %}";
+                        window.location.href = "{% url 'ultimas_noticias' %}";
+                    } else if (texto.includes('Politica')) {
+                        window.location.href = "{% url 'inicial' %}?tag=1";
+                    } else if (texto.includes('Mundo')) {
+                        window.location.href = "{% url 'inicial' %}?tag=3";
+                    } else if (texto.includes('Educacao')) {
+                        window.location.href = "{% url 'inicial' %}?tag=10";
+                    } else if (texto.includes('Economia')) {
+                        window.location.href = "{% url 'inicial' %}?tag=2";
+                    } else if (texto.includes('Cultura')) {
+                        window.location.href = "{% url 'inicial' %}?tag=7";
+                    } else if (texto.includes('Pernambuco')) {
+                        window.location.href = "{% url 'inicial' %}?tag=1";
                     } else {
                         alert(`Você clicou em: ${texto}`);
                     }
@@ -1302,45 +1630,7 @@
             });
         }
 
-        // Garantir que os botões de redes sociais sejam sempre visíveis
-        window.addEventListener('load', function() {
-            const socialButtons = document.querySelectorAll('.circular-button');
-            socialButtons.forEach(button => {
-                button.style.display = 'flex';
-                button.style.alignItems = 'center';
-                button.style.justifyContent = 'center';
-            });
-        });
-        
-        // Botão de curtir notícia
-        const curtirBtn = document.getElementById('curtirBtn');
-        if (curtirBtn) {
-            curtirBtn.addEventListener('click', function() {
-                this.classList.toggle('ativo');
-                const icon = this.querySelector('i');
-                const span = this.querySelector('span');
-                if (this.classList.contains('ativo')) {
-                    icon.className = 'fas fa-thumbs-up';
-                    span.textContent = 'Curtido';
-                } else {
-                    icon.className = 'far fa-thumbs-up';
-                    span.textContent = 'Curtir';
-                }
-            });
-        }
-        
-        // Botão de compartilhar
-        const compartilharBtn = document.getElementById('compartilharBtn');
-        if (compartilharBtn) {
-            compartilharBtn.addEventListener('click', function() {
-                this.classList.add('ativo');
-                setTimeout(() => {
-                    this.classList.remove('ativo');
-                }, 1000);
-            });
-        }
-        
-        // Sistema de comentários
+        // ========== SISTEMA DE COMENTÁRIOS ==========
         document.addEventListener('DOMContentLoaded', function() {
             const textoComentario = document.getElementById('textoComentario');
             const paiIdInput = document.getElementById('paiId');
@@ -1380,8 +1670,13 @@
                         c.classList.remove('comentario-sendo-respondido');
                     });
                     
+                    if (comentario) comentario.classList.add('comentario-sendo-respondido');
+                    
                     formComentario.insertBefore(indicacao, formComentario.firstChild);
                     if (textoComentario) textoComentario.focus();
+                    
+                    // Mostrar botão cancelar
+                    if (btnCancelar) btnCancelar.style.display = 'block';
                     
                     // Botão para cancelar resposta
                     indicacao.querySelector('.btn-remover-resposta').addEventListener('click', function() {
@@ -1389,6 +1684,9 @@
                         indicacao.remove();
                         if (comentario) {
                             comentario.classList.remove('comentario-sendo-respondido');
+                        }
+                        if (btnCancelar && textoComentario.value.trim() === '') {
+                            btnCancelar.style.display = 'none';
                         }
                     });
                     
@@ -1427,28 +1725,295 @@
                     }
                 });
             }
-            
-            // Inicializar drawer de busca
-            const searchDrawer = document.getElementById('searchDrawer');
-            if (searchDrawer) {
-                searchDrawer.style.display = 'none';
-            }
-            
-            // Adicionar evento ao formulário de busca
-            const searchForm = document.querySelector(".search-form");
-            if (searchForm) {
-                searchForm.addEventListener("submit", () => {
-                    closeSearchDrawer();
-                });
-            }
         });
-        
+
+        // ========== SISTEMA DE EXCLUSÃO COM MODAL ==========
+
+        // Inicializar sistema de exclusão
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('modalExclusao');
+            const btnModalConfirmar = document.getElementById('btnModalConfirmar');
+            const btnModalCancelar = document.getElementById('btnModalCancelar');
+            const modalMensagem = document.getElementById('modalMensagem');
+            const toastNotification = document.getElementById('toastNotification');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            // Interceptar todos os cliques nos botões de excluir
+            document.querySelectorAll('.btn-excluir').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const comentarioId = this.getAttribute('data-comentario-id');
+                    comentarioParaExcluir = document.getElementById(`comentario-${comentarioId}`);
+                    
+                    // Encontrar o formulário de exclusão relacionado
+                    formParaExcluir = this.closest('form');
+                    
+                    if (!formParaExcluir || !comentarioParaExcluir) return;
+                    
+                    // Determinar se é um comentário principal ou resposta
+                    const isResposta = comentarioParaExcluir.classList.contains('resposta');
+                    const autor = comentarioParaExcluir.querySelector('.comentario-autor')?.textContent || 'usuário';
+                    
+                    // Personalizar mensagem
+                    const mensagem = isResposta 
+                        ? `Tem certeza que deseja excluir esta resposta de <strong>${autor}</strong>? Esta ação não pode ser desfeita.`
+                        : `Tem certeza que deseja excluir o comentário de <strong>${autor}</strong>? Todas as respostas também serão removidas.`;
+                    
+                    modalMensagem.innerHTML = mensagem;
+                    
+                    // Mostrar modal
+                    showModal();
+                });
+            });
+            
+            // Botão confirmar do modal
+            btnModalConfirmar.addEventListener('click', function() {
+                if (exclusaoEmAndamento || !formParaExcluir) return;
+                
+                exclusaoEmAndamento = true;
+                
+                // Mostrar loading
+                this.classList.add('loading');
+                this.querySelector('.btn-text').textContent = 'Excluindo...';
+                
+                // Adicionar efeito de confirmação no modal
+                const modalContainer = modal.querySelector('.modal-exclusao-container');
+                modalContainer.classList.add('modal-confirmando');
+                
+                // Adicionar efeito visual no comentário
+                if (comentarioParaExcluir) {
+                    comentarioParaExcluir.style.transition = 'all 0.5s ease';
+                    comentarioParaExcluir.style.opacity = '0.5';
+                    comentarioParaExcluir.style.transform = 'scale(0.98)';
+                }
+                
+                // Simular delay para efeito visual
+                setTimeout(() => {
+                    // Enviar formulário
+                    formParaExcluir.submit();
+                    
+                    // Em caso de falha no submit, redefinir estado
+                    setTimeout(() => {
+                        resetModalState();
+                        if (comentarioParaExcluir) {
+                            comentarioParaExcluir.style.opacity = '1';
+                            comentarioParaExcluir.style.transform = 'scale(1)';
+                        }
+                    }, 3000);
+                }, 800);
+            });
+            
+            // Botão cancelar do modal
+            btnModalCancelar.addEventListener('click', function() {
+                hideModal();
+                showToast('Exclusão cancelada', 'info');
+            });
+            
+            // Fechar modal ao clicar fora
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    hideModal();
+                    showToast('Exclusão cancelada', 'info');
+                }
+            });
+            
+            // Fechar modal com ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    hideModal();
+                    showToast('Exclusão cancelada', 'info');
+                }
+            });
+            
+            // Funções auxiliares
+            function showModal() {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                
+                // Animar entrada
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                }, 10);
+                
+                // Focar no botão cancelar por padrão (mais seguro)
+                setTimeout(() => {
+                    btnModalCancelar.focus();
+                }, 100);
+            }
+            
+            function hideModal() {
+                modal.style.opacity = '0';
+                
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                    resetModalState();
+                }, 300);
+            }
+            
+            function resetModalState() {
+                exclusaoEmAndamento = false;
+                formParaExcluir = null;
+                comentarioParaExcluir = null;
+                
+                const btnConfirmar = document.getElementById('btnModalConfirmar');
+                btnConfirmar.classList.remove('loading');
+                btnConfirmar.querySelector('.btn-text').textContent = 'Sim, excluir';
+                
+                const modalContainer = modal.querySelector('.modal-exclusao-container');
+                modalContainer.classList.remove('modal-confirmando');
+            }
+            
+            function showToast(message, type = 'success') {
+                toastMessage.textContent = message;
+                toastNotification.className = 'toast-notification';
+                
+                if (type === 'error') {
+                    toastNotification.classList.add('error');
+                    toastNotification.querySelector('i').className = 'fas fa-exclamation-circle';
+                } else if (type === 'info') {
+                    toastNotification.classList.add('info');
+                    toastNotification.querySelector('i').className = 'fas fa-info-circle';
+                } else {
+                    toastNotification.querySelector('i').className = 'fas fa-check-circle';
+                }
+                
+                toastNotification.style.display = 'flex';
+                toastNotification.style.animation = 'slideInRight 0.3s ease';
+                
+                // Auto-fechar após 5 segundos
+                setTimeout(() => {
+                    hideToast();
+                }, 5000);
+            }
+            
+            window.hideToast = function() {
+                toastNotification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    toastNotification.style.display = 'none';
+                    toastNotification.style.animation = '';
+                }, 300);
+            };
+            
+            // Adicionar efeito visual nos botões de excluir
+            document.querySelectorAll('.btn-excluir').forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    const comentario = document.getElementById(`comentario-${this.getAttribute('data-comentario-id')}`);
+                    if (comentario) {
+                        comentario.style.transition = 'all 0.3s ease';
+                        comentario.style.boxShadow = '0 0 0 2px rgba(220, 53, 69, 0.2)';
+                        comentario.style.backgroundColor = '#fff9f9';
+                    }
+                });
+                
+                btn.addEventListener('mouseleave', function() {
+                    const comentario = document.getElementById(`comentario-${this.getAttribute('data-comentario-id')}`);
+                    if (comentario) {
+                        comentario.style.boxShadow = '';
+                        comentario.style.backgroundColor = '';
+                    }
+                });
+                
+                // Efeito de clique
+                btn.addEventListener('mousedown', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                btn.addEventListener('mouseup', function() {
+                    this.style.transform = '';
+                });
+            });
+        });
+
+        // ========== FUNÇÕES GERAIS ==========
+
+        // Garantir que os botões de redes sociais sejam sempre visíveis
+        window.addEventListener('load', function() {
+            const socialButtons = document.querySelectorAll('.circular-button');
+            socialButtons.forEach(button => {
+                button.style.display = 'flex';
+                button.style.alignItems = 'center';
+                button.style.justifyContent = 'center';
+            });
+        });
+
+        // Botão de curtir notícia
+        const curtirBtn = document.getElementById('curtirBtn');
+        if (curtirBtn) {
+            curtirBtn.addEventListener('click', function() {
+                this.classList.toggle('ativo');
+                const icon = this.querySelector('i');
+                const span = this.querySelector('span');
+                if (this.classList.contains('ativo')) {
+                    icon.className = 'fas fa-thumbs-up';
+                    span.textContent = 'Curtido';
+                } else {
+                    icon.className = 'far fa-thumbs-up';
+                    span.textContent = 'Curtir';
+                }
+            });
+        }
+
+        // Função para compartilhar notícia
+        function shareNews(url) {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ noticia.titulo }}',
+                    text: '{{ noticia.subtitulo }}',
+                    url: url
+                })
+                .then(() => showToast('Notícia compartilhada com sucesso!', 'success'))
+                .catch((error) => {
+                    console.log('Erro ao compartilhar:', error);
+                    showToast('Erro ao compartilhar. Tente novamente.', 'error');
+                });
+            } else {
+                // Fallback para copiar o link
+                navigator.clipboard.writeText(url)
+                    .then(() => {
+                        showToast('Link copiado para a área de transferência!', 'info');
+                        const compartilharBtn = document.getElementById('compartilharBtn');
+                        if (compartilharBtn) {
+                            compartilharBtn.classList.add('ativo');
+                            setTimeout(() => {
+                                compartilharBtn.classList.remove('ativo');
+                            }, 1000);
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Erro ao copiar link:', err);
+                        showToast('Erro ao copiar link. Tente novamente.', 'error');
+                    });
+            }
+        }
+
+        // Funções para abrir/fechar drawer de busca
+        function toggleSearchDrawer() {
+            const drawer = document.getElementById('searchDrawer');
+            if (drawer.style.display === 'none' || drawer.style.display === '') {
+                drawer.style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('searchInput')?.focus();
+                }, 100);
+            } else {
+                closeSearchDrawer();
+            }
+        }
+
+        function closeSearchDrawer() {
+            const drawer = document.getElementById('searchDrawer');
+            drawer.style.display = 'none';
+        }
+
         // Função para rolar até um comentário específico
         function scrollToComentario(comentarioId) {
             const elemento = document.getElementById(`comentario-${comentarioId}`);
             if (elemento) {
                 elemento.scrollIntoView({ behavior: 'smooth' });
                 elemento.style.backgroundColor = '#fff3e0';
+                elemento.style.transition = 'background-color 0.5s ease';
                 setTimeout(() => {
                     elemento.style.backgroundColor = '';
                 }, 2000);

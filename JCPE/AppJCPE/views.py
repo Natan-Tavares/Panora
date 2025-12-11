@@ -600,6 +600,30 @@ def denunciar_comentario(request, resposta_id):
     messages.success(request, "Comentário denunciado com sucesso!")
     return redirect(request.META.get('HTTP_REFERER', 'inicial'))
 
+# ---------------------------
+# EXCLUIR COMENTÁRIO
+# ---------------------------
+@login_required(login_url='login')
+def excluir_comentario(request, resposta_id):
+    resposta = get_object_or_404(Resposta, id=resposta_id)
+    
+    # Verificar se o usuário tem permissão para excluir
+    # (autor do comentário - comparando strings - ou superusuário)
+    if request.user.username == resposta.usuario or request.user.is_superuser:
+        # Salvar a notícia relacionada para redirecionamento
+        noticia_id = resposta.noticia.id
+        
+        # Excluir todas as respostas filho primeiro (se houver)
+        resposta.comentarios_filho.all().delete()
+        
+        # Excluir o comentário principal
+        resposta.delete()
+        
+        messages.success(request, "Comentário excluído com sucesso!")
+        return redirect('ler_noticia', id=noticia_id)
+    else:
+        messages.error(request, "Você não tem permissão para excluir este comentário.")
+        return redirect('ler_noticia', id=resposta.noticia.id)
 
 # ---------------------------
 # CONTA / EDITAR PERFIL
