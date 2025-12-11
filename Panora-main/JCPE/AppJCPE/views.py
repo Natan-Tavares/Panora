@@ -278,7 +278,7 @@ def conta(request):
         'colunistas': None   
     }
 
-    return render(request, 'jc.html', context)
+    return render(request, 'conta.html', context)
 
 @login_required
 def editar_perfil(request):
