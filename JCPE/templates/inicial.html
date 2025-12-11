@@ -583,7 +583,7 @@
                             </a>
                             <div class="hero-actions">
                                 <span><i class="far fa-clock"></i> {{ n.data_criacao|date:"H:i" }}</span>
-                                <h2><i class=""></i> {{ n.titulo }}</h2>
+                                <h4><i class=""></i> {{ n.titulo }}</h4>
                                 <div class="actions-icons">
                                     <a href="{% url 'salvar_noticia' n.id %}" title="Salvar">
                                         {% if n.id in noticias_salvas_ids %}
